@@ -145,15 +145,28 @@ export function Canvas({ onEditorReady, onCanvasChange, onSelectElement, autoTag
           if ((e as any).containerId) return false
           if ((e as any).frameId) return false
           if (getSemantic(e)) return false
-          return SHAPE_TO_SEMANTIC[e.type] != null
+          return SHAPE_TO_SEMANTIC[e.type] != null || e.type === 'frame'
         })
         if (targets.length === 0) return
 
-        // Keep every other element's original reference — only tag targets.
+        // Keep every other element's original reference — only touch targets.
+        const isDark = appState.theme === 'dark'
         const byId = new Map(targets.map((t) => [t.id, t]))
         const mutated = current.map((x) => {
           const tgt = byId.get(x.id)
           if (!tgt) return x
+          // Frames: translucent white fill so they stand out from the
+          // tablecloth grid — never tagged.
+          if (tgt.type === 'frame') {
+            const cur = (tgt as any).backgroundColor
+            if (!cur || cur === 'transparent') {
+              return {
+                ...tgt,
+                backgroundColor: isDark ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.8)',
+              } as any
+            }
+            return x
+          }
           // Pending type (drag-to-create) wins; else shape→semantic mapping.
           const st = pendingTagRef.current || SHAPE_TO_SEMANTIC[tgt.type]
           if (!st) return x
