@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState, useMemo } from 'react'
 import './StreamOverlay.css'
+import { useI18n } from '../lib/i18n'
 
 interface Props {
   streamText: string
@@ -29,6 +30,7 @@ function escapeLine(line: string): string {
 }
 
 export function StreamOverlay({ streamText, thinkingText, tokenCount, done }: Props) {
+  const t = useI18n()
   const codeRef = useRef<HTMLDivElement>(null)
   const thinkRef = useRef<HTMLDivElement>(null)
   const [startTime] = useState(() => performance.now())
@@ -115,7 +117,7 @@ export function StreamOverlay({ streamText, thinkingText, tokenCount, done }: Pr
       <div className="stream-header">
         <div className="stream-status">
           <div className={`stream-dot ${done ? 'done' : isThinking ? 'thinking' : ''}`} />
-          <span>{done ? 'COMPLETE' : isThinking ? 'THINKING' : 'STREAMING'}</span>
+          <span>{done ? t('stream.complete') : isThinking ? t('stream.thinkingNow') : t('stream.streaming')}</span>
         </div>
         <div className="stream-meta mono">
           <span>{tokenCount} tok</span>
@@ -133,8 +135,8 @@ export function StreamOverlay({ streamText, thinkingText, tokenCount, done }: Pr
             onClick={() => setThinkingExpanded(e => !e)}
           >
             <span className="stream-thinking-icon">{thinkingExpanded ? '▾' : '▸'}</span>
-            <span className="stream-thinking-label">THINKING</span>
-            <span className="stream-thinking-count">{thinkingText!.length.toLocaleString()} chr</span>
+            <span className="stream-thinking-label">{t('stream.thinking')}</span>
+            <span className="stream-thinking-count">{thinkingText!.length.toLocaleString()} {t('stream.chars')}</span>
           </button>
           {thinkingExpanded && (
             <div className="stream-thinking-body mono" ref={thinkRef}>

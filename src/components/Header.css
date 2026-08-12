@@ -148,6 +148,23 @@
   background: var(--bg-elevated);
 }
 
+/* Theme toggle button — flush against GitHub button */
+.theme-toggle-btn {
+  font-size: 10px !important;
+  letter-spacing: 0.08em !important;
+  padding: 4px 8px !important;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  margin-right: -6px;
+}
+.theme-toggle-btn:hover {
+  color: var(--text-primary);
+  border-color: var(--border-hover);
+  background: var(--bg-elevated);
+}
+
 /* What is this button */
 .what-is-this-btn {
   font-size: 10px !important;

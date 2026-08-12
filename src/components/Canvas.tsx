@@ -7,15 +7,18 @@ import './Canvas.css'
 interface Props {
   onEditorReady: (api: ExcalidrawImperativeAPI) => void
   onCanvasChange?: () => void
+  theme?: 'light' | 'dark'
+  langCode?: string
 }
 
-export function Canvas({ onEditorReady, onCanvasChange }: Props) {
+export function Canvas({ onEditorReady, onCanvasChange, theme = 'light', langCode = 'zh-CN' }: Props) {
   return (
     <div className="canvas-wrapper">
       <Excalidraw
         excalidrawAPI={onEditorReady}
         onChange={onCanvasChange}
-        theme={THEME.DARK}
+        theme={theme === 'light' ? THEME.LIGHT : THEME.DARK}
+        langCode={langCode}
         UIOptions={{
           canvasActions: {
             loadScene: false,

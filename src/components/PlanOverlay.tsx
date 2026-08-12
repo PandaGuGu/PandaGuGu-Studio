@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { StreamOverlay } from './StreamOverlay'
 import './PlanOverlay.css'
+import { useI18n } from '../lib/i18n'
 
 export interface PlanPhase {
   name: string
@@ -26,13 +27,14 @@ const PHASE_ICONS: Record<string, string> = {
   create: '▣',
 }
 
-const PHASE_VERBS: Record<string, string> = {
-  gaze: 'Gazing into the image…',
-  dream: 'Dreaming up the design…',
-  create: 'Crafting the code…',
+const PHASE_VERBS_KEYS: Record<string, string> = {
+  gaze: 'plan.gazing',
+  dream: 'plan.dreaming',
+  create: 'plan.creating',
 }
 
 export function PlanOverlay({ phases, activePhaseIndex, tokenCount, done, streamText, streamTokenCount, streamDone }: Props) {
+  const t = useI18n()
   const contentRef = useRef<HTMLDivElement>(null)
   const [startTime] = useState(() => performance.now())
   const [elapsed, setElapsed] = useState('0.0')
@@ -89,7 +91,7 @@ export function PlanOverlay({ phases, activePhaseIndex, tokenCount, done, stream
               {PHASE_ICONS[activePhase?.name] || '○'}
             </span>
             <span className="plan-active-verb">
-              {PHASE_VERBS[activePhase?.name] || 'Working…'}
+              {t(PHASE_VERBS_KEYS[activePhase?.name] || 'plan.working')}
             </span>
           </div>
 
@@ -114,7 +116,7 @@ export function PlanOverlay({ phases, activePhaseIndex, tokenCount, done, stream
           </div>
           <div className="plan-footer mono">
             <span>{tokenCount} tok / {elapsed}s</span>
-            <span>Phase {activePhaseIndex + 1} of {phases.length}</span>
+            <span>{t('plan.phase')} {activePhaseIndex + 1} / {phases.length}</span>
           </div>
         </>
       )}

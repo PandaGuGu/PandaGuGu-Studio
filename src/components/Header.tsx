@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import type { ProviderDef } from '../lib/providers'
+import { useI18n } from '../lib/i18n'
 import './Header.css'
 
 interface Props {
@@ -7,9 +8,12 @@ interface Props {
   modelLabel: string
   hasKey: boolean
   onOpenSettings: () => void
+  theme?: 'light' | 'dark'
+  onToggleTheme?: () => void
 }
 
-export function Header({ providerName, modelLabel, hasKey, onOpenSettings }: Props) {
+export function Header({ providerName, modelLabel, hasKey, onOpenSettings, theme = 'light', onToggleTheme }: Props) {
+  const t = useI18n()
   const [showAbout, setShowAbout] = useState(false)
 
   return (
@@ -18,10 +22,17 @@ export function Header({ providerName, modelLabel, hasKey, onOpenSettings }: Pro
         <div className="header-title">
           <span className="header-title-main">V C A N V A S</span>
           <span className="header-sep">/</span>
-          <span className="header-title-sub">PLAYGROUND</span>
+          <span className="header-title-sub">{t('header.subtitle')}</span>
           <span className="header-by">by <a href="https://e01.ai" target="_blank" rel="noopener" className="header-by-link">E01.ai</a></span>
         </div>
         <div className="header-right">
+          <button
+            className="btn btn-ghost theme-toggle-btn"
+            onClick={onToggleTheme}
+            title={theme === 'dark' ? t('theme.toggleDark') : t('theme.toggleLight')}
+          >
+            {theme === 'dark' ? '☾ ' + t('theme.dark') : '☀ ' + t('theme.light')}
+          </button>
           <a
             className="header-gh-btn"
             href="https://github.com/e01-ai/vcanvas"
@@ -34,7 +45,7 @@ export function Header({ providerName, modelLabel, hasKey, onOpenSettings }: Pro
             <span>GitHub</span>
           </a>
           <button className="btn btn-ghost what-is-this-btn" onClick={() => setShowAbout(true)}>
-            What is this?
+            {t('header.whatIsThis')}
           </button>
           <div className="header-divider" />
 
@@ -56,16 +67,15 @@ export function Header({ providerName, modelLabel, hasKey, onOpenSettings }: Pro
         <div className="about-overlay" onClick={() => setShowAbout(false)}>
           <div className="about-card" onClick={(e) => e.stopPropagation()}>
             <button className="about-close" onClick={() => setShowAbout(false)}>&times;</button>
-            <h2 className="about-title">Playground</h2>
+            <h2 className="about-title">{t('header.aboutTitle')}</h2>
             <p className="about-subtitle"><a href="https://e01.ai" target="_blank" rel="noopener">E01.ai</a> &middot; 2026</p>
 
             <div className="about-body">
               <p>
-                A free-draw canvas for interacting with vision-capable language models.
-                Sketch, reference, annotate, hint — then let the model see and build.
+                {t('header.aboutDesc')}
               </p>
 
-              <h3>Supported Providers</h3>
+              <h3>{t('header.aboutProviders')}</h3>
               <ul>
                 <li><strong>z.ai</strong> — GLM-5V Turbo</li>
                 <li><strong>Google</strong> — Gemini 2.5 Flash/Pro, Gemma 4</li>
@@ -73,25 +83,25 @@ export function Header({ providerName, modelLabel, hasKey, onOpenSettings }: Pro
                 <li><strong>OpenRouter</strong> — Claude, GPT-4.1, Gemini, Llama, DeepSeek</li>
               </ul>
 
-              <h3>How it works</h3>
+              <h3>{t('header.aboutHow')}</h3>
               <ol>
-                <li><strong>Draw or import</strong> — Sketch wireframes, paste screenshots, drop reference images.</li>
-                <li><strong>Describe</strong> — Add a text prompt for what you want built.</li>
-                <li><strong>Generate</strong> — The model sees your canvas + prompt and streams HTML/CSS/JS.</li>
-                <li><strong>Refine</strong> — Iterate. The model sees your sketch, the output screenshot, and your feedback.</li>
+                <li><strong>{t('header.aboutStep1T')}</strong> — {t('header.aboutStep1D')}</li>
+                <li><strong>{t('header.aboutStep2T')}</strong> — {t('header.aboutStep2D')}</li>
+                <li><strong>{t('header.aboutStep3T')}</strong> — {t('header.aboutStep3D')}</li>
+                <li><strong>{t('header.aboutStep4T')}</strong> — {t('header.aboutStep4D')}</li>
               </ol>
 
-              <h3>Features</h3>
+              <h3>{t('header.aboutFeatures')}</h3>
               <ul>
-                <li>Full canvas capture or frame-based region selection</li>
-                <li>Real-time streaming with token visualization</li>
-                <li>Plan mode: Gaze → Dream → Create</li>
-                <li>Save and load drawings</li>
+                <li>{t('header.aboutF1')}</li>
+                <li>{t('header.aboutF2')}</li>
+                <li>{t('header.aboutF3')}</li>
+                <li>{t('header.aboutF4')}</li>
               </ul>
 
               <div className="about-footer">
-                <span>Click the model button in the header to switch providers</span>
-                <span>Built by <a href="https://e01.ai" target="_blank" rel="noopener">E01.ai</a></span>
+                <span>{t('header.aboutFooter1')}</span>
+                <span>{t('header.aboutFooter2')}</span>
               </div>
             </div>
           </div>

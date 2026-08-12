@@ -1,0 +1,233 @@
+import React, { createContext, useContext } from 'react'
+
+export type Lang = 'zh-CN' | 'en'
+
+const translations: Record<Lang, Record<string, string>> = {
+  'zh-CN': {
+    'header.subtitle': '画布试验场',
+    'header.whatIsThis': '这是什么?',
+    'header.aboutTitle': '画布试验场',
+    'header.aboutDesc': '一个面向视觉大模型的自由画布。画草图、贴参考、加标注,然后让模型看懂并构建。',
+    'header.aboutProviders': '支持的模型',
+    'header.aboutHow': '使用方式',
+    'header.aboutStep1T': '画或导入',
+    'header.aboutStep1D': '绘制线框草图、粘贴截图、拖入参考图片。',
+    'header.aboutStep2T': '描述',
+    'header.aboutStep2D': '补充一段文字说明你想要的页面。',
+    'header.aboutStep3T': '生成',
+    'header.aboutStep3D': '模型看到画布 + 描述,流式生成 HTML/CSS/JS。',
+    'header.aboutStep4T': '细化',
+    'header.aboutStep4D': '迭代优化。模型会结合草图、输出截图和你的反馈继续修改。',
+    'header.aboutFeatures': '功能',
+    'header.aboutF1': '整画布输出或按画框区域选择',
+    'header.aboutF2': '实时流式生成,带 token 可视化',
+    'header.aboutF3': '规划模式:观察 → 构思 → 创建',
+    'header.aboutF4': '画作保存与载入',
+    'header.aboutFooter1': '点击右上角模型按钮切换模型服务商',
+    'header.aboutFooter2': '由 E01.ai 构建',
+    'theme.dark': '深色',
+    'theme.light': '浅色',
+    'theme.toggleDark': '切换为深色背景',
+    'theme.toggleLight': '切换为浅色背景',
+
+    'prompt.inspirationArt': '生成艺术',
+    'prompt.inspirationApp': '线框 → 应用',
+    'prompt.inspirationLanding': '落地页',
+    'prompt.inspirationDash': '数据看板',
+    'prompt.placeholderNew': '描述你想构建什么…',
+    'prompt.placeholderRefine': '描述要修改的地方,或留空直接点“细化”…',
+    'prompt.planOn': '规划模式已开启 — 观察、构思、创建',
+    'prompt.planOff': '开启规划模式,进行更深度的多步生成',
+    'prompt.planLabel': '规划',
+    'prompt.planHint': '观察 · 构思 · 创建',
+    'prompt.clear': '清空',
+    'prompt.noKey': '未配置 Key',
+    'prompt.refine': '细化',
+    'prompt.generate': '生成',
+    'prompt.hintNoKey': '请先在上方配置 API Key',
+
+    'frame.fullCanvas': '将发送整个画布给 AI',
+    'frame.drawFirst': '先在画布上画点什么',
+    'frame.prevOutput': '上一次输出',
+    'frame.add': '画框',
+    'frame.save': '保存',
+    'frame.load': '载入',
+    'frame.sources': '素材区',
+    'frame.all': '全选',
+    'frame.none': '取消',
+    'frame.lastOutput': '上次输出',
+    'frame.preview': '预览',
+
+    'preview.emptyText': '在画布上绘制或拖入参考图,描述需求后点“生成”',
+    'preview.emptyHint': 'AI 将把你的草图变成代码',
+
+    'app.apiKeyTitle': '需要配置 API Key',
+    'app.apiKeyDesc': '从 {url} 获取 {provider} 的 API Key。',
+    'app.apiKeyStep1': '从 {url} 获取 Key',
+    'app.apiKeyStep2': '点击右上角模型按钮打开设置',
+    'app.apiKeyStep3': '在 {provider} 卡片中粘贴 Key',
+    'app.openSettings': '打开设置',
+    'app.copy': '复制',
+    'app.openNew': '新窗口打开',
+    'app.desktop': '桌面',
+    'app.tablet': '平板',
+    'app.mobile': '手机',
+    'app.phaseGaze': '观察',
+    'app.phaseDream': '构思',
+    'app.phaseCreate': '创建',
+    'app.chipFullCanvas': '整个画布',
+    'app.chipCurrentOutput': '当前输出',
+
+    'settings.title': '设置',
+    'settings.general': '常规设置',
+    'settings.language': '界面语言',
+    'settings.openaiCompat': 'OpenAI 兼容',
+    'settings.active': '使用中',
+    'settings.url': '地址',
+    'settings.searchModels': '搜索视觉模型…',
+    'settings.loading': '加载中…',
+    'settings.error': '出错',
+    'settings.modelIdPlaceholder': '输入模型 ID…',
+    'settings.cancel': '取消',
+    'settings.save': '保存',
+
+    'stream.thinking': '思考过程',
+    'stream.complete': '完成',
+    'stream.thinkingNow': '思考中',
+    'stream.streaming': '生成中',
+    'stream.chars': '字符',
+
+    'plan.gazing': '正在观察图像…',
+    'plan.dreaming': '正在构思设计…',
+    'plan.creating': '正在编写代码…',
+    'plan.working': '工作中…',
+    'plan.phase': '阶段',
+  },
+
+  en: {
+    'header.subtitle': 'PLAYGROUND',
+    'header.whatIsThis': 'What is this?',
+    'header.aboutTitle': 'Playground',
+    'header.aboutDesc': 'A free-draw canvas for interacting with vision-capable language models. Sketch, reference, annotate, hint — then let the model see and build.',
+    'header.aboutProviders': 'Supported Providers',
+    'header.aboutHow': 'How it works',
+    'header.aboutStep1T': 'Draw or import',
+    'header.aboutStep1D': 'Sketch wireframes, paste screenshots, drop reference images.',
+    'header.aboutStep2T': 'Describe',
+    'header.aboutStep2D': 'Add a text prompt for what you want built.',
+    'header.aboutStep3T': 'Generate',
+    'header.aboutStep3D': 'The model sees your canvas + prompt and streams HTML/CSS/JS.',
+    'header.aboutStep4T': 'Refine',
+    'header.aboutStep4D': 'Iterate. The model sees your sketch, the output screenshot, and your feedback.',
+    'header.aboutFeatures': 'Features',
+    'header.aboutF1': 'Full canvas capture or frame-based region selection',
+    'header.aboutF2': 'Real-time streaming with token visualization',
+    'header.aboutF3': 'Plan mode: Gaze → Dream → Create',
+    'header.aboutF4': 'Save and load drawings',
+    'header.aboutFooter1': 'Click the model button in the header to switch providers',
+    'header.aboutFooter2': 'Built by E01.ai',
+    'theme.dark': 'Dark',
+    'theme.light': 'Light',
+    'theme.toggleDark': 'Switch to dark background',
+    'theme.toggleLight': 'Switch to light background',
+
+    'prompt.inspirationArt': 'Generative Art',
+    'prompt.inspirationApp': 'Wireframe → App',
+    'prompt.inspirationLanding': 'Landing Page',
+    'prompt.inspirationDash': 'Dashboard',
+    'prompt.placeholderNew': 'Describe what you want to build…',
+    'prompt.placeholderRefine': 'Describe changes, or leave empty and hit Refine…',
+    'prompt.planOn': 'Plan mode ON — Gaze, Dream, then Create',
+    'prompt.planOff': 'Enable Plan mode for deeper, multi-step generation',
+    'prompt.planLabel': 'Plan',
+    'prompt.planHint': 'Gaze · Dream · Create',
+    'prompt.clear': 'Clear',
+    'prompt.noKey': 'No Key',
+    'prompt.refine': 'Refine',
+    'prompt.generate': 'Generate',
+    'prompt.hintNoKey': 'Paste API key above',
+
+    'frame.fullCanvas': 'Full canvas will be sent',
+    'frame.drawFirst': 'Draw something to get started',
+    'frame.prevOutput': 'previous output',
+    'frame.add': 'Frame',
+    'frame.save': 'Save',
+    'frame.load': 'Load',
+    'frame.sources': 'Sources',
+    'frame.all': 'All',
+    'frame.none': 'None',
+    'frame.lastOutput': 'Last Output',
+    'frame.preview': 'PRV',
+
+    'preview.emptyText': 'Draw or drop references in frames, describe it, and hit Generate',
+    'preview.emptyHint': 'GLM-5V will turn your sketch into code',
+
+    'app.apiKeyTitle': 'API Key Required',
+    'app.apiKeyDesc': 'Get an API key from {url} for {provider}.',
+    'app.apiKeyStep1': 'Get a key from {url}',
+    'app.apiKeyStep2': 'Click the model button in the header to open settings',
+    'app.apiKeyStep3': 'Paste the key in the {provider} card',
+    'app.openSettings': 'Open Settings',
+    'app.copy': 'COPY',
+    'app.openNew': 'OPEN',
+    'app.desktop': 'Desktop',
+    'app.tablet': 'Tablet',
+    'app.mobile': 'Mobile',
+    'app.phaseGaze': 'Gaze',
+    'app.phaseDream': 'Dream',
+    'app.phaseCreate': 'Create',
+    'app.chipFullCanvas': 'Full canvas',
+    'app.chipCurrentOutput': 'Current output',
+
+    'settings.title': 'Settings',
+    'settings.general': 'General',
+    'settings.language': 'Language',
+    'settings.openaiCompat': 'OpenAI-compat',
+    'settings.active': 'ACTIVE',
+    'settings.url': 'URL',
+    'settings.searchModels': 'Search vision models...',
+    'settings.loading': 'loading...',
+    'settings.error': 'err',
+    'settings.modelIdPlaceholder': 'type model ID...',
+    'settings.cancel': 'Cancel',
+    'settings.save': 'Save',
+
+    'stream.thinking': 'THINKING',
+    'stream.complete': 'COMPLETE',
+    'stream.thinkingNow': 'THINKING',
+    'stream.streaming': 'STREAMING',
+    'stream.chars': 'chr',
+
+    'plan.gazing': 'Gazing into the image…',
+    'plan.dreaming': 'Dreaming up the design…',
+    'plan.creating': 'Crafting the code…',
+    'plan.working': 'Working…',
+    'plan.phase': 'Phase',
+  },
+}
+
+interface TParams {
+  [key: string]: string
+}
+
+type TFunction = (key: string, params?: TParams) => string
+
+const I18nContext = createContext<TFunction>(() => '')
+
+export function I18nProvider({ lang, children }: { lang: Lang; children: React.ReactNode }) {
+  const t: TFunction = (key, params) => {
+    const table = translations[lang]
+    let s = (table && table[key]) || key
+    if (params) {
+      for (const [k, v] of Object.entries(params)) {
+        s = s.replace(new RegExp(`\\{${k}\\}`, 'g'), v)
+      }
+    }
+    return s
+  }
+  return <I18nContext.Provider value={t}>{children}</I18nContext.Provider>
+}
+
+export function useI18n(): TFunction {
+  return useContext(I18nContext)
+}

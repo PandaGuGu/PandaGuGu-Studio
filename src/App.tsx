@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react'
+import React, { useState, useRef, useCallback, useEffect } from 'react'
 import { convertToExcalidrawElements } from '@excalidraw/excalidraw'
 import type { ExcalidrawImperativeAPI } from '@excalidraw/excalidraw/types'
 import { Header } from './components/Header'
@@ -15,6 +15,7 @@ import { ResizeHandle } from './components/ResizeHandle'
 import { streamChat, extractHTML } from './lib/api'
 import { exportSourceAsPng, exportAllAsPng, getSources } from './lib/export'
 import { getProvider, loadProviderState, saveProviderState } from './lib/providers'
+import { I18nProvider, useI18n, type Lang } from './lib/i18n'
 import type { ProviderState } from './lib/providers'
 import type { Message } from './lib/api'
 import type { ChatChip } from './lib/store'
@@ -107,10 +108,25 @@ If someone looks at the output and instantly thinks "AI made this" — that's th
 - Repeating the same information the user can already see`
 
 export function App() {
+  const t = useI18n()
   const editorRef = useRef<ExcalidrawImperativeAPI | null>(null)
   const [editor, setEditor] = useState<ExcalidrawImperativeAPI | null>(null)
   const [providerState, setProviderState] = useState<ProviderState>(loadProviderState)
   const [showSettings, setShowSettings] = useState(false)
+  const [canvasTheme, setCanvasTheme] = useState<'light' | 'dark'>('light')
+  const [device, setDevice] = useState<'desktop' | 'tablet' | 'mobile'>('desktop')
+  const [langCode, setLangCode] = useState<string>(
+    () => localStorage.getItem('vcanvas-lang') || 'zh-CN'
+  )
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = canvasTheme
+  }, [canvasTheme])
+
+  const handleLangChange = useCallback((lang: string) => {
+    setLangCode(lang)
+    localStorage.setItem('vcanvas-lang', lang)
+  }, [])
 
   const provider = getProvider(providerState.activeProviderId)
   const modelId = providerState.activeModelId
@@ -237,7 +253,7 @@ export function App() {
     if (!hasFrames) {
       // No frames — full canvas mode
       const b64 = await exportAllAsPng(api)
-      if (b64) return [{ base64: b64, label: 'Full canvas' }]
+      if (b64) return [{ base64: b64, label: t('app.chipFullCanvas') }]
       return []
     }
 
@@ -245,7 +261,7 @@ export function App() {
     if (selected.length === 0) {
       // Frames exist but none selected — export entire canvas
       const b64 = await exportAllAsPng(api)
-      if (b64) return [{ base64: b64, label: 'Full canvas' }]
+      if (b64) return [{ base64: b64, label: t('app.chipFullCanvas') }]
       return []
     }
 
@@ -255,7 +271,7 @@ export function App() {
       if (b64) results.push({ base64: b64, label: src.name })
     }
     return results
-  }, [selectedFrameIds])
+  }, [selectedFrameIds, t])
 
   // Capture preview iframe as screenshot
   const capturePreview = useCallback(async (): Promise<string | null> => {
@@ -375,7 +391,7 @@ export function App() {
         type: 'image',
         source: { type: 'base64', media_type: 'image/png', data: screenshotB64 },
       })
-      chipImages.push({ src: 'data:image/png;base64,' + screenshotB64, label: 'Current output' })
+      chipImages.push({ src: 'data:image/png;base64,' + screenshotB64, label: t('app.chipCurrentOutput') })
     }
 
     // 2. Canvas sketches (original reference)
@@ -436,7 +452,7 @@ export function App() {
       setGenerating(false)
       addChip({ role: 'assistant', text: 'ERR:' + err.message })
     }
-  }, [provider, apiKey, modelId, generating, lastHTML, capturePreview, getSelectedFrameImages, addChip])
+  }, [provider, apiKey, modelId, generating, lastHTML, capturePreview, getSelectedFrameImages, addChip, t])
 
   // ── Plan Mode: multi-step Gaze → Dream → Create ──
 
@@ -512,9 +528,9 @@ ${SYSTEM_PROMPT}`
     setPlanActiveIndex(0)
 
     const initialPhases: PlanPhase[] = [
-      { name: 'gaze', label: 'Gaze', status: 'active', text: '' },
-      { name: 'dream', label: 'Dream', status: 'waiting', text: '' },
-      { name: 'create', label: 'Create', status: 'waiting', text: '' },
+      { name: 'gaze', label: t('app.phaseGaze'), status: 'active', text: '' },
+      { name: 'dream', label: t('app.phaseDream'), status: 'waiting', text: '' },
+      { name: 'create', label: t('app.phaseCreate'), status: 'waiting', text: '' },
     ]
     setPlanPhases(initialPhases)
 
@@ -596,7 +612,7 @@ ${SYSTEM_PROMPT}`
       setPlanDone(true)
       addChip({ role: 'assistant', text: 'ERR: ' + err.message })
     }
-  }, [apiKey, generating, getSelectedFrameImages, addChip, runPlanPhase])
+  }, [apiKey, generating, getSelectedFrameImages, addChip, runPlanPhase, t])
 
   const handlePlanRefine = useCallback(async (prompt: string) => {
     if (!apiKey || generating) return
@@ -607,9 +623,9 @@ ${SYSTEM_PROMPT}`
     setPlanActiveIndex(0)
 
     const initialPhases: PlanPhase[] = [
-      { name: 'gaze', label: 'Gaze', status: 'active', text: '' },
-      { name: 'dream', label: 'Dream', status: 'waiting', text: '' },
-      { name: 'create', label: 'Create', status: 'waiting', text: '' },
+      { name: 'gaze', label: t('app.phaseGaze'), status: 'active', text: '' },
+      { name: 'dream', label: t('app.phaseDream'), status: 'waiting', text: '' },
+      { name: 'create', label: t('app.phaseCreate'), status: 'waiting', text: '' },
     ]
     setPlanPhases(initialPhases)
 
@@ -625,7 +641,7 @@ ${SYSTEM_PROMPT}`
         type: 'image',
         source: { type: 'base64', media_type: 'image/png', data: screenshotB64 },
       })
-      chipImages.push({ src: 'data:image/png;base64,' + screenshotB64, label: 'Current output' })
+      chipImages.push({ src: 'data:image/png;base64,' + screenshotB64, label: t('app.chipCurrentOutput') })
     }
     for (const img of frameImages) {
       imageContent.push({
@@ -693,28 +709,38 @@ ${SYSTEM_PROMPT}`
       setPlanDone(true)
       addChip({ role: 'assistant', text: 'ERR: ' + err.message })
     }
-  }, [provider, apiKey, modelId, generating, lastHTML, capturePreview, getSelectedFrameImages, addChip, runPlanPhase])
+  }, [provider, apiKey, modelId, generating, lastHTML, capturePreview, getSelectedFrameImages, addChip, runPlanPhase, t])
 
   const needsKey = apiKey.length <= 4
 
   return (
+    <I18nProvider lang={langCode as Lang}>
     <>
       <Header
         providerName={provider.name}
         modelLabel={modelLabel}
         hasKey={!needsKey}
         onOpenSettings={() => setShowSettings(true)}
+        theme={canvasTheme}
+        onToggleTheme={() => setCanvasTheme(t => (t === 'dark' ? 'light' : 'dark'))}
       />
       {showSettings && (
         <ProviderModal
           state={providerState}
           onUpdate={handleProviderUpdate}
           onClose={() => setShowSettings(false)}
+          langCode={langCode}
+          onLangChange={handleLangChange}
         />
       )}
       <div className="workspace">
         <div className="panel-left" ref={panelLeftRef}>
-          <Canvas onEditorReady={(e) => { editorRef.current = e; setEditor(e) }} onCanvasChange={handleCanvasChange} />
+          <Canvas
+            onEditorReady={(e) => { editorRef.current = e; setEditor(e) }}
+            onCanvasChange={handleCanvasChange}
+            theme={canvasTheme}
+            langCode={langCode}
+          />
           <FramePicker
             editor={editor}
             selectedIds={selectedFrameIds}
@@ -747,25 +773,23 @@ ${SYSTEM_PROMPT}`
                     <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4" />
                   </svg>
                 </div>
-                <h2 className="api-key-overlay-title">API Key Required</h2>
+                <h2 className="api-key-overlay-title">{t('app.apiKeyTitle')}</h2>
                 <p className="api-key-overlay-desc">
-                  Get an API key from{' '}
-                  <a href={provider.keyUrl} target="_blank" rel="noopener">{provider.keyUrlLabel}</a>{' '}
-                  for <strong>{provider.name}</strong>.
+                  {t('app.apiKeyDesc', { url: provider.keyUrlLabel, provider: provider.name })}
                 </p>
                 <div className="api-key-overlay-steps">
-                  <div className="api-key-step"><span className="api-key-step-num">1</span> Get a key from <a href={provider.keyUrl} target="_blank" rel="noopener">{provider.keyUrlLabel}</a></div>
-                  <div className="api-key-step"><span className="api-key-step-num">2</span> Click the model button in the header to open settings</div>
-                  <div className="api-key-step"><span className="api-key-step-num">3</span> Paste the key in the <strong>{provider.name}</strong> card</div>
+                  <div className="api-key-step"><span className="api-key-step-num">1</span> {t('app.apiKeyStep1', { url: provider.keyUrlLabel })}</div>
+                  <div className="api-key-step"><span className="api-key-step-num">2</span> {t('app.apiKeyStep2')}</div>
+                  <div className="api-key-step"><span className="api-key-step-num">3</span> {t('app.apiKeyStep3', { provider: provider.name })}</div>
                 </div>
                 <button className="btn btn-primary" style={{ marginTop: '16px', width: '100%' }} onClick={() => setShowSettings(true)}>
-                  Open Settings
+                  {t('app.openSettings')}
                 </button>
               </div>
             </div>
           )}
           <div className="preview-container">
-            <Preview html={lastHTML} iframeRef={previewRef} />
+            <Preview html={lastHTML} iframeRef={previewRef} device={device} />
             {generating && !planMode && (
               <StreamOverlay
                 streamText={streamText}
@@ -789,13 +813,28 @@ ${SYSTEM_PROMPT}`
           {lastHTML && (
             <div className="preview-toolbar">
               <div className="preview-toolbar-left">
+                <div className="device-switch" role="group" aria-label="预览设备尺寸">
+                  {(['desktop', 'tablet', 'mobile'] as const).map(d => (
+                    <button
+                      key={d}
+                      className={`device-switch-btn ${device === d ? 'active' : ''}`}
+                      onClick={() => setDevice(d)}
+                      title={d === 'desktop' ? t('app.desktop') : d === 'tablet' ? t('app.tablet') : t('app.mobile')}
+                    >
+                      {d === 'desktop' ? t('app.desktop') : d === 'tablet' ? t('app.tablet') : t('app.mobile')}
+                    </button>
+                  ))}
+                </div>
+                <span className="mono preview-meta" style={{ marginLeft: 8 }}>
+                  {device === 'desktop' ? t('app.desktop') : device === 'tablet' ? '768px' : '375px'}
+                </span>
                 <button className="btn btn-secondary" onClick={() => {
                   navigator.clipboard.writeText(lastHTML)
-                }}>COPY</button>
+                }}>{t('app.copy')}</button>
                 <button className="btn btn-secondary" onClick={() => {
                   const w = window.open()
                   if (w) { w.document.write(lastHTML); w.document.close() }
-                }}>OPEN</button>
+                }}>{t('app.openNew')}</button>
               </div>
               <span className="mono preview-meta">
                 {iteration > 0 && `#${iteration}`}
@@ -806,5 +845,6 @@ ${SYSTEM_PROMPT}`
         </div>
       </div>
     </>
+    </I18nProvider>
   )
 }

@@ -1,14 +1,18 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react'
 import { PROVIDERS, fetchOpenRouterModels, type ProviderDef, type ProviderState, type ModelDef } from '../lib/providers'
 import './ProviderModal.css'
+import { useI18n } from '../lib/i18n'
 
 interface Props {
   state: ProviderState
   onUpdate: (state: ProviderState) => void
   onClose: () => void
+  langCode?: string
+  onLangChange?: (lang: string) => void
 }
 
-export function ProviderModal({ state, onUpdate, onClose }: Props) {
+export function ProviderModal({ state, onUpdate, onClose, langCode = 'zh-CN', onLangChange }: Props) {
+  const t = useI18n()
   const [keys, setKeys] = useState<Record<string, string>>({ ...state.keys })
   const [activeProviderId, setActiveProviderId] = useState(state.activeProviderId)
   const [activeModelId, setActiveModelId] = useState(state.activeModelId)
@@ -106,11 +110,25 @@ export function ProviderModal({ state, onUpdate, onClose }: Props) {
     <div className="pm-overlay" onClick={onClose}>
       <div className="pm-modal" onClick={(e) => e.stopPropagation()}>
         <div className="pm-header">
-          <h2 className="pm-title">Model Settings</h2>
+          <h2 className="pm-title">{t('settings.title')}</h2>
           <button className="pm-close" onClick={onClose}>&times;</button>
         </div>
 
         <div className="pm-body">
+          <div className="pm-general">
+            <div className="pm-general-title">{t('settings.general')}</div>
+            <div className="pm-general-row">
+              <span className="pm-general-label">{t('settings.language')}</span>
+              <select
+                className="pm-general-select"
+                value={langCode}
+                onChange={(e) => onLangChange?.(e.target.value)}
+              >
+                <option value="zh-CN">简体中文</option>
+                <option value="en">English</option>
+              </select>
+            </div>
+          </div>
           <div className="pm-cards">
             {PROVIDERS.map((provider) => {
               const isActive = provider.id === activeProviderId
@@ -128,15 +146,15 @@ export function ProviderModal({ state, onUpdate, onClose }: Props) {
                     <div className="pm-card-name-row">
                       <span className={`pm-card-dot ${keyStatus}`} />
                       <span className="pm-card-name">{provider.name}</span>
-                      {provider.id === 'custom' && <span className="pm-card-tag">OpenAI-compat</span>}
+                      {provider.id === 'custom' && <span className="pm-card-tag">{t('settings.openaiCompat')}</span>}
                     </div>
-                    {isActive && <span className="pm-card-active-badge">ACTIVE</span>}
+                    {isActive && <span className="pm-card-active-badge">{t('settings.active')}</span>}
                   </div>
 
                   {/* Custom endpoint input */}
                   {isActive && provider.customEndpoint && (
                     <div className="pm-card-endpoint-row" onClick={(e) => e.stopPropagation()}>
-                      <span className="pm-endpoint-label">URL</span>
+                      <span className="pm-endpoint-label">{t('settings.url')}</span>
                       <input
                         type="text"
                         className="pm-key-input"
@@ -182,11 +200,11 @@ export function ProviderModal({ state, onUpdate, onClose }: Props) {
                             className="pm-model-search"
                             value={modelSearch}
                             onChange={(e) => setModelSearch(e.target.value)}
-                            placeholder="Search vision models..."
+                            placeholder={t('settings.searchModels')}
                             spellCheck={false}
                           />
-                          {fetchLoading && <span className="pm-fetch-status">loading...</span>}
-                          {fetchError && <span className="pm-fetch-error">err</span>}
+                          {fetchLoading && <span className="pm-fetch-status">{t('settings.loading')}</span>}
+                          {fetchError && <span className="pm-fetch-error">{t('settings.error')}</span>}
                           {fetchedModels && !modelSearch && (
                             <span className="pm-fetch-status">{fetchedModels.length} models</span>
                           )}
@@ -222,7 +240,7 @@ export function ProviderModal({ state, onUpdate, onClose }: Props) {
                             value={manualModelId}
                             onChange={(e) => setManualModelId(e.target.value)}
                             onKeyDown={(e) => e.key === 'Enter' && handleManualModelSubmit()}
-                            placeholder="type model ID..."
+                            placeholder={t('settings.modelIdPlaceholder')}
                             spellCheck={false}
                             autoFocus
                           />
@@ -255,8 +273,8 @@ export function ProviderModal({ state, onUpdate, onClose }: Props) {
             </span>
           </div>
           <div className="pm-footer-actions">
-            <button className="btn btn-secondary" onClick={onClose}>Cancel</button>
-            <button className="btn btn-primary" onClick={handleSave}>Save</button>
+            <button className="btn btn-secondary" onClick={onClose}>{t('settings.cancel')}</button>
+            <button className="btn btn-primary" onClick={handleSave}>{t('settings.save')}</button>
           </div>
         </div>
       </div>

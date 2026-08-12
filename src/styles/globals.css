@@ -1,6 +1,35 @@
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
 :root {
+  --bg-primary: #f4f6f9;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #eceef3;
+  --bg-elevated: #e2e6ee;
+  --border: #d6dbe5;
+  --border-hover: #b6bfcf;
+  --text-primary: #23272e;
+  --text-secondary: #56627a;
+  --text-muted: #8b95a8;
+  --accent: #2e7d6f;
+  --accent-hover: #24685c;
+  --accent-glow: rgba(46, 125, 111, 0.2);
+  --accent-dim: rgba(46, 125, 111, 0.09);
+  --green: #2e7d6f;
+  --green-glow: rgba(46, 125, 111, 0.15);
+  --orange: #a87a2c;
+  --orange-glow: rgba(168, 122, 44, 0.15);
+  --red: #b34a4a;
+  --red-glow: rgba(179, 74, 74, 0.15);
+  --cyan: #3c7ea8;
+  --cyan-glow: rgba(60, 126, 168, 0.15);
+  --scan-color: #2e7d6f;
+  --radius: 4px;
+  --radius-sm: 2px;
+  --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+  --font-sans: 'Inter', -apple-system, sans-serif;
+}
+
+[data-theme='dark'] {
   --bg-primary: #0c0e11;
   --bg-secondary: #10131a;
   --bg-tertiary: #161a24;
@@ -23,10 +52,6 @@
   --cyan: #5a9ec8;
   --cyan-glow: rgba(90, 158, 200, 0.15);
   --scan-color: #4a9e8e;
-  --radius: 4px;
-  --radius-sm: 2px;
-  --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
-  --font-sans: 'Inter', -apple-system, sans-serif;
 }
 
 body {

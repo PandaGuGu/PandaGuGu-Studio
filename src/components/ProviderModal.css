@@ -69,6 +69,47 @@
   gap: 8px;
 }
 
+/* ── General settings ── */
+.pm-general {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+  background: var(--bg-secondary);
+}
+
+.pm-general-title {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+  margin-bottom: 10px;
+}
+
+.pm-general-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.pm-general-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.pm-general-select {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 4px 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  cursor: pointer;
+}
+
 .pm-card {
   border: 1px solid var(--border);
   border-radius: 6px;

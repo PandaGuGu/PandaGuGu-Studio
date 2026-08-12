@@ -121,7 +121,7 @@
 }
 
 .panel-left {
-  width: 35%;
+  width: calc(100% - 350px);
   min-width: 320px;
   display: flex;
   flex-direction: column;
