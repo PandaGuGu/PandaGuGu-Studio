@@ -78,7 +78,7 @@ export function FramePicker({ editor, selectedIds, onSelectionChange, onAddFrame
       alert(t('semantic.exportEmpty'))
       return
     }
-    downloadJSON(bp, brandFilename('json', modelLabel, 'blueprint'))
+    downloadJSON(bp, brandFilename('json'))
   }, [editor, t])
 
   const hasFrames = sources.some(s => s.kind === 'frame')

@@ -251,7 +251,7 @@ export function App() {
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = brandFilename('json', modelLabel, 'canvas')
+    a.download = brandFilename('json')
     a.click()
     URL.revokeObjectURL(url)
   }, [])
@@ -953,7 +953,7 @@ ${SYSTEM_PROMPT}`
                         const url = URL.createObjectURL(blob)
                         const a = document.createElement('a')
                         a.href = url
-                        a.download = brandFilename('html', modelLabel, `${v.id}-${v.label.replace(/[^\w\u4e00-\u9fa5]/g, '')}`)
+                        a.download = brandFilename('html')
                         a.click()
                         URL.revokeObjectURL(url)
                       }}
@@ -1021,7 +1021,7 @@ ${SYSTEM_PROMPT}`
                   const url = URL.createObjectURL(blob)
                   const a = document.createElement('a')
                   a.href = url
-                  a.download = brandFilename('html', modelLabel)
+                  a.download = brandFilename('html')
                   a.click()
                   URL.revokeObjectURL(url)
                 }}>{t('app.download')}</button>

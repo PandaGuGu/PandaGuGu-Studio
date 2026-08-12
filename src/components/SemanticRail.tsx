@@ -104,7 +104,7 @@ export function SemanticRail({ editor, selected, selectedIds = new Set(), modelL
       alert(t('semantic.exportEmpty'))
       return
     }
-    downloadJSON(bp, brandFilename('json', modelLabel, 'blueprint'))
+    downloadJSON(bp, brandFilename('json'))
   }
 
   const handleExportPng = async () => {
@@ -118,7 +118,7 @@ export function SemanticRail({ editor, selected, selectedIds = new Set(), modelL
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = brandFilename('png', modelLabel)
+    a.download = brandFilename('png')
     a.click()
     URL.revokeObjectURL(url)
     setExportMenuOpen(false)

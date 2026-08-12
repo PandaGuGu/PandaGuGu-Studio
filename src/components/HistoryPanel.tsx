@@ -60,7 +60,7 @@ export function HistoryPanel({ items, activeId, modelLabel, onLoad, onDelete, on
                   const url = URL.createObjectURL(blob)
                   const a = document.createElement('a')
                   a.href = url
-                  a.download = brandFilename('html', modelLabel)
+                  a.download = brandFilename('html')
                   a.click()
                   URL.revokeObjectURL(url)
                 }}
