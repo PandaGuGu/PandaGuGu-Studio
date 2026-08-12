@@ -58,6 +58,15 @@ export function LayersPanel({ editor, canvasVersion, selectedElementId, onAddFra
     })
   }, [editor])
 
+  const handleDelete = useCallback((id: string, e: React.MouseEvent) => {
+    e.stopPropagation()
+    if (!editor) return
+    const elements = editor
+      .getSceneElements()
+      .filter((el) => el.id !== id)
+    editor.updateScene({ elements })
+  }, [editor])
+
   return (
     <div className="layers-panel">
       <div className="layers-header">
@@ -75,7 +84,7 @@ export function LayersPanel({ editor, canvasVersion, selectedElementId, onAddFra
           <div className="layers-empty">{t('layers.empty')}</div>
         )}
         {layers.map((layer) => (
-          <button
+          <div
             key={layer.id}
             className={`layer-item ${selectedElementId === layer.id ? 'selected' : ''}`}
             onClick={() => handleSelect(layer.id)}
@@ -85,7 +94,15 @@ export function LayersPanel({ editor, canvasVersion, selectedElementId, onAddFra
             </span>
             <span className="layer-name">{layer.label}</span>
             <span className="layer-type">{layer.semantic || layer.type}</span>
-          </button>
+            <span
+              className="layer-delete"
+              onClick={(e) => handleDelete(layer.id, e)}
+              title={t('layers.delete')}
+              role="button"
+            >
+              −
+            </span>
+          </div>
         ))}
       </div>
     </div>

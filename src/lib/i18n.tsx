@@ -60,6 +60,7 @@ const translations: Record<Lang, Record<string, string>> = {
 
     'layers.title': '图层',
     'layers.add': '添加画框',
+    'layers.delete': '删除该图层',
     'layers.empty': '画布为空,画一个元素试试',
 
     'preview.emptyText': '在画布上绘制或拖入参考图,描述需求后点“生成”',
@@ -228,6 +229,7 @@ const translations: Record<Lang, Record<string, string>> = {
 
     'layers.title': 'Layers',
     'layers.add': 'Add frame',
+    'layers.delete': 'Delete layer',
     'layers.empty': 'Canvas is empty — draw something to get started',
 
     'preview.emptyText': 'Draw or drop references in frames, describe it, and hit Generate',
