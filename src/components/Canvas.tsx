@@ -63,10 +63,17 @@ export function Canvas({ onEditorReady, onCanvasChange, onSelectElement, autoTag
     const handleClick = (e: MouseEvent) => {
       if (!e.ctrlKey && !e.metaKey) return
       const rect = wrapper.getBoundingClientRect()
-      const scenePt = viewportCoordsToSceneCoords({
-        clientX: e.clientX - rect.left,
-        clientY: e.clientY - rect.top,
-      })
+      const appState: any = editor.getAppState()
+      const scenePt = viewportCoordsToSceneCoords(
+        { clientX: e.clientX - rect.left, clientY: e.clientY - rect.top },
+        {
+          zoom: appState.zoom,
+          offsetLeft: appState.offsetLeft,
+          offsetTop: appState.offsetTop,
+          scrollX: appState.scrollX,
+          scrollY: appState.scrollY,
+        }
+      )
       const hit = editor
         .getSceneElements()
         .filter((el) => !(el as any).isDeleted)
