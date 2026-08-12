@@ -2,7 +2,7 @@
 
 **画布式 HTML 生成器**——在画布上画元素、自动打语义标记、画框圈成页面区块，一键导出 JSON 蓝图交给 AI 生成完整 HTML。
 
-纯前端，BYOK（自带 API Key），无需后端，运行在浏览器里。
+纯前端，无后端，完全在浏览器里运行。AI 能力走 **BYOK**（Bring Your Own Key）——你在设置页自行填入模型 API Key（应用不内置任何 key），Key 只存浏览器本地，绝不上传。
 
 ![PandaGuGu Studio screenshot](screenshot/sc.png)
 
