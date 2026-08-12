@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "build:gh": "VCANVAS_BASE=/vcanvas/ vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "check": "bash scripts/check.sh"
   },
   "license": "MIT",
   "dependencies": {
