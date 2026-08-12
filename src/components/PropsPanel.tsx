@@ -10,6 +10,7 @@ import {
   setSemanticEvents,
   setSemanticHtml,
   applyStyle,
+  DEFAULT_PROPS,
   HEADING_SIZES,
   LAYOUTS,
 } from '../lib/blueprint'
@@ -31,6 +32,9 @@ export function PropsPanel({ editor, element, onChanged }: Props) {
 
   const type = meta.type as SemanticType
   const props = meta.props || {}
+  // Panel shows defaults as placeholder, but only writes to props on edit —
+  // so the canvas drawing is never auto-restyled.
+  const dflt = (key: string) => (DEFAULT_PROPS[type] || {})[key]
 
   // Persist any meta change + style sync back to canvas
   const apply = (patch: Partial<Pick<typeof meta, 'props' | 'layout' | 'style' | 'events' | 'html'>>) => {
@@ -57,7 +61,7 @@ export function PropsPanel({ editor, element, onChanged }: Props) {
     <input
       type="number"
       className="pp-input p"
-      value={Number(props[key]) || 0}
+      value={Number(props[key] ?? dflt(key)) || 0}
       min={min}
       max={max}
       onChange={(e) => onProp({ [key]: Number(e.target.value) })}
@@ -67,7 +71,7 @@ export function PropsPanel({ editor, element, onChanged }: Props) {
     <input
       type="color"
       className="pp-input p-color"
-      value={String(props[key] || '#888888')}
+      value={String(props[key] ?? dflt(key) ?? '#888888')}
       onChange={(e) => onProp({ [key]: e.target.value })}
     />
   )
@@ -75,24 +79,24 @@ export function PropsPanel({ editor, element, onChanged }: Props) {
     <input
       type="text"
       className="pp-input"
-      value={String(props[key] || '')}
-      placeholder={placeholder}
+      value={String(props[key] ?? '')}
+      placeholder={placeholder || String(dflt(key) ?? '')}
       onChange={(e) => onProp({ [key]: e.target.value })}
     />
   )
   const area = (key: string, rows = 2, placeholder = '') => (
     <textarea
       className="pp-input p-area"
-      value={String(props[key] || '')}
+      value={String(props[key] ?? '')}
       rows={rows}
-      placeholder={placeholder}
+      placeholder={placeholder || String(dflt(key) ?? '')}
       onChange={(e) => onProp({ [key]: e.target.value })}
     />
   )
   const select = <T extends string | number>(key: string, opts: { v: T; label: string }[]) => (
     <select
       className="pp-input p-select"
-      value={String(props[key])}
+      value={String(props[key] ?? dflt(key) ?? '')}
       onChange={(e) => {
         const v = e.target.value
         const matched = opts.find((o) => String(o.v) === v)

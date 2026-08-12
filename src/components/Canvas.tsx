@@ -8,8 +8,6 @@ import { PropsPanel } from './PropsPanel'
 import {
   getSemantic,
   setSemantic,
-  applyStyle,
-  DEFAULT_PROPS,
   DEFAULT_LAYOUT,
 } from '../lib/blueprint'
 import type { SemanticType } from '../lib/blueprint'
@@ -76,13 +74,9 @@ export function Canvas({ onEditorReady, onCanvasChange, onSelectElement, autoTag
         for (const ne of newEls) {
           const semanticType = SHAPE_TO_SEMANTIC[ne.type]
           if (!semanticType) continue
-          const meta = {
-            type: semanticType,
-            layout: DEFAULT_LAYOUT,
-            props: { ...DEFAULT_PROPS[semanticType] },
-          }
-          const styled = applyStyle(setSemantic(ne, meta), meta)
-          mutated = mutated.map((x) => (x.id === ne.id ? styled : x))
+          // Tag only — never restyle the user's drawing.
+          const meta = { type: semanticType, layout: DEFAULT_LAYOUT, props: {} }
+          mutated = mutated.map((x) => (x.id === ne.id ? setSemantic(ne, meta) : x))
         }
         editor.updateScene({ elements: mutated as any })
       }

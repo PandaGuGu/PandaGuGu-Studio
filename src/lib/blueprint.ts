@@ -195,51 +195,45 @@ export function setSemanticHtml(
   return setSemantic(el, m)
 }
 
-/** Apply style fields back onto the Excalidraw element so the canvas is WYSIWYG. */
+/**
+ * Apply style fields back onto the Excalidraw element so the canvas is WYSIWYG.
+ * IMPORTANT: only touches fields the user explicitly set (props has the key);
+ * never overrides the shape's original look when a prop is unset.
+ */
 export function applyStyle(el: ExcalidrawElement, meta: SemanticMeta): ExcalidrawElement {
   const p = meta.props || {}
   const next = { ...el } as any
   const t = meta.type
+  const has = (k: string) => p[k] !== undefined
 
-  // Container-like (rect + bg + radius)
   if (t === 'container' || t === 'section' || t === 'card' || t === 'nav' ||
       t === 'button' || t === 'input') {
-    next.backgroundColor = p.bg ?? el.backgroundColor
-    if (t === 'button') next.strokeColor = p.color ?? el.strokeColor
+    if (has('bg')) next.backgroundColor = p.bg
+    if (t === 'button' && has('color')) next.strokeColor = p.color
     else if (t === 'input') {
-      next.strokeColor = p.border ?? el.strokeColor
-      next.backgroundColor = p.bg ?? '#ffffff'
-    } else {
-      next.strokeColor = el.strokeColor
+      if (has('border')) next.strokeColor = p.border
     }
-    next.roundness =
-      typeof p.radius === 'number'
-        ? { type: 'proportional' as const, value: Math.min(1, (p.radius || 0) / 60) }
-        : el.roundness
-    next.strokeWidth = t === 'input' ? 1.5 : 2
-    next.fillStyle = 'solid'
+    if (has('radius')) {
+      next.roundness = {
+        type: 'proportional' as const,
+        value: Math.min(1, (p.radius || 0) / 60),
+      }
+    }
   } else if (t === 'heading' || t === 'text' || t === 'link') {
-    next.text = (t === 'link' ? p.label : p.content) ?? (el as any).text
-    next.fontSize = p.fontSize ?? (el as any).fontSize
-    next.strokeColor = p.color ?? el.strokeColor
-    if (t === 'heading') next.fontFamily = p.fontWeight && p.fontWeight >= 600 ? 2 : 1
-    else if (t === 'text') next.fontFamily = p.bold ? 2 : 1
-    else if (t === 'link') next.fontFamily = 1
-  } else if (t === 'raw') {
-    // Render a small marker text on the rect so the canvas hints at content
-    next.text = '[raw]'
-    next.fontSize = 12
-    next.strokeColor = '#888780'
+    if (has('content')) next.text = p.content
+    if (has('label') && t === 'link') next.text = p.label
+    if (has('fontSize')) next.fontSize = p.fontSize
+    if (has('color')) next.strokeColor = p.color
+    if (t === 'heading' && has('fontWeight')) next.fontFamily = p.fontWeight >= 600 ? 2 : 1
+    else if (t === 'text' && has('bold')) next.fontFamily = p.bold ? 2 : 1
   } else if (t === 'note') {
-    // Note: warm beige fill, dark amber text
-    next.backgroundColor = '#FAEEDA'
-    next.strokeColor = '#EF9F27'
-    next.text = p.content ?? ''
-    next.fontSize = 13
-    next.strokeWidth = 1
-    next.fillStyle = 'solid'
+    if (has('content')) next.text = p.content
+    if (has('color')) {
+      next.strokeColor = p.color
+      next.backgroundColor = '#FAEEDA'
+    }
   }
-  // image: nothing to style — props live in blueprint
+  // raw / image: never touch visuals — the user's drawing stays as drawn
 
   return next as ExcalidrawElement
 }

@@ -3,11 +3,9 @@ import type { ExcalidrawImperativeAPI } from '@excalidraw/excalidraw/types'
 import type { ExcalidrawElement } from '@excalidraw/excalidraw/element/types'
 import {
   SEMANTIC_GROUPS,
-  DEFAULT_PROPS,
   DEFAULT_LAYOUT,
   canTag,
   setSemantic,
-  applyStyle,
   toBlueprint,
   downloadJSON,
 } from '../lib/blueprint'
@@ -39,12 +37,9 @@ export function SemanticRail({ editor, selected, onChanged, autoTag = true, onAu
 
   const handleTag = (type: SemanticType) => {
     if (!editor || !selected || !canTag(selected)) return
-    const meta: SemanticMeta = {
-      type,
-      layout: DEFAULT_LAYOUT,
-      props: { ...DEFAULT_PROPS[type] },
-    }
-    const tagged = applyStyle(setSemantic(selected, meta), meta)
+    // Tag only — keep the user's drawing exactly as-is (no restyle).
+    const meta: SemanticMeta = { type, layout: DEFAULT_LAYOUT, props: {} }
+    const tagged = setSemantic(selected, meta)
     const elements = editor
       .getSceneElements()
       .map((el) => (el.id === tagged.id ? tagged : el))
