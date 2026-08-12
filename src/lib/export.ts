@@ -65,6 +65,7 @@ export async function exportSourceAsPng(
       appState: {
         exportWithDarkMode: isDark,
         exportBackground: true,
+        viewBackgroundColor: isDark ? '#0c0e11' : '#f4f6f9',
       },
       files: api.getFiles(),
       mimeType: 'image/png',
@@ -95,6 +96,7 @@ export async function exportAllAsPng(
       appState: {
         exportWithDarkMode: isDark,
         exportBackground: true,
+        viewBackgroundColor: isDark ? '#0c0e11' : '#f4f6f9',
       },
       files: api.getFiles(),
       mimeType: 'image/png',

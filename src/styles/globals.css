@@ -23,6 +23,8 @@
   --cyan: #3c7ea8;
   --cyan-glow: rgba(60, 126, 168, 0.15);
   --scan-color: #2e7d6f;
+  --grid-a: rgba(0, 0, 0, 0.05);
+  --grid-b: rgba(0, 0, 0, 0.02);
   --radius: 4px;
   --radius-sm: 2px;
   --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
@@ -52,6 +54,8 @@
   --cyan: #5a9ec8;
   --cyan-glow: rgba(90, 158, 200, 0.15);
   --scan-color: #4a9e8e;
+  --grid-a: rgba(255, 255, 255, 0.05);
+  --grid-b: rgba(255, 255, 255, 0.015);
 }
 
 body {

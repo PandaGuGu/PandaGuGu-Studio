@@ -44,6 +44,9 @@ export function Canvas({ onEditorReady, onCanvasChange, theme = 'light', langCod
         onChange={handleChange}
         theme={theme === 'light' ? THEME.LIGHT : THEME.DARK}
         langCode={langCode}
+        initialData={{
+          appState: { viewBackgroundColor: 'transparent' as any },
+        }}
         UIOptions={{
           canvasActions: {
             loadScene: false,
