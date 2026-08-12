@@ -192,12 +192,8 @@ export function htmlToBlueprint(html: string): Blueprint | null {
   const root = simplify(body, { x: 40, y: 40, w: 720 })
   if (!root) return null
   return {
-    app: 'pandagugu-studio',
-    kind: 'blueprint',
-    version: 2,
     title: doc.title || 'Imported',
     theme: 'light',
-    note: 'Imported from HTML — simplified semantic elements with estimated layout.',
     elements: [root],
   }
 }

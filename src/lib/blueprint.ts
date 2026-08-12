@@ -48,12 +48,10 @@ export interface BlueprintElement {
 }
 
 export interface Blueprint {
-  app: 'pandagugu-studio'
-  kind: 'blueprint'
-  version: 2
+  /** Page title — comes from the first frame name or container label (real canvas data). */
   title: string
+  /** Canvas theme (real canvas data). */
   theme: 'light' | 'dark'
-  note: string
   elements: BlueprintElement[]
 }
 
@@ -317,12 +315,8 @@ export function toBlueprint(
 
   const appState: any = api.getAppState()
   return {
-    app: 'pandagugu-studio',
-    kind: 'blueprint',
-    version: 2,
     title: String(title || 'Untitled'),
     theme: appState.theme === 'dark' ? 'dark' : 'light',
-    note: 'BLUEPRINT SPEC: elements are semantic page components, not drawings. Map types to HTML as: section-><section>, container/card/nav-><div>, heading-><h1..h6> (use props.level), text-><p>, link-><a href=props.href>, button-><button>, input-><input placeholder>, image-><img src=props.src>, raw->embed props.html verbatim, note->design intent only, do not render. layout: "free"=position:absolute (x/y/w/h in CSS px, 1 unit = 1px @100% zoom, top-left origin), "row"=flex row, "column"=flex column, "grid"/"wrap"=CSS grid/flex-wrap. props: bg/color/fontSize/fontWeight/radius/padding/align/label/content/placeholder/border/shadow. zIndex=stacking order (larger on top). Generate one complete HTML page strictly following the element tree; do not invent extra sections.',
     elements: roots.map(build),
   }
 }

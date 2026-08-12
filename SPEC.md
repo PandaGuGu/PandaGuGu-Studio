@@ -45,11 +45,8 @@
 
 ```
 Blueprint {
-  app: 'pandagugu-studio'
-  kind: 'blueprint'
-  version: 2
-  title: string                 // 画框名优先，其次首个 container label
-  theme: 'light' | 'dark'
+  title: string                 // 画框名优先，其次首个 container label（真实数据）
+  theme: 'light' | 'dark'       // 画布主题（真实数据）
   elements: BlueprintElement[]  // 元素树
 }
 
