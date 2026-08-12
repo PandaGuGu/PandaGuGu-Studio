@@ -81,6 +81,14 @@
   box-shadow: 0 0 8px var(--accent-glow);
 }
 
+.header-model-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+}
+
 .header-model-provider {
   font-size: 10px;
   font-weight: 600;
@@ -99,6 +107,11 @@
   font-weight: 500;
   color: var(--text-primary);
   letter-spacing: 0.03em;
+}
+
+.header-model-unset {
+  color: var(--orange);
+  font-weight: 600;
 }
 
 .header-gear {
