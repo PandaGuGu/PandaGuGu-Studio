@@ -322,7 +322,7 @@ export function toBlueprint(
     version: 2,
     title: String(title || 'Untitled'),
     theme: appState.theme === 'dark' ? 'dark' : 'light',
-    note: 'Frames map to <section>. Coordinates are Excalidraw logical units (1 unit = 1 CSS px at 100% zoom). x/y = top-left corner. layout hints: free|row|column|grid|wrap — AI decides flex/grid vs absolute.',
+    note: 'BLUEPRINT SPEC: elements are semantic page components, not drawings. Map types to HTML as: section-><section>, container/card/nav-><div>, heading-><h1..h6> (use props.level), text-><p>, link-><a href=props.href>, button-><button>, input-><input placeholder>, image-><img src=props.src>, raw->embed props.html verbatim, note->design intent only, do not render. layout: "free"=position:absolute (x/y/w/h in CSS px, 1 unit = 1px @100% zoom, top-left origin), "row"=flex row, "column"=flex column, "grid"/"wrap"=CSS grid/flex-wrap. props: bg/color/fontSize/fontWeight/radius/padding/align/label/content/placeholder/border/shadow. zIndex=stacking order (larger on top). Generate one complete HTML page strictly following the element tree; do not invent extra sections.',
     elements: roots.map(build),
   }
 }

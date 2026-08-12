@@ -296,11 +296,10 @@ export function App() {
     const bp = toBlueprint(api)
     if (!bp) return null
     return (
-      '使用以下画布蓝图生成完整的 HTML 页面。' +
-      '蓝图元素按语义类型映射为 HTML 结构（section→<section>，container→<div>，heading→<h1-h6>，button→<button>，input→<input>，image→<img>，text→<p>，link→<a>，raw 的 html 原样嵌入，note 便签作为设计意图参考）。' +
-      '重叠元素按 zIndex 设置 z-index。' +
-      '坐标单位为 CSS 像素（1 单位 = 1px @ 100% zoom），layout:' +
-      ' free 用 position:absolute，row/column/grid/wrap 用 flex/grid。\n\n' +
+      '严格根据以下画布蓝图生成一个完整的 HTML 页面。' +
+      '【映射规则】section→<section>，container/card/nav→<div>，heading→<h1-h6>（用 props.level），text→<p>，link→<a href=props.href>，button→<button>，input→<input placeholder>，image→<img src=props.src>，raw→原样嵌入 props.html，note→仅作设计意图参考不要渲染。' +
+      '【布局规则】layout:"free" 用 position:absolute（x/y/w/h 为 CSS 像素，1 单位=1px@100% zoom，原点在左上角），"row" 用 flex 横向，"column" 用 flex 纵向，"grid"/"wrap" 用 grid/flex-wrap。重叠元素按 zIndex 设 z-index（大者在上）。' +
+      '【硬性要求】1) 严格按元素树生成，不得臆造或删除区块；2) 文案一律使用 props 中的 content/label/placeholder，不要自己编内容；3) 输出完整可运行的单文件 HTML（含 <!DOCTYPE html> 和内联 CSS），不要输出解释文字。\n\n' +
       '```json\n' +
       JSON.stringify(bp, null, 2) +
       '\n```'
@@ -329,11 +328,12 @@ export function App() {
       const style = styles[i]
       setBatchProgress({ done: i, total: styles.length, current: style.label })
       const prompt =
-        '根据以下画布蓝图生成一个完整的 HTML 页面。' +
-        '元素映射：section→<section>，container→<div>，heading→<h1-h6>，button→<button>，input→<input>，image→<img>，text→<p>，link→<a>，raw 的 html 原样嵌入，note 便签作为设计意图参考。' +
-        '重叠元素按 zIndex 设 z-index；layout: free 用 position:absolute，row/column/grid/wrap 用 flex/grid。' +
+        '严格根据以下画布蓝图生成一个完整的 HTML 页面。' +
+        '【映射规则】section→<section>，container/card/nav→<div>，heading→<h1-h6>（用 props.level），text→<p>，link→<a href=props.href>，button→<button>，input→<input placeholder>，image→<img src=props.src>，raw→原样嵌入 props.html，note→仅作设计意图参考不要渲染。' +
+        '【布局规则】layout:"free" 用 position:absolute（x/y/w/h 为 CSS 像素），"row" 用 flex 横向，"column" 用 flex 纵向。重叠元素按 zIndex 设 z-index。' +
+        '【硬性要求】严格按元素树生成、文案用 props 内容不要自己编、输出完整可运行单文件 HTML。' +
         `\n\n【风格要求】${style.desc}` +
-        '\n\n必须输出完整可运行的单个 HTML 文件（含 <!DOCTYPE html> 与内联 CSS），不要输出任何解释文字。\n\n```json\n' +
+        '\n\n```json\n' +
         JSON.stringify(bp, null, 2) +
         '\n```'
       try {
