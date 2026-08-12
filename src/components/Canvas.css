@@ -70,3 +70,77 @@
   border-color: var(--orange);
   color: var(--bg-primary);
 }
+
+/* ▲ Align button — top toolbar, right of auto-tag */
+.canvas-align {
+  position: absolute;
+  top: 6px;
+  left: 108px;
+  z-index: 15;
+}
+
+.canvas-align-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 28px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg-secondary);
+  color: var(--cyan);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.12s;
+}
+
+.canvas-align-btn:hover,
+.canvas-align-btn.open {
+  border-color: var(--cyan);
+  background: rgba(90, 158, 200, 0.1);
+}
+
+.canvas-align-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  width: 170px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  z-index: 20;
+}
+
+.canvas-align-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 8px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  cursor: pointer;
+  text-align: left;
+  white-space: nowrap;
+  transition: all 0.12s;
+}
+
+.canvas-align-item:hover {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border-color: var(--border);
+}
+
+.canvas-align-icon {
+  width: 16px;
+  text-align: center;
+  font-size: 11px;
+}
