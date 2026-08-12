@@ -6,6 +6,22 @@
 
 ![PandaGuGu Studio screenshot](screenshot/sc.png)
 
+## 与 Excalidraw 的关系（我们的优势）
+
+PandaGuGu Studio 基于 MIT 开源的 [Excalidraw](https://github.com/excalidraw/excalidraw) 构建——它是成熟的开源无限画布引擎。我们不重复造轮子，而是把画布从"绘图白板"升级为**"视觉 → 代码"管线**：
+
+| Excalidraw 原生 | PandaGuGu Studio 叠加 |
+|---|---|
+| 形状：矩形 / 椭圆 / 文字 / 图片 | **语义**：容器 / 标题 / 按钮 / 图片… 12 种页面元素 |
+| 导出 PNG / 自有 JSON | **开放蓝图 JSON**：语义类型 + layout + zIndex，AI 直接消费生成 HTML |
+| 画完即止（白板） | **AI 生成闭环**：画布 → 蓝图 → 流式生成 HTML → 沙箱预览 → 细化 |
+| 画框 = 框选工具 | 画框 = `<section>` 页面结构（多画框 = 多区块页面） |
+| 形状属性很少、靠手调 | 按语义类型属性面板（颜色/文字/圆角…），编辑实时 WYSIWYG |
+| 元素列表扁平 | IDE 树形图层（画框 = 文件夹，▸/▾ 折叠，点击选中） |
+| Shift 多选 | Ctrl/⌘ 多选 + 8 种对齐/等距分布（嘉立创风格） |
+
+**一句话定位**：Excalidraw 是引擎，PandaGuGu Studio 是把它变成"画出来 → AI 写出代码"的产品。
+
 ## 核心工作流
 
 ```
