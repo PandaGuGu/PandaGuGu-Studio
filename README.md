@@ -124,4 +124,8 @@ src/
 
 ## License
 
-MIT
+MIT — 保留所有上游版权声明：
+
+- **Excalidraw**（底层画布引擎，MIT）— Copyright (c) 2020 Excalidraw
+- **VCanvas**（上游项目，MIT）— Copyright (c) 2026 E01.ai
+- **PandaGuGu Studio**（本项目）— Copyright (c) 2026 PandaGuGu Studio
