@@ -24,6 +24,8 @@ export function FramePicker({ editor, selectedIds, onSelectionChange, onAddFrame
   const t = useI18n()
   const [sources, setSources] = useState<SourceThumb[]>([])
   const [hasDrawing, setHasDrawing] = useState(false)
+  const [expanded, setExpanded] = useState(false)
+  const prevHasFramesRef = useRef(false)
   const prevCountRef = useRef(0)
 
   const refreshSources = useCallback(async () => {
@@ -69,18 +71,33 @@ export function FramePicker({ editor, selectedIds, onSelectionChange, onAddFrame
 
   const hasFrames = sources.some(s => s.kind === 'frame')
 
-  // ── No frames: single-line status bar ──
-  if (!hasFrames) {
+  // First time frames appear → auto-expand once so user sees the new frame.
+  useEffect(() => {
+    if (hasFrames && !prevHasFramesRef.current) setExpanded(true)
+    if (!hasFrames) setExpanded(false)
+    prevHasFramesRef.current = hasFrames
+  }, [hasFrames])
+
+  // ── Collapsed bar (no frames OR user collapsed) ──
+  if (!hasFrames || !expanded) {
     return (
       <div className="frame-picker-bar">
         <span className="fpb-status">
           <span className={`fpb-dot ${hasDrawing ? 'on' : ''}`} />
           {hasDrawing ? t('frame.fullCanvas') : t('frame.drawFirst')}
+          {hasFrames && (
+            <span className="fpb-count"> · {sources.length} {t('frame.frames')}</span>
+          )}
         </span>
         {previewScreenshot && (
           <span className="fpb-badge">+ {t('frame.prevOutput')}</span>
         )}
         <div className="fpb-actions">
+          {hasFrames && (
+            <button className="btn btn-ghost" onClick={() => setExpanded(true)}>
+              ▾ {t('frame.expand')}
+            </button>
+          )}
           <button className="btn btn-ghost" onClick={onAddFrame}>+ {t('frame.add')}</button>
           <button className="btn btn-ghost" onClick={onSave}>{t('frame.save')}</button>
           <button className="btn btn-ghost" onClick={onLoad}>{t('frame.load')}</button>
@@ -89,15 +106,18 @@ export function FramePicker({ editor, selectedIds, onSelectionChange, onAddFrame
     )
   }
 
-  // ── Has frames: show thumbnail strip ──
+  // ── Expanded: thumbnail strip ──
   return (
     <div className="frame-picker">
       <div className="frame-picker-header">
         <span className="frame-picker-label">
-          素材区
+          {t('frame.sources')}
           <span className="frame-count">{selectedIds.size}/{sources.length}</span>
         </span>
         <div className="frame-picker-actions">
+          <button className="btn btn-ghost" onClick={() => setExpanded(false)}>
+            ▴ {t('frame.collapse')}
+          </button>
           <button className="btn btn-ghost" onClick={onAddFrame}>+ {t('frame.add')}</button>
           <button className="btn btn-ghost" onClick={selectAll}>{t('frame.all')}</button>
           <button className="btn btn-ghost" onClick={selectNone}>{t('frame.none')}</button>

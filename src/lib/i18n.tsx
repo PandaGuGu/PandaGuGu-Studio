@@ -218,6 +218,9 @@ const translations: Record<Lang, Record<string, string>> = {
     'frame.none': 'None',
     'frame.lastOutput': 'Last Output',
     'frame.preview': 'PRV',
+    'frame.collapse': 'Collapse',
+    'frame.expand': 'Expand',
+    'frame.frames': 'frames',
 
     'preview.emptyText': 'Draw or drop references in frames, describe it, and hit Generate',
     'preview.emptyHint': 'GLM-5V will turn your sketch into code',
