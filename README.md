@@ -49,7 +49,6 @@ PandaGuGu Studio 基于 MIT 开源的 [Excalidraw](https://github.com/excalidraw
 
 ```json
 {
-  "title": "Hero", "theme": "dark",
   "elements": [
     { "type": "section", "label": "Hero", "x": 100, "y": 80, "w": 800, "h": 500,
       "zIndex": 0, "layout": "column",

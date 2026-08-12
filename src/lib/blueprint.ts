@@ -48,10 +48,6 @@ export interface BlueprintElement {
 }
 
 export interface Blueprint {
-  /** Page title — comes from the first frame name or container label (real canvas data). */
-  title: string
-  /** Canvas theme (real canvas data). */
-  theme: 'light' | 'dark'
   elements: BlueprintElement[]
 }
 
@@ -254,12 +250,10 @@ export function toBlueprint(
 ): Blueprint | null {
   const all = api.getSceneElements()
   let elements = all
-  let titleHint: string | null = null
 
   if (opts?.frameId) {
     const frame = all.find((e) => e.id === opts.frameId) as any
     if (!frame) return null
-    titleHint = frame.name || null
     elements = all.filter(
       (e) => e.id === opts.frameId || (e as any).frameId === opts.frameId
     )
@@ -306,17 +300,7 @@ export function toBlueprint(
   })
   if (roots.length === 0) return null
 
-  const firstFrame = roots.find((e) => e.type === 'frame') as any
-  const firstContainer = roots.find((e) => getSemantic(e)?.type === 'container')
-  const title =
-    titleHint ||
-    (firstFrame && firstFrame.name) ||
-    ((firstContainer && getSemantic(firstContainer)?.props.label) || 'Untitled')
-
-  const appState: any = api.getAppState()
   return {
-    title: String(title || 'Untitled'),
-    theme: appState.theme === 'dark' ? 'dark' : 'light',
     elements: roots.map(build),
   }
 }

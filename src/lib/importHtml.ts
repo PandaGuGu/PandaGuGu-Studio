@@ -192,8 +192,6 @@ export function htmlToBlueprint(html: string): Blueprint | null {
   const root = simplify(body, { x: 40, y: 40, w: 720 })
   if (!root) return null
   return {
-    title: doc.title || 'Imported',
-    theme: 'light',
     elements: [root],
   }
 }
