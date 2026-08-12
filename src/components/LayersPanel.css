@@ -56,7 +56,7 @@
 .layer-item {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   padding: 4px 6px;
   border: 1px solid transparent;
   border-radius: var(--radius-sm);
@@ -78,6 +78,39 @@
   background: var(--accent-dim);
   border-color: var(--accent);
   color: var(--accent);
+}
+
+.layer-item.is-frame {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.layer-item.is-frame.selected {
+  color: var(--accent);
+}
+
+.layer-arrow {
+  width: 14px;
+  height: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: 3px;
+  flex-shrink: 0;
+  transition: transform 0.12s;
+}
+
+.layer-arrow:hover {
+  color: var(--text-primary);
+  background: var(--bg-tertiary);
+}
+
+.layer-arrow-spacer {
+  width: 14px;
+  flex-shrink: 0;
 }
 
 .layer-icon {
