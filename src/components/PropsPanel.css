@@ -1,0 +1,109 @@
+.props-panel {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 10;
+  width: 230px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  font-family: var(--font-mono);
+}
+
+.props-panel-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.props-panel-title {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+}
+
+.props-panel-hint {
+  font-size: 9px;
+  color: var(--text-muted);
+  letter-spacing: 0.03em;
+}
+
+.props-panel-body {
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.pp-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--text-secondary);
+  min-height: 24px;
+}
+
+.pp-row > span {
+  flex-shrink: 0;
+}
+
+.pp-col {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+}
+
+.pp-row-inline {
+  justify-content: space-between;
+}
+
+.pp-input {
+  flex: 1;
+  min-width: 0;
+  padding: 4px 6px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.pp-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.pp-num {
+  width: 56px;
+  flex: none;
+}
+
+.pp-color {
+  width: 40px;
+  height: 24px;
+  padding: 2px;
+  flex: none;
+  cursor: pointer;
+}
+
+.pp-check {
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.pp-select {
+  flex: 1;
+}
+
+.pp-area {
+  resize: vertical;
+  min-height: 40px;
+}
