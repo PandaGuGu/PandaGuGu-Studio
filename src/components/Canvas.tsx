@@ -66,7 +66,6 @@ export function Canvas({ onEditorReady, onCanvasChange, onSelectElement, autoTag
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const autoTagTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const pendingTagRef = useRef<SemanticType | null>(null)
-  const [alignMenuOpen, setAlignMenuOpen] = useState(false)
 
   const handleAlign = useCallback((op: AlignOp) => {
     if (!editor || selectedIds.size < 2) return
@@ -81,7 +80,6 @@ export function Canvas({ onEditorReady, onCanvasChange, onSelectElement, autoTag
       .map((el) => idMap.get(el.id) || el)
     editor.updateScene({ elements })
     onCanvasChange?.()
-    setAlignMenuOpen(false)
   }, [editor, selectedIds, onCanvasChange])
 
   const handleReady = useCallback((api: ExcalidrawImperativeAPI) => {
@@ -204,28 +202,16 @@ export function Canvas({ onEditorReady, onCanvasChange, onSelectElement, autoTag
       </button>
       {selectedIds.size >= 2 && (
         <div className="canvas-align">
-          <button
-            className={`canvas-align-btn ${alignMenuOpen ? 'open' : ''}`}
-            onClick={() => setAlignMenuOpen((v) => !v)}
-            title={t('align.title')}
-          >
-            ▲
-          </button>
-          {alignMenuOpen && (
-            <div className="canvas-align-menu">
-              {ALIGN_BTNS.map(({ op, icon }) => (
-                <button
-                  key={op}
-                  className="canvas-align-item"
-                  onClick={() => handleAlign(op)}
-                  title={t(`align.${op}`)}
-                >
-                  <span className="canvas-align-icon">{icon}</span>
-                  {t(`align.${op}`)}
-                </button>
-              ))}
-            </div>
-          )}
+          {ALIGN_BTNS.map(({ op, icon }) => (
+            <button
+              key={op}
+              className="canvas-align-btn"
+              onClick={() => handleAlign(op)}
+              title={t(`align.${op}`)}
+            >
+              {icon}
+            </button>
+          ))}
         </div>
       )}
       <SemanticRail editor={editor} selected={selected} onChanged={onCanvasChange} onDrawTag={handleDrawTag} />
