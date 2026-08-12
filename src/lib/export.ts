@@ -121,3 +121,15 @@ function blobToBase64(blob: Blob): Promise<string> {
     reader.readAsDataURL(blob)
   })
 }
+
+/**
+ * Brand-based export filename: `PandaGuGu-YYYY-MM-DD[.tag].ext`
+ * e.g. brandFilename('json')            -> PandaGuGu-2026-08-12.json
+ *      brandFilename('json', 'blueprint') -> PandaGuGu-2026-08-12.blueprint.json
+ */
+export function brandFilename(kind: 'json' | 'png', tag?: string): string {
+  const d = new Date()
+  const pad = (n: number) => String(n).padStart(2, '0')
+  const date = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
+  return `PandaGuGu-${date}${tag ? `.${tag}` : ''}.${kind}`
+}

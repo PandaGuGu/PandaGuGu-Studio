@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react'
 import type { ExcalidrawImperativeAPI } from '@excalidraw/excalidraw/types'
-import { getSources, exportSourceAsPng, exportAllAsPng } from '../lib/export'
+import { getSources, exportSourceAsPng, exportAllAsPng, brandFilename } from '../lib/export'
 import type { SourceInfo } from '../lib/export'
 import { toBlueprint, downloadJSON } from '../lib/blueprint'
 import './FramePicker.css'
@@ -77,7 +77,7 @@ export function FramePicker({ editor, selectedIds, onSelectionChange, onAddFrame
       alert(t('semantic.exportEmpty'))
       return
     }
-    downloadJSON(bp, `${bp.title.replace(/\s+/g, '-')}.blueprint.json`)
+    downloadJSON(bp, brandFilename('json', 'blueprint'))
   }, [editor, t])
 
   const hasFrames = sources.some(s => s.kind === 'frame')

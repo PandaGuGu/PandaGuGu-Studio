@@ -11,7 +11,7 @@ import {
 } from '../lib/blueprint'
 import { alignElements } from '../lib/align'
 import type { AlignOp } from '../lib/align'
-import { exportAllAsPng } from '../lib/export'
+import { exportAllAsPng, brandFilename } from '../lib/export'
 import type { SemanticType, SemanticMeta } from '../lib/blueprint'
 import { useI18n } from '../lib/i18n'
 import './SemanticRail.css'
@@ -101,7 +101,7 @@ export function SemanticRail({ editor, selected, selectedIds = new Set(), onChan
       alert(t('semantic.exportEmpty'))
       return
     }
-    downloadJSON(bp, `${bp.title.replace(/\s+/g, '-')}.blueprint.json`)
+    downloadJSON(bp, brandFilename('json', 'blueprint'))
   }
 
   const handleExportPng = async () => {
@@ -115,7 +115,7 @@ export function SemanticRail({ editor, selected, selectedIds = new Set(), onChan
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = `vcanvas-${Date.now()}.png`
+    a.download = brandFilename('png')
     a.click()
     URL.revokeObjectURL(url)
     setExportMenuOpen(false)

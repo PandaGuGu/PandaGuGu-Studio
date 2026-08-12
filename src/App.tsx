@@ -14,7 +14,7 @@ import { MessageStrip } from './components/MessageStrip'
 import { ResizeHandle } from './components/ResizeHandle'
 import { LayersPanel } from './components/LayersPanel'
 import { streamChat, extractHTML } from './lib/api'
-import { exportSourceAsPng, exportAllAsPng, getSources } from './lib/export'
+import { exportSourceAsPng, exportAllAsPng, getSources, brandFilename } from './lib/export'
 import { toBlueprint } from './lib/blueprint'
 import { getProvider, loadProviderState, saveProviderState } from './lib/providers'
 import { useI18n } from './lib/i18n'
@@ -217,7 +217,7 @@ export function App() {
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = `pandagugu-canvas-${Date.now()}.json`
+    a.download = brandFilename('json', 'canvas')
     a.click()
     URL.revokeObjectURL(url)
   }, [])
