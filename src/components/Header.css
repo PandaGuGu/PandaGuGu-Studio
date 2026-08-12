@@ -110,7 +110,24 @@
   color: var(--text-secondary);
 }
 
-/* GitHub button */
+/* "Settings" action label — hidden by default, slides in on hover */
+.header-model-action {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--accent);
+  letter-spacing: 0.04em;
+  max-width: 0;
+  opacity: 0;
+  overflow: hidden;
+  margin-left: -3px;
+  transition: max-width 0.18s ease, opacity 0.18s ease, margin-left 0.18s ease;
+  white-space: nowrap;
+}
+.header-model-btn:hover .header-model-action {
+  max-width: 60px;
+  opacity: 1;
+  margin-left: 0;
+}
 
 /* Theme toggle button */
 .theme-toggle-btn {

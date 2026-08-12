@@ -6,6 +6,7 @@ const translations: Record<Lang, Record<string, string>> = {
   'zh-CN': {
     'header.subtitle': '画布试验场',
     'header.whatIsThis': '这是什么?',
+    'header.openSettings': '设置',
     'header.aboutTitle': '画布试验场',
     'header.aboutDesc': '一个面向视觉大模型的自由画布。画草图、贴参考、加标注,然后让模型看懂并构建。',
     'header.aboutProviders': '支持的模型',
@@ -186,6 +187,7 @@ const translations: Record<Lang, Record<string, string>> = {
   en: {
     'header.subtitle': 'PLAYGROUND',
     'header.whatIsThis': 'What is this?',
+    'header.openSettings': 'Settings',
     'header.aboutTitle': 'Playground',
     'header.aboutDesc': 'A free-draw canvas for interacting with vision-capable language models. Sketch, reference, annotate, hint — then let the model see and build.',
     'header.aboutProviders': 'Supported Providers',
