@@ -24,6 +24,8 @@ interface Props {
   onChanged?: () => void
   /** No selection → switch Excalidraw tool & tag the next drawn element. */
   onDrawTag?: (type: SemanticType) => void
+  /** Open the "import HTML" dialog. */
+  onImportHtml?: () => void
 }
 
 const ALIGN_BTNS: { op: AlignOp; icon: string }[] = [
@@ -45,7 +47,7 @@ const TYPE_ICONS: Record<SemanticType, string> = {
   raw: '</>', note: '✎',
 }
 
-export function SemanticRail({ editor, selected, selectedIds = new Set(), modelLabel, onChanged, onDrawTag }: Props) {
+export function SemanticRail({ editor, selected, selectedIds = new Set(), modelLabel, onChanged, onDrawTag, onImportHtml }: Props) {
   const t = useI18n()
   const taggable = !!editor && !!selected && canTag(selected!)
   const multiSelect = selectedIds.size >= 2
@@ -198,6 +200,13 @@ export function SemanticRail({ editor, selected, selectedIds = new Set(), modelL
           >
             <span className="semantic-rail-icon">🖼</span>
             {t('semantic.exportPng')}
+          </button>
+          <button
+            className="semantic-rail-menu-item"
+            onClick={() => { onImportHtml?.(); setExportMenuOpen(false) }}
+          >
+            <span className="semantic-rail-icon">⇪</span>
+            {t('semantic.importHtml')}
           </button>
           <div className="semantic-rail-menu-divider" />
           <div className="semantic-rail-menu-group">{t('align.title')}</div>

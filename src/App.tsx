@@ -16,6 +16,8 @@ import { LayersPanel } from './components/LayersPanel'
 import { VariantPanel } from './components/VariantPanel'
 import type { VariantStyle } from './components/VariantPanel'
 import { HistoryPanel } from './components/HistoryPanel'
+import { ImportHtmlModal } from './components/ImportHtmlModal'
+import { importHtmlToScene } from './lib/importHtml'
 import { loadHistory, appendHistory, removeHistory, clearHistory } from './lib/history'
 import type { HistoryItem } from './lib/history'
 import { streamChat, chatOnce, extractHTML } from './lib/api'
@@ -184,6 +186,9 @@ export function App() {
     setHistory(next)
   }, [lastHTML])
 
+  // ── Import HTML → canvas ──
+  const [showImport, setShowImport] = useState(false)
+
   const previewRef = useRef<HTMLIFrameElement>(null)
   const panelLeftRef = useRef<HTMLDivElement>(null)
   const [selectedElementId, setSelectedElementId] = useState<string | null>(null)
@@ -274,6 +279,15 @@ export function App() {
     if (canvasChangeTimer.current) clearTimeout(canvasChangeTimer.current)
     canvasChangeTimer.current = setTimeout(() => setCanvasVersion(v => v + 1), 400)
   }, [])
+
+  /** Import HTML → parse → simplify → auto-layout → push onto canvas. */
+  const handleImportHtml = useCallback((html: string): boolean => {
+    const api = editorRef.current
+    if (!api) return false
+    const ok = importHtmlToScene(api, html)
+    if (ok) handleCanvasChange()
+    return ok
+  }, [handleCanvasChange])
 
   /** One-click: serialize current canvas blueprint into a prompt for the AI. */
   const handleUseBlueprint = useCallback((): string | null => {
@@ -857,6 +871,12 @@ ${SYSTEM_PROMPT}`
           onLangChange={handleLangChange}
         />
       )}
+      {showImport && (
+        <ImportHtmlModal
+          onImport={handleImportHtml}
+          onClose={() => setShowImport(false)}
+        />
+      )}
       <div className="workspace">
         <div className="panel-left" ref={panelLeftRef}>
           <Canvas
@@ -868,6 +888,7 @@ ${SYSTEM_PROMPT}`
             theme={canvasTheme}
             langCode={langCode}
             modelLabel={modelLabel}
+            onImportHtml={() => setShowImport(true)}
           />
           <FramePicker
             editor={editor}
