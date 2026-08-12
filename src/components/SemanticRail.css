@@ -16,13 +16,8 @@
     0 8px 28px rgba(0, 0, 0, 0.25),
     0 0 12px var(--accent-glow);
   max-width: calc(100% - 40px);
-  overflow-x: auto;
-  overflow-y: hidden;
   backdrop-filter: blur(8px);
 }
-
-.semantic-rail::-webkit-scrollbar { height: 4px; }
-.semantic-rail::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 
 .semantic-rail-btn {
   display: inline-flex;
@@ -109,10 +104,9 @@
 /* ── Dropdown search menu (opens above the rail) ── */
 .semantic-rail-menu {
   position: absolute;
-  left: 50%;
-  bottom: calc(100% + 8px);
-  transform: translateX(-50%);
-  width: 240px;
+  left: 0;
+  bottom: calc(100% + 6px);
+  width: 220px;
   background: var(--bg-secondary);
   border: 1px solid var(--border);
   border-radius: var(--radius);

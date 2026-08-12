@@ -81,57 +81,55 @@ export function SemanticRail({ editor, selected, onChanged }: Props) {
     : allTypes
 
   return (
-    <>
-      <div className="semantic-rail">
-        <button
-          className={`semantic-rail-btn semantic-rail-search-btn ${menuOpen ? 'open' : ''}`}
-          onClick={() => setMenuOpen((v) => !v)}
-          title={t('semantic.search')}
-        >
-          <span className="semantic-rail-icon">▾</span>
-          {t('semantic.search')}
-        </button>
+    <div className="semantic-rail">
+      <button
+        className={`semantic-rail-btn semantic-rail-search-btn ${menuOpen ? 'open' : ''}`}
+        onClick={() => setMenuOpen((v) => !v)}
+        title={t('semantic.search')}
+      >
+        <span className="semantic-rail-icon">▾</span>
+        {t('semantic.search')}
+      </button>
 
-        <div className="semantic-rail-divider" />
+      <div className="semantic-rail-divider" />
 
-        {SEMANTIC_GROUPS.map((group, gi) => (
-          <React.Fragment key={group.label}>
-            {group.types.map((type) => (
-              <button
-                key={type}
-                className="semantic-rail-btn"
-                disabled={!taggable}
-                onClick={() => handleTag(type)}
-                title={t(`semantic.${type}`)}
-              >
-                <span className="semantic-rail-icon">{TYPE_ICONS[type]}</span>
-                {t(`semantic.${type}`)}
-              </button>
-            ))}
-            {gi < SEMANTIC_GROUPS.length - 1 && (
-              <div className="semantic-rail-divider" />
-            )}
-          </React.Fragment>
-        ))}
+      {SEMANTIC_GROUPS.map((group, gi) => (
+        <React.Fragment key={group.label}>
+          {group.types.map((type) => (
+            <button
+              key={type}
+              className="semantic-rail-btn"
+              disabled={!taggable}
+              onClick={() => handleTag(type)}
+              title={t(`semantic.${type}`)}
+            >
+              <span className="semantic-rail-icon">{TYPE_ICONS[type]}</span>
+              {t(`semantic.${type}`)}
+            </button>
+          ))}
+          {gi < SEMANTIC_GROUPS.length - 1 && (
+            <div className="semantic-rail-divider" />
+          )}
+        </React.Fragment>
+      ))}
 
-        <div className="semantic-rail-divider" />
+      <div className="semantic-rail-divider" />
 
-        <button
-          className="semantic-rail-btn semantic-rail-clear"
-          disabled={!taggable}
-          onClick={handleClear}
-          title={t('semantic.untag')}
-        >
-          <span className="semantic-rail-icon">✕</span>
-        </button>
-        <button
-          className="semantic-rail-btn semantic-rail-export"
-          onClick={handleExport}
-          title={t('semantic.exportBlueprint')}
-        >
-          <span className="semantic-rail-icon">⇩</span>
-        </button>
-      </div>
+      <button
+        className="semantic-rail-btn semantic-rail-clear"
+        disabled={!taggable}
+        onClick={handleClear}
+        title={t('semantic.untag')}
+      >
+        <span className="semantic-rail-icon">✕</span>
+      </button>
+      <button
+        className="semantic-rail-btn semantic-rail-export"
+        onClick={handleExport}
+        title={t('semantic.exportBlueprint')}
+      >
+        <span className="semantic-rail-icon">⇩</span>
+      </button>
 
       {menuOpen && (
         <div className="semantic-rail-menu">
@@ -164,6 +162,6 @@ export function SemanticRail({ editor, selected, onChanged }: Props) {
           </div>
         </div>
       )}
-    </>
+    </div>
   )
 }
