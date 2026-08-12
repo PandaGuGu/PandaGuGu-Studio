@@ -50,7 +50,6 @@ export function SemanticRail({ editor, selected, selectedIds = new Set(), onChan
   const multiSelect = selectedIds.size >= 2
   const [menuOpen, setMenuOpen] = useState(false)
   const [exportMenuOpen, setExportMenuOpen] = useState(false)
-  const [alignMenuOpen, setAlignMenuOpen] = useState(false)
   const [query, setQuery] = useState('')
 
   const handleAlign = (op: AlignOp) => {
@@ -66,7 +65,6 @@ export function SemanticRail({ editor, selected, selectedIds = new Set(), onChan
       .map((el) => idMap.get(el.id) || el)
     editor.updateScene({ elements })
     onChanged?.()
-    setAlignMenuOpen(false)
   }
 
   const handleTag = (type: SemanticType) => {
@@ -184,29 +182,39 @@ export function SemanticRail({ editor, selected, selectedIds = new Set(), onChan
         <span className="semantic-rail-icon">▲</span>
       </button>
 
-      {multiSelect && (
-        <button
-          className={`semantic-rail-btn semantic-rail-align-btn ${alignMenuOpen ? 'open' : ''}`}
-          onClick={() => setAlignMenuOpen((v) => !v)}
-          title={t('align.title')}
-        >
-          <span className="semantic-rail-icon">▲</span>
-        </button>
-      )}
-
-      {alignMenuOpen && (
-        <div className="semantic-rail-align-menu">
-          {ALIGN_BTNS.map(({ op, icon }) => (
-            <button
-              key={op}
-              className="semantic-rail-menu-item"
-              onClick={() => handleAlign(op)}
-              title={t(`align.${op}`)}
-            >
-              <span className="semantic-rail-icon">{icon}</span>
-              {t(`align.${op}`)}
-            </button>
-          ))}
+      {exportMenuOpen && (
+        <div className="semantic-rail-export-menu">
+          <button
+            className="semantic-rail-menu-item"
+            onClick={() => { handleExport(); setExportMenuOpen(false) }}
+          >
+            <span className="semantic-rail-icon">📋</span>
+            {t('semantic.exportBlueprint')}
+          </button>
+          <button
+            className="semantic-rail-menu-item"
+            onClick={handleExportPng}
+          >
+            <span className="semantic-rail-icon">🖼</span>
+            {t('semantic.exportPng')}
+          </button>
+          {multiSelect && (
+            <>
+              <div className="semantic-rail-menu-divider" />
+              <div className="semantic-rail-menu-group">{t('align.title')}</div>
+              {ALIGN_BTNS.map(({ op, icon }) => (
+                <button
+                  key={op}
+                  className="semantic-rail-menu-item"
+                  onClick={() => handleAlign(op)}
+                  title={t(`align.${op}`)}
+                >
+                  <span className="semantic-rail-icon">{icon}</span>
+                  {t(`align.${op}`)}
+                </button>
+              ))}
+            </>
+          )}
         </div>
       )}
 

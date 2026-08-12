@@ -120,35 +120,23 @@
   padding: 4px;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 1px;
   z-index: 20;
 }
 
-.semantic-rail-align-btn {
-  color: var(--cyan);
+.semantic-rail-menu-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 4px 0;
 }
 
-.semantic-rail-align-btn:hover,
-.semantic-rail-align-btn.open {
-  border-color: var(--cyan);
-  color: var(--cyan);
-  background: rgba(90, 158, 200, 0.1);
-}
-
-.semantic-rail-align-menu {
-  position: absolute;
-  right: 0;
-  bottom: calc(100% + 6px);
-  width: 190px;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
-  padding: 4px;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  z-index: 20;
+.semantic-rail-menu-group {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  padding: 4px 6px 2px;
 }
 
 /* ── Dropdown search menu (opens above the rail) ── */
