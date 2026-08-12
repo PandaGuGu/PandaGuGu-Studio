@@ -28,7 +28,47 @@ export function PropsPanel({ editor, element, onChanged }: Props) {
   const t = useI18n()
   const meta = getSemantic(element)
   const [advanced, setAdvanced] = useState(false)
-  if (!meta || !editor) return null
+  if (!editor) return null
+
+  // ── Frame: adjust its own data (name / background / size) ──
+  if (element.type === 'frame') {
+    const f = element as any
+    const applyFrame = (patch: Partial<{ name: string; backgroundColor: string; width: number; height: number }>) => {
+      const next = { ...f, ...patch } as any
+      const elements = editor
+        .getSceneElements()
+        .map((el) => (el.id === next.id ? next : el)) as any[]
+      editor.updateScene({ elements })
+      onChanged?.()
+    }
+    return (
+      <div className="props-panel">
+        <div className="props-panel-head">
+          <span className="props-panel-title">{t('frame.title')}</span>
+          <span className="props-panel-hint">{t('semantic.propsHint')}</span>
+        </div>
+        <div className="props-panel-body">
+          <label className="pp-row"><span>{t('props.label')}</span>
+            <input className="pp-input" value={f.name || ''} placeholder="Frame" onChange={(e) => applyFrame({ name: e.target.value })} />
+          </label>
+          <label className="pp-row"><span>{t('props.bg')}</span>
+            <input type="color" className="pp-input p-color" value={f.backgroundColor || '#ffffff'} onChange={(e) => applyFrame({ backgroundColor: e.target.value })} />
+          </label>
+          <div className="pp-row-inline">
+            <label className="pp-col"><span>{t('props.width')}</span>
+              <input type="number" className="pp-input p-num" value={Math.round(f.width || 0)} min={100} onChange={(e) => applyFrame({ width: Number(e.target.value) })} />
+            </label>
+            <label className="pp-col"><span>{t('props.height')}</span>
+              <input type="number" className="pp-input p-num" value={Math.round(f.height || 0)} min={100} onChange={(e) => applyFrame({ height: Number(e.target.value) })} />
+            </label>
+          </div>
+          <div className="pp-hint-text">{t('frame.adjustHint')}</div>
+        </div>
+      </div>
+    )
+  }
+
+  if (!meta) return null
 
   const type = meta.type as SemanticType
   const props = meta.props || {}
@@ -38,7 +78,7 @@ export function PropsPanel({ editor, element, onChanged }: Props) {
 
   // Persist any meta change + style sync back to canvas
   const apply = (patch: Partial<Pick<typeof meta, 'props' | 'layout' | 'style' | 'events' | 'html'>>) => {
-    let next = element
+    let next: any = element
     if (patch.layout !== undefined) next = setSemanticLayout(next, patch.layout)
     if (patch.style !== undefined) next = setSemanticStyle(next, patch.style)
     if (patch.events !== undefined) next = setSemanticEvents(next, patch.events as any)

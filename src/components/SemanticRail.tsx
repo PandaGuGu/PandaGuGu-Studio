@@ -26,6 +26,8 @@ interface Props {
   onDrawTag?: (type: SemanticType) => void
   /** Open the "import HTML" dialog. */
   onImportHtml?: () => void
+  /** Open the classic-templates dialog. */
+  onOpenTemplates?: () => void
 }
 
 const ALIGN_BTNS: { op: AlignOp; icon: string }[] = [
@@ -47,7 +49,7 @@ const TYPE_ICONS: Record<SemanticType, string> = {
   raw: '</>', note: '✎',
 }
 
-export function SemanticRail({ editor, selected, selectedIds = new Set(), modelLabel, onChanged, onDrawTag, onImportHtml }: Props) {
+export function SemanticRail({ editor, selected, selectedIds = new Set(), modelLabel, onChanged, onDrawTag, onImportHtml, onOpenTemplates }: Props) {
   const t = useI18n()
   const taggable = !!editor && !!selected && canTag(selected!)
   const multiSelect = selectedIds.size >= 2
@@ -207,6 +209,13 @@ export function SemanticRail({ editor, selected, selectedIds = new Set(), modelL
           >
             <span className="semantic-rail-icon">⇪</span>
             {t('semantic.importHtml')}
+          </button>
+          <button
+            className="semantic-rail-menu-item"
+            onClick={() => { onOpenTemplates?.(); setExportMenuOpen(false) }}
+          >
+            <span className="semantic-rail-icon">▦</span>
+            {t('semantic.templates')}
           </button>
           <div className="semantic-rail-menu-divider" />
           <div className="semantic-rail-menu-group">{t('align.title')}</div>

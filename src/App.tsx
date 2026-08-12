@@ -15,9 +15,11 @@ import { ResizeHandle } from './components/ResizeHandle'
 import { LayersPanel } from './components/LayersPanel'
 import { VariantPanel } from './components/VariantPanel'
 import type { VariantStyle } from './components/VariantPanel'
+import type { Template } from './lib/templates'
 import { HistoryPanel } from './components/HistoryPanel'
 import { ImportHtmlModal } from './components/ImportHtmlModal'
-import { importHtmlToScene } from './lib/importHtml'
+import { TemplateModal } from './components/TemplateModal'
+import { importHtmlToScene, applyBlueprintToScene } from './lib/importHtml'
 import { loadHistory, appendHistory, removeHistory, clearHistory } from './lib/history'
 import type { HistoryItem } from './lib/history'
 import { streamChat, chatOnce, extractHTML } from './lib/api'
@@ -189,6 +191,9 @@ export function App() {
   // ── Import HTML → canvas ──
   const [showImport, setShowImport] = useState(false)
 
+  // ── Classic templates ──
+  const [showTemplates, setShowTemplates] = useState(false)
+
   const previewRef = useRef<HTMLIFrameElement>(null)
   const panelLeftRef = useRef<HTMLDivElement>(null)
   const [selectedElementId, setSelectedElementId] = useState<string | null>(null)
@@ -287,6 +292,14 @@ export function App() {
     const ok = importHtmlToScene(api, html)
     if (ok) handleCanvasChange()
     return ok
+  }, [handleCanvasChange])
+
+  const handleApplyTemplate = useCallback((template: Template) => {
+    const api = editorRef.current
+    if (!api) return
+    const ok = applyBlueprintToScene(api, template.build())
+    if (ok) handleCanvasChange()
+    setShowTemplates(false)
   }, [handleCanvasChange])
 
   /** One-click: serialize current canvas blueprint into a prompt for the AI. */
@@ -877,6 +890,12 @@ ${SYSTEM_PROMPT}`
           onClose={() => setShowImport(false)}
         />
       )}
+      {showTemplates && (
+        <TemplateModal
+          onApply={handleApplyTemplate}
+          onClose={() => setShowTemplates(false)}
+        />
+      )}
       <div className="workspace">
         <div className="panel-left" ref={panelLeftRef}>
           <Canvas
@@ -889,6 +908,7 @@ ${SYSTEM_PROMPT}`
             langCode={langCode}
             modelLabel={modelLabel}
             onImportHtml={() => setShowImport(true)}
+            onOpenTemplates={() => setShowTemplates(true)}
           />
           <FramePicker
             editor={editor}

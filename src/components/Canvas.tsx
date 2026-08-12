@@ -24,6 +24,7 @@ interface Props {
   langCode?: string
   modelLabel?: string
   onImportHtml?: () => void
+  onOpenTemplates?: () => void
 }
 
 /** Map Excalidraw shape type → semantic type for auto-tagging. */
@@ -48,7 +49,7 @@ const TOOL_OF: Record<SemanticType, string> = {
   raw: 'rectangle', note: 'rectangle',
 }
 
-export function Canvas({ onEditorReady, onCanvasChange, onSelectElement, autoTag = true, onAutoTagChange, theme = 'light', langCode = 'zh-CN', modelLabel, onImportHtml }: Props) {
+export function Canvas({ onEditorReady, onCanvasChange, onSelectElement, autoTag = true, onAutoTagChange, theme = 'light', langCode = 'zh-CN', modelLabel, onImportHtml, onOpenTemplates }: Props) {
   const t = useI18n()
   const [editor, setEditor] = useState<ExcalidrawImperativeAPI | null>(null)
   const [selected, setSelected] = useState<ExcalidrawElement | null>(null)
@@ -198,7 +199,7 @@ export function Canvas({ onEditorReady, onCanvasChange, onSelectElement, autoTag
     }
   }, [])
 
-  const showPanel = !!selected && !!getSemantic(selected)
+  const showPanel = !!selected && (selected.type === 'frame' || !!getSemantic(selected))
 
   return (
     <div className="canvas-wrapper" ref={wrapperRef}>
@@ -233,7 +234,7 @@ export function Canvas({ onEditorReady, onCanvasChange, onSelectElement, autoTag
         <span className="canvas-auto-tag-icon">⚡</span>
         {t('semantic.autoTag')}
       </button>
-      <SemanticRail editor={editor} selected={selected} selectedIds={selectedIds} modelLabel={modelLabel} onChanged={onCanvasChange} onDrawTag={handleDrawTag} onImportHtml={onImportHtml} />
+      <SemanticRail editor={editor} selected={selected} selectedIds={selectedIds} modelLabel={modelLabel} onChanged={onCanvasChange} onDrawTag={handleDrawTag} onImportHtml={onImportHtml} onOpenTemplates={onOpenTemplates} />
     </div>
   )
 }

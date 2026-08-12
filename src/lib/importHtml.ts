@@ -241,7 +241,7 @@ function makeText(semantic: SemanticType, b: BlueprintElement, props: Record<str
   }
 }
 
-function blueprintElementToExcalidraw(b: BlueprintElement, indexSeed: { n: number }): ExcalidrawElement[] {
+function blueprintElementToExcalidraw(b: BlueprintElement, indexSeed: { n: number }, frameId?: string): ExcalidrawElement[] {
   const props = b.props || {}
   let el: any
   if (b.type === 'heading' || b.type === 'text' || b.type === 'link') {
@@ -249,12 +249,13 @@ function blueprintElementToExcalidraw(b: BlueprintElement, indexSeed: { n: numbe
   } else {
     el = makeRect(b.type, b, props)
   }
+  if (frameId) el.frameId = frameId
   el.index = `a${String(indexSeed.n++).padStart(4, '0')}`
   el.customData = { semantic: { type: b.type, layout: b.layout || DEFAULT_LAYOUT, props: b.props || {} } }
   const els: ExcalidrawElement[] = [el]
   for (const child of b.children || []) {
     // Containers: keep absolute positions as estimated; children nest via containerId.
-    const childEls = blueprintElementToExcalidraw(child, indexSeed)
+    const childEls = blueprintElementToExcalidraw(child, indexSeed, frameId)
     for (const ce of childEls) {
       ;(ce as any).containerId = el.id
     }
@@ -263,12 +264,41 @@ function blueprintElementToExcalidraw(b: BlueprintElement, indexSeed: { n: numbe
   return els as ExcalidrawElement[]
 }
 
-/** Blueprint tree → Excalidraw scene elements (with semantic tags). */
+/** Build a real Excalidraw frame from a root section element. */
+function makeFrame(b: BlueprintElement, indexSeed: { n: number }): any {
+  return {
+    id: nextId(),
+    type: 'frame',
+    name: (b.props && b.props.label) || 'Frame',
+    x: b.x, y: b.y, width: Math.max(b.w, 100), height: Math.max(b.h, 100),
+    angle: 0,
+    backgroundColor: 'rgba(255,255,255,0.15)',
+    fillStyle: 'solid', strokeWidth: 2, strokeStyle: 'solid',
+    roundness: null, roughness: 1, opacity: 100,
+    seed: Math.floor(Math.random() * 2 ** 31),
+    version: 1, versionNonce: Math.floor(Math.random() * 2 ** 31),
+    index: `f${String(indexSeed.n++).padStart(4, '0')}`,
+    isDeleted: false,
+    groupIds: [], frameId: null, boundElements: null,
+    updated: Date.now(), link: null, locked: false,
+  }
+}
+
+/** Blueprint tree → Excalidraw scene elements (with semantic tags).
+ *  Root sections become real frames; their children bind to the frame via frameId. */
 export function blueprintToElements(bp: Blueprint): ExcalidrawElement[] {
   const out: ExcalidrawElement[] = []
   const seed = { n: 1 }
   for (const root of bp.elements) {
-    out.push(...blueprintElementToExcalidraw(root, seed))
+    if (root.type === 'section') {
+      const frame = makeFrame(root, seed)
+      out.push(frame as any)
+      for (const child of root.children || []) {
+        out.push(...blueprintElementToExcalidraw(child, seed, frame.id))
+      }
+    } else {
+      out.push(...blueprintElementToExcalidraw(root, seed))
+    }
   }
   return out
 }
@@ -277,6 +307,14 @@ export function blueprintToElements(bp: Blueprint): ExcalidrawElement[] {
 export function importHtmlToScene(api: ExcalidrawImperativeAPI, html: string): boolean {
   const bp = htmlToBlueprint(html)
   if (!bp) return false
+  const elements = blueprintToElements(bp)
+  api.updateScene({ elements: elements as any })
+  return true
+}
+
+/** Apply a prebuilt blueprint (e.g. a template) to the canvas, clearing the existing scene. */
+export function applyBlueprintToScene(api: ExcalidrawImperativeAPI, bp: Blueprint): boolean {
+  if (!bp || bp.elements.length === 0) return false
   const elements = blueprintToElements(bp)
   api.updateScene({ elements: elements as any })
   return true
