@@ -250,10 +250,24 @@ export function applyStyle(el: ExcalidrawElement, meta: SemanticMeta): Excalidra
  * Serialize the current scene into a blueprint tree (v2).
  * Only semantically-tagged elements are included; parent/child relations come
  * from Excalidraw's containerBinding (containerId).
+ * Pass { frameId } to export only the elements inside that frame (画框圈选).
  */
-export function toBlueprint(api: ExcalidrawImperativeAPI): Blueprint | null {
-  const elements = api.getSceneElements()
-  if (elements.length === 0) return null
+export function toBlueprint(
+  api: ExcalidrawImperativeAPI,
+  opts?: { frameId?: string }
+): Blueprint | null {
+  const all = api.getSceneElements()
+  let elements = all
+  let titleHint: string | null = null
+
+  if (opts?.frameId) {
+    const frame = all.find((e) => e.id === opts.frameId) as any
+    if (!frame) return null
+    titleHint = frame.name || null
+    elements = all.filter(
+      (e) => e.id === opts.frameId || (e as any).frameId === opts.frameId
+    )
+  }
 
   const build = (el: ExcalidrawElement): BlueprintElement => {
     const meta = getSemantic(el)
@@ -285,7 +299,8 @@ export function toBlueprint(api: ExcalidrawImperativeAPI): Blueprint | null {
 
   const firstContainer = roots.find((e) => getSemantic(e)?.type === 'container')
   const title =
-    (firstContainer && getSemantic(firstContainer)?.props.label) || 'Untitled'
+    titleHint ||
+    ((firstContainer && getSemantic(firstContainer)?.props.label) || 'Untitled')
 
   const appState: any = api.getAppState()
   return {

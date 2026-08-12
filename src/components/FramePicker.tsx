@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react'
 import type { ExcalidrawImperativeAPI } from '@excalidraw/excalidraw/types'
 import { getSources, exportSourceAsPng, exportAllAsPng } from '../lib/export'
 import type { SourceInfo } from '../lib/export'
+import { toBlueprint, downloadJSON } from '../lib/blueprint'
 import './FramePicker.css'
 import { useI18n } from '../lib/i18n'
 
@@ -69,6 +70,16 @@ export function FramePicker({ editor, selectedIds, onSelectionChange, onAddFrame
     onSelectionChange(new Set())
   }, [onSelectionChange])
 
+  const handleExportFrameJson = useCallback((frameId: string) => {
+    if (!editor) return
+    const bp = toBlueprint(editor, { frameId })
+    if (!bp) {
+      alert(t('semantic.exportEmpty'))
+      return
+    }
+    downloadJSON(bp, `${bp.title.replace(/\s+/g, '-')}.blueprint.json`)
+  }, [editor, t])
+
   const hasFrames = sources.some(s => s.kind === 'frame')
 
   // First time frames appear → auto-expand once so user sees the new frame.
@@ -128,23 +139,36 @@ export function FramePicker({ editor, selectedIds, onSelectionChange, onAddFrame
       </div>
       <div className="frame-picker-strip">
         {sources.map((s) => (
-          <button
+          <div
             key={s.id}
-            className={`frame-thumb ${selectedIds.has(s.id) ? 'selected' : ''}`}
-            onClick={() => toggle(s.id)}
-            title={`${s.kind}: ${s.name}`}
+            className={`frame-thumb-wrap ${selectedIds.has(s.id) ? 'selected' : ''}`}
           >
-            {s.thumbUrl ? (
-              <img src={s.thumbUrl} alt={s.name} />
-            ) : (
-              <div className="frame-thumb-empty" />
+            <button
+              className="frame-thumb"
+              onClick={() => toggle(s.id)}
+              title={`${s.kind}: ${s.name}`}
+            >
+              {s.thumbUrl ? (
+                <img src={s.thumbUrl} alt={s.name} />
+              ) : (
+                <div className="frame-thumb-empty" />
+              )}
+              <span className="frame-thumb-name">
+                <span className="frame-thumb-kind">{s.kind === 'image' ? 'IMG' : 'FRM'}</span>
+                {s.name}
+              </span>
+              {selectedIds.has(s.id) && <div className="frame-thumb-check">ok</div>}
+            </button>
+            {s.kind === 'frame' && (
+              <button
+                className="frame-thumb-export"
+                onClick={(e) => { e.stopPropagation(); handleExportFrameJson(s.id) }}
+                title={t('frame.exportJson')}
+              >
+                ⇩
+              </button>
             )}
-            <span className="frame-thumb-name">
-              <span className="frame-thumb-kind">{s.kind === 'image' ? 'IMG' : 'FRM'}</span>
-              {s.name}
-            </span>
-            {selectedIds.has(s.id) && <div className="frame-thumb-check">ok</div>}
-          </button>
+          </div>
         ))}
         {previewScreenshot && (
           <div className="frame-thumb screenshot-thumb">
