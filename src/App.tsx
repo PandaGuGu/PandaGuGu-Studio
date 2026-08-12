@@ -12,6 +12,7 @@ import { PlanOverlay } from './components/PlanOverlay'
 import type { PlanPhase } from './components/PlanOverlay'
 import { MessageStrip } from './components/MessageStrip'
 import { ResizeHandle } from './components/ResizeHandle'
+import { LayersPanel } from './components/LayersPanel'
 import { streamChat, extractHTML } from './lib/api'
 import { exportSourceAsPng, exportAllAsPng, getSources } from './lib/export'
 import { getProvider, loadProviderState, saveProviderState } from './lib/providers'
@@ -19,6 +20,7 @@ import { useI18n } from './lib/i18n'
 import type { ProviderState } from './lib/providers'
 import type { Message } from './lib/api'
 import type { ChatChip } from './lib/store'
+import type { ExcalidrawElement } from '@excalidraw/excalidraw/element/types'
 import './styles/app.css'
 
 const SYSTEM_PROMPT = `You are an expert frontend developer. The user will show you a sketch/wireframe/reference and describe what they want. Generate a COMPLETE, self-contained HTML file.
@@ -153,6 +155,7 @@ export function App() {
 
   const previewRef = useRef<HTMLIFrameElement>(null)
   const panelLeftRef = useRef<HTMLDivElement>(null)
+  const [selectedElementId, setSelectedElementId] = useState<string | null>(null)
 
   const handleProviderUpdate = useCallback((newState: ProviderState) => {
     setProviderState(newState)
@@ -737,6 +740,7 @@ ${SYSTEM_PROMPT}`
           <Canvas
             onEditorReady={(e) => { editorRef.current = e; setEditor(e) }}
             onCanvasChange={handleCanvasChange}
+            onSelectElement={(el) => setSelectedElementId(el?.id || null)}
             theme={canvasTheme}
             langCode={langCode}
           />
@@ -763,6 +767,12 @@ ${SYSTEM_PROMPT}`
             planMode={planMode}
             onPlanModeToggle={() => setPlanMode(p => !p)}
             hasKey={!needsKey}
+          />
+          <LayersPanel
+            editor={editor}
+            canvasVersion={canvasVersion}
+            selectedElementId={selectedElementId}
+            onAddFrame={handleAddFrame}
           />
           <div className="preview-container">
             <Preview html={lastHTML} iframeRef={previewRef} device={device} />

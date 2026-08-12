@@ -11,11 +11,12 @@ import './Canvas.css'
 interface Props {
   onEditorReady: (api: ExcalidrawImperativeAPI) => void
   onCanvasChange?: () => void
+  onSelectElement?: (el: ExcalidrawElement | null) => void
   theme?: 'light' | 'dark'
   langCode?: string
 }
 
-export function Canvas({ onEditorReady, onCanvasChange, theme = 'light', langCode = 'zh-CN' }: Props) {
+export function Canvas({ onEditorReady, onCanvasChange, onSelectElement, theme = 'light', langCode = 'zh-CN' }: Props) {
   const [editor, setEditor] = useState<ExcalidrawImperativeAPI | null>(null)
   const [selected, setSelected] = useState<ExcalidrawElement | null>(null)
 
@@ -32,8 +33,9 @@ export function Canvas({ onEditorReady, onCanvasChange, theme = 'light', langCod
     const firstId = Object.keys(ids).find((k) => ids[k])
     const el = firstId ? els.find((e) => e.id === firstId) || null : null
     setSelected(el)
+    onSelectElement?.(el)
     onCanvasChange?.()
-  }, [onCanvasChange])
+  }, [onSelectElement, onCanvasChange])
 
   const showPanel = !!selected && !!getSemantic(selected)
 

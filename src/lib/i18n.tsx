@@ -58,6 +58,10 @@ const translations: Record<Lang, Record<string, string>> = {
     'frame.lastOutput': '上次输出',
     'frame.preview': '预览',
 
+    'layers.title': '图层',
+    'layers.add': '添加画框',
+    'layers.empty': '画布为空,画一个元素试试',
+
     'preview.emptyText': '在画布上绘制或拖入参考图,描述需求后点“生成”',
     'preview.emptyHint': 'AI 将把你的草图变成代码',
 
@@ -221,6 +225,10 @@ const translations: Record<Lang, Record<string, string>> = {
     'frame.collapse': 'Collapse',
     'frame.expand': 'Expand',
     'frame.frames': 'frames',
+
+    'layers.title': 'Layers',
+    'layers.add': 'Add frame',
+    'layers.empty': 'Canvas is empty — draw something to get started',
 
     'preview.emptyText': 'Draw or drop references in frames, describe it, and hit Generate',
     'preview.emptyHint': 'GLM-5V will turn your sketch into code',
