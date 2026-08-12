@@ -9,13 +9,12 @@
   align-items: center;
   gap: 1px;
   padding: 5px 8px;
-  background: linear-gradient(180deg, #1c2130 0%, #14181f 100%);
-  border: 1px solid rgba(74, 158, 142, 0.18);
+  background: linear-gradient(180deg, var(--bg-elevated) 0%, var(--bg-secondary) 100%);
+  border: 1px solid var(--border);
   border-radius: 12px;
   box-shadow:
-    0 8px 28px rgba(0, 0, 0, 0.5),
-    0 0 0 1px rgba(0, 0, 0, 0.3),
-    0 0 12px rgba(74, 158, 142, 0.08);
+    0 8px 28px rgba(0, 0, 0, 0.25),
+    0 0 12px var(--accent-glow);
   max-width: calc(100% - 40px);
   overflow-x: auto;
   overflow-y: hidden;
@@ -23,7 +22,7 @@
 }
 
 .semantic-rail::-webkit-scrollbar { height: 4px; }
-.semantic-rail::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+.semantic-rail::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 
 .semantic-rail-btn {
   display: inline-flex;
@@ -42,9 +41,9 @@
 }
 
 .semantic-rail-btn:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--bg-tertiary);
   color: var(--text-primary);
-  border-color: rgba(255, 255, 255, 0.08);
+  border-color: var(--border);
 }
 
 .semantic-rail-btn:disabled {
@@ -64,21 +63,21 @@
 .semantic-rail-divider {
   width: 1px;
   height: 18px;
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--border);
   margin: 0 4px;
   flex-shrink: 0;
 }
 
 .semantic-rail-search-btn {
   color: var(--accent);
-  border-color: rgba(74, 158, 142, 0.25);
+  border-color: var(--border);
   background: var(--accent-dim);
 }
 
 .semantic-rail-search-btn:hover:not(:disabled) {
   border-color: var(--accent);
-  color: var(--accent-hover);
-  background: rgba(74, 158, 142, 0.18);
+  color: var(--accent);
+  background: var(--accent-dim);
 }
 
 .semantic-rail-search-btn.open {
@@ -102,7 +101,7 @@
 }
 
 .semantic-rail-export:hover {
-  color: var(--accent-hover);
+  color: var(--accent);
   background: var(--accent-dim);
   border-color: var(--accent);
 }
