@@ -123,10 +123,27 @@
   color: var(--accent);
 }
 
-.semantic-rail-export:hover {
+.semantic-rail-export:hover,
+.semantic-rail-export.open {
   color: var(--accent);
   background: var(--accent-dim);
   border-color: var(--accent);
+}
+
+.semantic-rail-export-menu {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 6px);
+  width: 200px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  z-index: 20;
 }
 
 /* ── Dropdown search menu (opens above the rail) ── */

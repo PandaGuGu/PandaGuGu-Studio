@@ -11,6 +11,7 @@ import {
 } from '../lib/blueprint'
 import { alignElements } from '../lib/align'
 import type { AlignOp } from '../lib/align'
+import { exportAllAsPng } from '../lib/export'
 import type { SemanticType, SemanticMeta } from '../lib/blueprint'
 import { useI18n } from '../lib/i18n'
 import './SemanticRail.css'
@@ -37,6 +38,7 @@ export function SemanticRail({ editor, selected, selectedIds = new Set(), onChan
   const taggable = !!editor && !!selected && canTag(selected!)
   const multiSelect = selectedIds.size >= 2
   const [menuOpen, setMenuOpen] = useState(false)
+  const [exportMenuOpen, setExportMenuOpen] = useState(false)
   const [query, setQuery] = useState('')
 
   const handleAlign = (op: AlignOp) => {
@@ -103,6 +105,24 @@ export function SemanticRail({ editor, selected, selectedIds = new Set(), onChan
     downloadJSON(bp, `${bp.title.replace(/\s+/g, '-')}.blueprint.json`)
   }
 
+  const handleExportPng = async () => {
+    if (!editor) return
+    const b64 = await exportAllAsPng(editor)
+    if (!b64) return
+    // Convert base64 → blob → download
+    const byteChars = atob(b64)
+    const bytes = new Uint8Array(byteChars.length)
+    for (let i = 0; i < byteChars.length; i++) bytes[i] = byteChars.charCodeAt(i)
+    const blob = new Blob([bytes], { type: 'image/png' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `vcanvas-${Date.now()}.png`
+    a.click()
+    URL.revokeObjectURL(url)
+    setExportMenuOpen(false)
+  }
+
   const q = query.trim().toLowerCase()
   const allTypes = SEMANTIC_GROUPS.flatMap((g) => g.types)
   const filtered = q
@@ -157,12 +177,31 @@ export function SemanticRail({ editor, selected, selectedIds = new Set(), onChan
         <span className="semantic-rail-icon">✕</span>
       </button>
       <button
-        className="semantic-rail-btn semantic-rail-export"
-        onClick={handleExport}
-        title={t('semantic.exportBlueprint')}
+        className={`semantic-rail-btn semantic-rail-export ${exportMenuOpen ? 'open' : ''}`}
+        onClick={() => setExportMenuOpen((v) => !v)}
+        title={t('semantic.exportMenu')}
       >
-        <span className="semantic-rail-icon">⇩</span>
+        <span className="semantic-rail-icon">⌄</span>
       </button>
+
+      {exportMenuOpen && (
+        <div className="semantic-rail-export-menu">
+          <button
+            className="semantic-rail-menu-item"
+            onClick={() => { handleExport(); setExportMenuOpen(false) }}
+          >
+            <span className="semantic-rail-icon">📋</span>
+            {t('semantic.exportBlueprint')}
+          </button>
+          <button
+            className="semantic-rail-menu-item"
+            onClick={handleExportPng}
+          >
+            <span className="semantic-rail-icon">🖼</span>
+            {t('semantic.exportPng')}
+          </button>
+        </div>
+      )}
 
       {multiSelect && (
         <>
