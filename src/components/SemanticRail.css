@@ -16,16 +16,122 @@
   overflow-y: auto;
 }
 
+.semantic-rail-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 3px;
+  padding: 2px 2px 6px;
+}
+
 .semantic-rail-title {
   font-size: 10px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: var(--accent);
-  padding: 2px 4px 6px;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 3px;
   white-space: nowrap;
+}
+
+.semantic-rail-menu-btn {
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  font-size: 10px;
+  line-height: 1;
+  cursor: pointer;
+  transition: all 0.12s;
+  padding: 0;
+}
+
+.semantic-rail-menu-btn:hover,
+.semantic-rail-menu-btn.open {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-dim);
+}
+
+.semantic-rail-menu {
+  position: absolute;
+  left: 118px;
+  top: 10px;
+  width: 190px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  z-index: 20;
+}
+
+.semantic-rail-search {
+  width: 100%;
+  padding: 5px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.semantic-rail-search:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.semantic-rail-menu-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.semantic-rail-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 6px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  cursor: pointer;
+  text-align: left;
+  white-space: nowrap;
+  transition: all 0.12s;
+}
+
+.semantic-rail-menu-item:hover:not(:disabled) {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border-color: var(--border);
+}
+
+.semantic-rail-menu-item:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.semantic-rail-menu-empty {
+  padding: 8px 6px;
+  font-size: 11px;
+  color: var(--text-muted);
+  text-align: center;
 }
 
 .semantic-rail-group {

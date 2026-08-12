@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import type { ExcalidrawImperativeAPI } from '@excalidraw/excalidraw/types'
 import type { ExcalidrawElement } from '@excalidraw/excalidraw/element/types'
 import {
@@ -40,6 +40,8 @@ const GROUP_LABEL_KEY: Record<string, string> = {
 export function SemanticRail({ editor, selected, onChanged }: Props) {
   const t = useI18n()
   const taggable = !!editor && !!selected && canTag(selected!)
+  const [menuOpen, setMenuOpen] = useState(false)
+  const [query, setQuery] = useState('')
 
   const handleTag = (type: SemanticType) => {
     if (!editor || !selected || !canTag(selected)) return
@@ -76,40 +78,94 @@ export function SemanticRail({ editor, selected, onChanged }: Props) {
     downloadJSON(bp, `${bp.title.replace(/\s+/g, '-')}.blueprint.json`)
   }
 
+  const q = query.trim().toLowerCase()
+  const allTypes = SEMANTIC_GROUPS.flatMap((g) => g.types)
+  const filtered = q
+    ? allTypes.filter(
+        (type) =>
+          type.toLowerCase().includes(q) ||
+          t(`semantic.${type}`).toLowerCase().includes(q)
+      )
+    : allTypes
+
   return (
-    <div className="semantic-rail">
-      <div className="semantic-rail-title">{t('semantic.title')}</div>
-      {SEMANTIC_GROUPS.map((group) => (
-        <React.Fragment key={group.label}>
-          <div className="semantic-rail-group">{t(GROUP_LABEL_KEY[group.label])}</div>
-          {group.types.map((type) => (
-            <button
-              key={type}
-              className="semantic-rail-btn"
-              disabled={!taggable}
-              onClick={() => handleTag(type)}
-              title={t(`semantic.${type}`)}
-            >
-              <span className="semantic-rail-icon">{TYPE_ICONS[type]}</span>
-              {t(`semantic.${type}`)}
-            </button>
-          ))}
-        </React.Fragment>
-      ))}
-      <div className="semantic-rail-sep" />
-      <button
-        className="semantic-rail-btn semantic-rail-clear"
-        disabled={!taggable}
-        onClick={handleClear}
-        title={t('semantic.untag')}
-      >
-        <span className="semantic-rail-icon">✕</span>
-        {t('semantic.untag')}
-      </button>
-      <button className="semantic-rail-btn semantic-rail-export" onClick={handleExport}>
-        <span className="semantic-rail-icon">⇩</span>
-        {t('semantic.exportBlueprint')}
-      </button>
-    </div>
+    <>
+      <div className="semantic-rail">
+        <div className="semantic-rail-head">
+          <span className="semantic-rail-title">{t('semantic.title')}</span>
+          <button
+            className={`semantic-rail-menu-btn ${menuOpen ? 'open' : ''}`}
+            onClick={() => setMenuOpen((v) => !v)}
+            title={t('semantic.search')}
+          >
+            ▾
+          </button>
+        </div>
+
+        {SEMANTIC_GROUPS.map((group) => (
+          <React.Fragment key={group.label}>
+            <div className="semantic-rail-group">{t(GROUP_LABEL_KEY[group.label])}</div>
+            {group.types.map((type) => (
+              <button
+                key={type}
+                className="semantic-rail-btn"
+                disabled={!taggable}
+                onClick={() => handleTag(type)}
+                title={t(`semantic.${type}`)}
+              >
+                <span className="semantic-rail-icon">{TYPE_ICONS[type]}</span>
+                {t(`semantic.${type}`)}
+              </button>
+            ))}
+          </React.Fragment>
+        ))}
+        <div className="semantic-rail-sep" />
+        <button
+          className="semantic-rail-btn semantic-rail-clear"
+          disabled={!taggable}
+          onClick={handleClear}
+          title={t('semantic.untag')}
+        >
+          <span className="semantic-rail-icon">✕</span>
+          {t('semantic.untag')}
+        </button>
+        <button className="semantic-rail-btn semantic-rail-export" onClick={handleExport}>
+          <span className="semantic-rail-icon">⇩</span>
+          {t('semantic.exportBlueprint')}
+        </button>
+      </div>
+
+      {menuOpen && (
+        <div className="semantic-rail-menu">
+          <input
+            className="semantic-rail-search"
+            autoFocus
+            value={query}
+            placeholder={t('semantic.searchPlaceholder')}
+            onChange={(e) => setQuery(e.target.value)}
+          />
+          <div className="semantic-rail-menu-list">
+            {filtered.map((type) => (
+              <button
+                key={type}
+                className="semantic-rail-menu-item"
+                disabled={!taggable}
+                onClick={() => {
+                  handleTag(type)
+                  setMenuOpen(false)
+                  setQuery('')
+                }}
+              >
+                <span className="semantic-rail-icon">{TYPE_ICONS[type]}</span>
+                {t(`semantic.${type}`)}
+              </button>
+            ))}
+            {filtered.length === 0 && (
+              <div className="semantic-rail-menu-empty">{t('semantic.searchEmpty')}</div>
+            )}
+          </div>
+        </div>
+      )}
+    </>
   )
 }
