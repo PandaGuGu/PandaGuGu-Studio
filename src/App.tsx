@@ -246,7 +246,7 @@ export function App() {
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = brandFilename('json', 'canvas')
+    a.download = brandFilename('json', modelLabel, 'canvas')
     a.click()
     URL.revokeObjectURL(url)
   }, [])
@@ -867,6 +867,7 @@ ${SYSTEM_PROMPT}`
             onAutoTagChange={setAutoTag}
             theme={canvasTheme}
             langCode={langCode}
+            modelLabel={modelLabel}
           />
           <FramePicker
             editor={editor}
@@ -877,6 +878,7 @@ ${SYSTEM_PROMPT}`
             onSave={handleSave}
             onLoad={handleLoad}
             previewScreenshot={previewScreenshot}
+            modelLabel={modelLabel}
           />
           <MessageStrip chips={chips} />
         </div>
@@ -908,6 +910,7 @@ ${SYSTEM_PROMPT}`
           <HistoryPanel
             items={history}
             activeId={activeHistoryId}
+            modelLabel={modelLabel}
             onLoad={handleLoadHistory}
             onDelete={handleDeleteHistory}
             onClear={handleClearHistory}
@@ -929,7 +932,7 @@ ${SYSTEM_PROMPT}`
                         const url = URL.createObjectURL(blob)
                         const a = document.createElement('a')
                         a.href = url
-                        a.download = `${v.id}-${v.label.replace(/[^\w\u4e00-\u9fa5]/g, '')}.html`
+                        a.download = brandFilename('html', modelLabel, `${v.id}-${v.label.replace(/[^\w\u4e00-\u9fa5]/g, '')}`)
                         a.click()
                         URL.revokeObjectURL(url)
                       }}
@@ -997,7 +1000,7 @@ ${SYSTEM_PROMPT}`
                   const url = URL.createObjectURL(blob)
                   const a = document.createElement('a')
                   a.href = url
-                  a.download = `PandaGuGu-${new Date().toISOString().slice(0, 10)}.html`
+                  a.download = brandFilename('html', modelLabel)
                   a.click()
                   URL.revokeObjectURL(url)
                 }}>{t('app.download')}</button>

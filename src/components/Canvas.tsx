@@ -22,6 +22,7 @@ interface Props {
   onAutoTagChange?: (v: boolean) => void
   theme?: 'light' | 'dark'
   langCode?: string
+  modelLabel?: string
 }
 
 /** Map Excalidraw shape type → semantic type for auto-tagging. */
@@ -46,7 +47,7 @@ const TOOL_OF: Record<SemanticType, string> = {
   raw: 'rectangle', note: 'rectangle',
 }
 
-export function Canvas({ onEditorReady, onCanvasChange, onSelectElement, autoTag = true, onAutoTagChange, theme = 'light', langCode = 'zh-CN' }: Props) {
+export function Canvas({ onEditorReady, onCanvasChange, onSelectElement, autoTag = true, onAutoTagChange, theme = 'light', langCode = 'zh-CN', modelLabel }: Props) {
   const t = useI18n()
   const [editor, setEditor] = useState<ExcalidrawImperativeAPI | null>(null)
   const [selected, setSelected] = useState<ExcalidrawElement | null>(null)
@@ -231,7 +232,7 @@ export function Canvas({ onEditorReady, onCanvasChange, onSelectElement, autoTag
         <span className="canvas-auto-tag-icon">⚡</span>
         {t('semantic.autoTag')}
       </button>
-      <SemanticRail editor={editor} selected={selected} selectedIds={selectedIds} onChanged={onCanvasChange} onDrawTag={handleDrawTag} />
+      <SemanticRail editor={editor} selected={selected} selectedIds={selectedIds} modelLabel={modelLabel} onChanged={onCanvasChange} onDrawTag={handleDrawTag} />
     </div>
   )
 }

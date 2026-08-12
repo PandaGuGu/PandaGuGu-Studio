@@ -20,6 +20,7 @@ interface Props {
   editor: ExcalidrawImperativeAPI | null
   selected: ExcalidrawElement | null
   selectedIds?: Set<string>
+  modelLabel?: string
   onChanged?: () => void
   /** No selection → switch Excalidraw tool & tag the next drawn element. */
   onDrawTag?: (type: SemanticType) => void
@@ -44,7 +45,7 @@ const TYPE_ICONS: Record<SemanticType, string> = {
   raw: '</>', note: '✎',
 }
 
-export function SemanticRail({ editor, selected, selectedIds = new Set(), onChanged, onDrawTag }: Props) {
+export function SemanticRail({ editor, selected, selectedIds = new Set(), modelLabel, onChanged, onDrawTag }: Props) {
   const t = useI18n()
   const taggable = !!editor && !!selected && canTag(selected!)
   const multiSelect = selectedIds.size >= 2
@@ -101,7 +102,7 @@ export function SemanticRail({ editor, selected, selectedIds = new Set(), onChan
       alert(t('semantic.exportEmpty'))
       return
     }
-    downloadJSON(bp, brandFilename('json', 'blueprint'))
+    downloadJSON(bp, brandFilename('json', modelLabel, 'blueprint'))
   }
 
   const handleExportPng = async () => {
@@ -115,7 +116,7 @@ export function SemanticRail({ editor, selected, selectedIds = new Set(), onChan
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = brandFilename('png')
+    a.download = brandFilename('png', modelLabel)
     a.click()
     URL.revokeObjectURL(url)
     setExportMenuOpen(false)

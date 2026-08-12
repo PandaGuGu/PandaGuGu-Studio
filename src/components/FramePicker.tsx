@@ -19,9 +19,10 @@ interface Props {
   onSave: () => void
   onLoad: () => void
   previewScreenshot: string | null
+  modelLabel?: string
 }
 
-export function FramePicker({ editor, selectedIds, onSelectionChange, onAddFrame, canvasVersion, onSave, onLoad, previewScreenshot }: Props) {
+export function FramePicker({ editor, selectedIds, onSelectionChange, onAddFrame, canvasVersion, onSave, onLoad, previewScreenshot, modelLabel }: Props) {
   const t = useI18n()
   const [sources, setSources] = useState<SourceThumb[]>([])
   const [hasDrawing, setHasDrawing] = useState(false)
@@ -77,7 +78,7 @@ export function FramePicker({ editor, selectedIds, onSelectionChange, onAddFrame
       alert(t('semantic.exportEmpty'))
       return
     }
-    downloadJSON(bp, brandFilename('json', 'blueprint'))
+    downloadJSON(bp, brandFilename('json', modelLabel, 'blueprint'))
   }, [editor, t])
 
   const hasFrames = sources.some(s => s.kind === 'frame')

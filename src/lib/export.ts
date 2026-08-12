@@ -122,14 +122,22 @@ function blobToBase64(blob: Blob): Promise<string> {
   })
 }
 
+/** Sanitize a model label for use in filenames: "GLM-5V Turbo" -> "GLM-5V-Turbo". */
+export function sanitizeModel(model: string): string {
+  return model.replace(/[^\w\u4e00-\u9fa5]+/g, '-').replace(/^-+|-+$/g, '') || 'Unknown'
+}
+
 /**
- * Brand-based export filename: `PandaGuGu-YYYY-MM-DD[.tag].ext`
- * e.g. brandFilename('json')            -> PandaGuGu-2026-08-12.json
- *      brandFilename('json', 'blueprint') -> PandaGuGu-2026-08-12.blueprint.json
+ * Brand-based export filename: `[Model-]YYYY-MM-DD-PandaGuGu[.tag].ext`
+ * e.g. brandFilename('html', 'GLM-5V Turbo')
+ *        -> GLM-5V-Turbo-2026-08-12-PandaGuGu.html
+ *      brandFilename('json', 'GLM-5V Turbo', 'blueprint')
+ *        -> GLM-5V-Turbo-2026-08-12-PandaGuGu.blueprint.json
  */
-export function brandFilename(kind: 'json' | 'png', tag?: string): string {
+export function brandFilename(kind: 'json' | 'png' | 'html', model?: string, tag?: string): string {
   const d = new Date()
   const pad = (n: number) => String(n).padStart(2, '0')
   const date = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
-  return `PandaGuGu-${date}${tag ? `.${tag}` : ''}.${kind}`
+  const head = model ? sanitizeModel(model) : 'PandaGuGu'
+  return `${head}-${date}-PandaGuGu${tag ? `.${tag}` : ''}.${kind}`
 }
