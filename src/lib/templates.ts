@@ -54,7 +54,7 @@ const section = (x: number, y: number, w: number, h: number, label: string, chil
 
 // Root container for templates (avoids Excalidraw frame-render crash).
 const root = (x: number, y: number, w: number, h: number, label: string, children: BlueprintElement[]) =>
-  mk('container', x, y, w, h, { label }, children)
+  mk('section', x, y, w, h, { label }, children)
 
 // ── Mobile templates ──
 

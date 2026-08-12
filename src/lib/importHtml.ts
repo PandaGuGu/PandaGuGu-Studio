@@ -67,6 +67,15 @@ function detectLayout(style: string | undefined, tag: string): 'row' | 'column' 
 
 const FONT_SIZES: Record<string, number> = { h1: 32, h2: 28, h3: 24, h4: 20, h5: 18, h6: 16 }
 
+function base62Idx(n: number): string {
+  // Excalidraw fractional index: base-62 chars (0-9 a-z A-Z). 1-indexed input.
+  const cs = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+  if (n <= 0) return 'a'
+  let s = '', x = n
+  while (x > 0) { x--; s = cs[x % 62] + s; x = Math.floor(x / 62) }
+  return s
+}
+
 let idCounter = 1
 function nextId(): string {
   return `imp-${idCounter++}-${Math.random().toString(36).slice(2, 6)}`
@@ -250,7 +259,7 @@ function blueprintElementToExcalidraw(b: BlueprintElement, indexSeed: { n: numbe
     el = makeRect(b.type, b, props)
   }
   if (frameId) el.frameId = frameId
-  el.index = `a${String(indexSeed.n++).padStart(4, '0')}`
+  el.index = base62Idx(indexSeed.n++)
   el.customData = { semantic: { type: b.type, layout: b.layout || DEFAULT_LAYOUT, props: b.props || {} } }
   const els: ExcalidrawElement[] = [el]
   for (const child of b.children || []) {
@@ -277,7 +286,7 @@ function makeFrame(b: BlueprintElement, indexSeed: { n: number }): any {
     roundness: null, roughness: 1, opacity: 100,
     seed: Math.floor(Math.random() * 2 ** 31),
     version: 1, versionNonce: Math.floor(Math.random() * 2 ** 31),
-    index: `f${String(indexSeed.n++).padStart(4, '0')}`,
+    index: base62Idx(indexSeed.n++),
     isDeleted: false,
     groupIds: [], frameId: null, boundElements: null,
     updated: Date.now(), link: null, locked: false,
