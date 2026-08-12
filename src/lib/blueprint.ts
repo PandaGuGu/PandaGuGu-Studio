@@ -107,6 +107,14 @@ export const HEADING_SIZES: Record<number, number> = {
 
 // ── Helpers ──
 
+/** Strip the default "Frame N" name down to just the number: "Frame 1" -> "1". Custom names pass through. */
+function frameLabel(name: string | undefined): string {
+  const n = (name || '').trim()
+  if (!n) return 'Section'
+  const m = n.match(/^Frame\s*(\d+)$/i)
+  return m ? m[1] : n
+}
+
 export function canTag(el: ExcalidrawElement): boolean {
   return (
     el.type === 'rectangle' ||
@@ -272,7 +280,7 @@ export function toBlueprint(
       layout: meta?.layout || DEFAULT_LAYOUT,
       zIndex,
       props: isFrame
-        ? { label: (el as any).name || 'Section', ...(meta?.props || {}) }
+        ? { label: frameLabel((el as any).name), ...(meta?.props || {}) }
         : meta?.props || {},
       children: isFrame
         ? elements
