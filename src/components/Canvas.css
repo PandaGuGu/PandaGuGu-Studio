@@ -70,34 +70,3 @@
   border-color: var(--orange);
   color: var(--bg-primary);
 }
-
-/* ▲ Align buttons — top toolbar, right of auto-tag (tile row) */
-.canvas-align {
-  position: absolute;
-  top: 6px;
-  left: 108px;
-  z-index: 15;
-  display: flex;
-  align-items: center;
-  gap: 3px;
-}
-
-.canvas-align-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 26px;
-  height: 28px;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  background: var(--bg-secondary);
-  color: var(--cyan);
-  font-size: 12px;
-  cursor: pointer;
-  transition: all 0.12s;
-}
-
-.canvas-align-btn:hover {
-  border-color: var(--cyan);
-  background: rgba(90, 158, 200, 0.1);
-}

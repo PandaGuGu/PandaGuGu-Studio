@@ -10,8 +10,6 @@ import {
   setSemantic,
   DEFAULT_LAYOUT,
 } from '../lib/blueprint'
-import { alignElements } from '../lib/align'
-import type { AlignOp } from '../lib/align'
 import type { SemanticType } from '../lib/blueprint'
 import { useI18n } from '../lib/i18n'
 import './Canvas.css'
@@ -48,17 +46,6 @@ const TOOL_OF: Record<SemanticType, string> = {
   raw: 'rectangle', note: 'rectangle',
 }
 
-const ALIGN_BTNS: { op: AlignOp; icon: string }[] = [
-  { op: 'left', icon: '⇤' },
-  { op: 'hcenter', icon: '↔' },
-  { op: 'right', icon: '⇥' },
-  { op: 'top', icon: '⇡' },
-  { op: 'vcenter', icon: '↕' },
-  { op: 'bottom', icon: '⇣' },
-  { op: 'hdistribute', icon: '⊞' },
-  { op: 'vdistribute', icon: '⊟' },
-]
-
 export function Canvas({ onEditorReady, onCanvasChange, onSelectElement, autoTag = true, onAutoTagChange, theme = 'light', langCode = 'zh-CN' }: Props) {
   const t = useI18n()
   const [editor, setEditor] = useState<ExcalidrawImperativeAPI | null>(null)
@@ -66,21 +53,6 @@ export function Canvas({ onEditorReady, onCanvasChange, onSelectElement, autoTag
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const autoTagTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const pendingTagRef = useRef<SemanticType | null>(null)
-
-  const handleAlign = useCallback((op: AlignOp) => {
-    if (!editor || selectedIds.size < 2) return
-    const selEls = editor
-      .getSceneElements()
-      .filter((e) => selectedIds.has(e.id) && !(e as any).isDeleted)
-    if (selEls.length < 2) return
-    const aligned = alignElements(selEls, op)
-    const idMap = new Map(aligned.map((a) => [a.id, a]))
-    const elements = editor
-      .getSceneElements()
-      .map((el) => idMap.get(el.id) || el)
-    editor.updateScene({ elements })
-    onCanvasChange?.()
-  }, [editor, selectedIds, onCanvasChange])
 
   const handleReady = useCallback((api: ExcalidrawImperativeAPI) => {
     setEditor(api)
@@ -200,21 +172,7 @@ export function Canvas({ onEditorReady, onCanvasChange, onSelectElement, autoTag
         <span className="canvas-auto-tag-icon">⚡</span>
         {t('semantic.autoTag')}
       </button>
-      {selectedIds.size >= 2 && (
-        <div className="canvas-align">
-          {ALIGN_BTNS.map(({ op, icon }) => (
-            <button
-              key={op}
-              className="canvas-align-btn"
-              onClick={() => handleAlign(op)}
-              title={t(`align.${op}`)}
-            >
-              {icon}
-            </button>
-          ))}
-        </div>
-      )}
-      <SemanticRail editor={editor} selected={selected} onChanged={onCanvasChange} onDrawTag={handleDrawTag} />
+      <SemanticRail editor={editor} selected={selected} selectedIds={selectedIds} onChanged={onCanvasChange} onDrawTag={handleDrawTag} />
     </div>
   )
 }

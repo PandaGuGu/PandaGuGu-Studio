@@ -9,6 +9,8 @@ import {
   toBlueprint,
   downloadJSON,
 } from '../lib/blueprint'
+import { alignElements } from '../lib/align'
+import type { AlignOp } from '../lib/align'
 import { exportAllAsPng } from '../lib/export'
 import type { SemanticType, SemanticMeta } from '../lib/blueprint'
 import { useI18n } from '../lib/i18n'
@@ -17,10 +19,22 @@ import './SemanticRail.css'
 interface Props {
   editor: ExcalidrawImperativeAPI | null
   selected: ExcalidrawElement | null
+  selectedIds?: Set<string>
   onChanged?: () => void
   /** No selection → switch Excalidraw tool & tag the next drawn element. */
   onDrawTag?: (type: SemanticType) => void
 }
+
+const ALIGN_BTNS: { op: AlignOp; icon: string }[] = [
+  { op: 'left', icon: '⇤' },
+  { op: 'hcenter', icon: '↔' },
+  { op: 'right', icon: '⇥' },
+  { op: 'top', icon: '⇡' },
+  { op: 'vcenter', icon: '↕' },
+  { op: 'bottom', icon: '⇣' },
+  { op: 'hdistribute', icon: '⊞' },
+  { op: 'vdistribute', icon: '⊟' },
+]
 
 const TYPE_ICONS: Record<SemanticType, string> = {
   container: '▭', section: '▤', card: '▢', nav: '☰',
@@ -30,12 +44,30 @@ const TYPE_ICONS: Record<SemanticType, string> = {
   raw: '</>', note: '✎',
 }
 
-export function SemanticRail({ editor, selected, onChanged, onDrawTag }: Props) {
+export function SemanticRail({ editor, selected, selectedIds = new Set(), onChanged, onDrawTag }: Props) {
   const t = useI18n()
   const taggable = !!editor && !!selected && canTag(selected!)
+  const multiSelect = selectedIds.size >= 2
   const [menuOpen, setMenuOpen] = useState(false)
   const [exportMenuOpen, setExportMenuOpen] = useState(false)
+  const [alignMenuOpen, setAlignMenuOpen] = useState(false)
   const [query, setQuery] = useState('')
+
+  const handleAlign = (op: AlignOp) => {
+    if (!editor || selectedIds.size < 2) return
+    const selEls = editor
+      .getSceneElements()
+      .filter((e) => selectedIds.has(e.id) && !(e as any).isDeleted)
+    if (selEls.length < 2) return
+    const aligned = alignElements(selEls, op)
+    const idMap = new Map(aligned.map((a) => [a.id, a]))
+    const elements = editor
+      .getSceneElements()
+      .map((el) => idMap.get(el.id) || el)
+    editor.updateScene({ elements })
+    onChanged?.()
+    setAlignMenuOpen(false)
+  }
 
   const handleTag = (type: SemanticType) => {
     if (!editor) return
@@ -151,6 +183,32 @@ export function SemanticRail({ editor, selected, onChanged, onDrawTag }: Props) 
       >
         <span className="semantic-rail-icon">▲</span>
       </button>
+
+      {multiSelect && (
+        <button
+          className={`semantic-rail-btn semantic-rail-align-btn ${alignMenuOpen ? 'open' : ''}`}
+          onClick={() => setAlignMenuOpen((v) => !v)}
+          title={t('align.title')}
+        >
+          <span className="semantic-rail-icon">▲</span>
+        </button>
+      )}
+
+      {alignMenuOpen && (
+        <div className="semantic-rail-align-menu">
+          {ALIGN_BTNS.map(({ op, icon }) => (
+            <button
+              key={op}
+              className="semantic-rail-menu-item"
+              onClick={() => handleAlign(op)}
+              title={t(`align.${op}`)}
+            >
+              <span className="semantic-rail-icon">{icon}</span>
+              {t(`align.${op}`)}
+            </button>
+          ))}
+        </div>
+      )}
 
       {exportMenuOpen && (
         <div className="semantic-rail-export-menu">
