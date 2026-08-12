@@ -1,9 +1,9 @@
 import React, { useCallback, useState } from 'react'
-import { Excalidraw, THEME, Footer } from '@excalidraw/excalidraw'
+import { Excalidraw, THEME } from '@excalidraw/excalidraw'
 import '@excalidraw/excalidraw/index.css'
 import type { ExcalidrawImperativeAPI } from '@excalidraw/excalidraw/types'
 import type { ExcalidrawElement } from '@excalidraw/excalidraw/element/types'
-import { SemanticToolbar } from './SemanticToolbar'
+import { SemanticRail } from './SemanticRail'
 import { PropsPanel } from './PropsPanel'
 import { getSemantic } from '../lib/blueprint'
 import './Canvas.css'
@@ -58,14 +58,11 @@ export function Canvas({ onEditorReady, onCanvasChange, theme = 'light', langCod
             changeViewBackgroundColor: false,
           },
         }}
-      >
-        <Footer>
-          <SemanticToolbar editor={editor} selected={selected} onChanged={onCanvasChange} />
-        </Footer>
-      </Excalidraw>
+      />
       {showPanel && (
         <PropsPanel editor={editor} element={selected!} onChanged={onCanvasChange} />
       )}
+      <SemanticRail editor={editor} selected={selected} onChanged={onCanvasChange} />
     </div>
   )
 }

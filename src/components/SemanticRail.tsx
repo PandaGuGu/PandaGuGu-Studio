@@ -11,9 +11,9 @@ import {
   toBlueprint,
   downloadJSON,
 } from '../lib/blueprint'
-import type { SemanticType, LayoutHint, SemanticMeta } from '../lib/blueprint'
+import type { SemanticType, SemanticMeta } from '../lib/blueprint'
 import { useI18n } from '../lib/i18n'
-import './SemanticToolbar.css'
+import './SemanticRail.css'
 
 interface Props {
   editor: ExcalidrawImperativeAPI | null
@@ -37,7 +37,7 @@ const GROUP_LABEL_KEY: Record<string, string> = {
   special: 'semantic.groupSpecial',
 }
 
-export function SemanticToolbar({ editor, selected, onChanged }: Props) {
+export function SemanticRail({ editor, selected, onChanged }: Props) {
   const t = useI18n()
   const taggable = !!editor && !!selected && canTag(selected!)
 
@@ -77,35 +77,37 @@ export function SemanticToolbar({ editor, selected, onChanged }: Props) {
   }
 
   return (
-    <div className="semantic-toolbar">
-      <span className="semantic-toolbar-label">{t('semantic.title')}</span>
+    <div className="semantic-rail">
+      <div className="semantic-rail-title">{t('semantic.title')}</div>
       {SEMANTIC_GROUPS.map((group) => (
         <React.Fragment key={group.label}>
-          <span className="semantic-group-label">{t(GROUP_LABEL_KEY[group.label])}</span>
+          <div className="semantic-rail-group">{t(GROUP_LABEL_KEY[group.label])}</div>
           {group.types.map((type) => (
             <button
               key={type}
-              className="semantic-btn"
+              className="semantic-rail-btn"
               disabled={!taggable}
               onClick={() => handleTag(type)}
               title={t(`semantic.${type}`)}
             >
-              <span className="semantic-btn-icon">{TYPE_ICONS[type]}</span>
+              <span className="semantic-rail-icon">{TYPE_ICONS[type]}</span>
               {t(`semantic.${type}`)}
             </button>
           ))}
         </React.Fragment>
       ))}
-      <span className="semantic-toolbar-sep" />
+      <div className="semantic-rail-sep" />
       <button
-        className="semantic-btn semantic-btn-clear"
+        className="semantic-rail-btn semantic-rail-clear"
         disabled={!taggable}
         onClick={handleClear}
         title={t('semantic.untag')}
       >
-        ✕
+        <span className="semantic-rail-icon">✕</span>
+        {t('semantic.untag')}
       </button>
-      <button className="semantic-btn semantic-btn-export" onClick={handleExport}>
+      <button className="semantic-rail-btn semantic-rail-export" onClick={handleExport}>
+        <span className="semantic-rail-icon">⇩</span>
         {t('semantic.exportBlueprint')}
       </button>
     </div>
