@@ -52,6 +52,28 @@
   background: rgba(200, 155, 74, 0.08);
 }
 
+.semantic-rail-group-label {
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: 0 2px;
+  white-space: nowrap;
+}
+
+.semantic-rail-align {
+  min-width: 24px;
+  justify-content: center;
+  padding: 5px 5px;
+}
+
+.semantic-rail-align:hover:not(:disabled) {
+  border-color: var(--cyan);
+  color: var(--cyan);
+  background: rgba(90, 158, 200, 0.1);
+}
+
 .semantic-rail-icon {
   font-size: 11px;
   line-height: 1;

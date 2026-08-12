@@ -50,6 +50,7 @@ export function Canvas({ onEditorReady, onCanvasChange, onSelectElement, autoTag
   const t = useI18n()
   const [editor, setEditor] = useState<ExcalidrawImperativeAPI | null>(null)
   const [selected, setSelected] = useState<ExcalidrawElement | null>(null)
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const autoTagTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const pendingTagRef = useRef<SemanticType | null>(null)
 
@@ -76,6 +77,7 @@ export function Canvas({ onEditorReady, onCanvasChange, onSelectElement, autoTag
     const firstId = Object.keys(ids).find((k) => ids[k])
     const el = firstId ? els.find((e) => e.id === firstId) || null : null
     setSelected(el)
+    setSelectedIds(new Set(Object.keys(ids).filter((k) => ids[k])))
     onSelectElement?.(el)
 
     // Auto-tag NEW elements, but deferred: wait until Excalidraw has fully
@@ -170,7 +172,7 @@ export function Canvas({ onEditorReady, onCanvasChange, onSelectElement, autoTag
         <span className="canvas-auto-tag-icon">⚡</span>
         {t('semantic.autoTag')}
       </button>
-      <SemanticRail editor={editor} selected={selected} onChanged={onCanvasChange} onDrawTag={handleDrawTag} />
+      <SemanticRail editor={editor} selected={selected} selectedIds={selectedIds} onChanged={onCanvasChange} onDrawTag={handleDrawTag} />
     </div>
   )
 }
