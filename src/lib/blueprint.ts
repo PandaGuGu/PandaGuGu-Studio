@@ -38,6 +38,8 @@ export interface BlueprintElement {
   h: number
   angle: number
   layout: LayoutHint
+  /** Scene z-order (0 = bottom). Use as z-index when elements overlap. */
+  zIndex: number
   props: Record<string, any>
   style?: string
   events?: Record<string, string>
@@ -268,6 +270,7 @@ export function toBlueprint(
   const build = (el: ExcalidrawElement): BlueprintElement => {
     const meta = getSemantic(el)
     const isFrame = el.type === 'frame'
+    const zIndex = all.indexOf(el)
     const out: BlueprintElement = {
       id: el.id,
       type: (isFrame ? 'section' : meta?.type || 'container') as SemanticType,
@@ -277,6 +280,7 @@ export function toBlueprint(
       h: Math.round(el.height || 0),
       angle: el.angle,
       layout: meta?.layout || DEFAULT_LAYOUT,
+      zIndex,
       props: isFrame
         ? { label: (el as any).name || 'Section', ...(meta?.props || {}) }
         : meta?.props || {},
