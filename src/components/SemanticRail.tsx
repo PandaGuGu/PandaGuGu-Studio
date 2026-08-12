@@ -214,25 +214,6 @@ export function SemanticRail({ editor, selected, selectedIds = new Set(), onChan
         </div>
       )}
 
-      {exportMenuOpen && (
-        <div className="semantic-rail-export-menu">
-          <button
-            className="semantic-rail-menu-item"
-            onClick={() => { handleExport(); setExportMenuOpen(false) }}
-          >
-            <span className="semantic-rail-icon">📋</span>
-            {t('semantic.exportBlueprint')}
-          </button>
-          <button
-            className="semantic-rail-menu-item"
-            onClick={handleExportPng}
-          >
-            <span className="semantic-rail-icon">🖼</span>
-            {t('semantic.exportPng')}
-          </button>
-        </div>
-      )}
-
       {menuOpen && (
         <div className="semantic-rail-menu">
           <input
