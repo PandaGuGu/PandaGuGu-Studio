@@ -241,6 +241,26 @@ export async function streamChat(
   return readOpenAIStream(response, callbacks)
 }
 
+// ── Non-streaming convenience wrapper ──
+// Collects the full streamed response into a string (used by batch variants etc.)
+
+export function chatOnce(
+  provider: ProviderDef,
+  apiKey: string,
+  modelId: string,
+  messages: Message[],
+  signal?: AbortSignal
+): Promise<string> {
+  return new Promise((resolve, reject) => {
+    let full = ''
+    streamChat(provider, apiKey, modelId, messages, {
+      onChunk: (text) => { full += text },
+      onDone: (text) => resolve(text),
+      onError: (err) => reject(err),
+    }, signal).catch(reject)
+  })
+}
+
 // ── HTML extraction + cleanup ──
 
 function cleanSyntaxArtifacts(html: string): string {

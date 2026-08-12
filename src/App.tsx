@@ -13,7 +13,9 @@ import type { PlanPhase } from './components/PlanOverlay'
 import { MessageStrip } from './components/MessageStrip'
 import { ResizeHandle } from './components/ResizeHandle'
 import { LayersPanel } from './components/LayersPanel'
-import { streamChat, extractHTML } from './lib/api'
+import { VariantPanel } from './components/VariantPanel'
+import type { VariantStyle } from './components/VariantPanel'
+import { streamChat, chatOnce, extractHTML } from './lib/api'
 import { exportSourceAsPng, exportAllAsPng, getSources, brandFilename } from './lib/export'
 import { toBlueprint } from './lib/blueprint'
 import { getProvider, loadProviderState, saveProviderState } from './lib/providers'
@@ -136,6 +138,7 @@ export function App() {
   const modelId = providerState.activeModelId
   const apiKey = providerState.keys[provider.id] || ''
   const modelLabel = provider.models.find(m => m.id === modelId)?.label || modelId
+  const needsKey = apiKey.length <= 4
   const [messages, setMessages] = useState<Message[]>([])
   const [chips, setChips] = useState<ChatChip[]>([])
   const [iteration, setIteration] = useState(0)
@@ -154,6 +157,13 @@ export function App() {
   const [planActiveIndex, setPlanActiveIndex] = useState(0)
   const [planTokenCount, setPlanTokenCount] = useState(0)
   const [planDone, setPlanDone] = useState(false)
+
+  // ── Batch variants ──
+  const [variants, setVariants] = useState<{ id: string; label: string; html: string }[]>([])
+  const [activeVariant, setActiveVariant] = useState(-1) // -1 = main blueprint output
+  const [batchGenerating, setBatchGenerating] = useState(false)
+  const [batchProgress, setBatchProgress] = useState<{ done: number; total: number; current: string } | null>(null)
+  const batchAbortRef = useRef<AbortController | null>(null)
 
   const previewRef = useRef<HTMLIFrameElement>(null)
   const panelLeftRef = useRef<HTMLDivElement>(null)
@@ -263,6 +273,57 @@ export function App() {
       '\n```'
     )
   }, [])
+
+  /** Batch variants: blueprint + N style descriptions → N HTMLs (serial). */
+  const handleVariantsGenerate = useCallback(async (styles: VariantStyle[]) => {
+    const api = editorRef.current
+    if (!api || needsKey || styles.length === 0) return
+    const bp = toBlueprint(api)
+    if (!bp) {
+      alert(t('semantic.exportEmpty'))
+      return
+    }
+
+    const controller = new AbortController()
+    batchAbortRef.current = controller
+    setVariants([])
+    setActiveVariant(-1)
+    setBatchGenerating(true)
+    setBatchProgress({ done: 0, total: styles.length, current: styles[0].label })
+
+    const results: { id: string; label: string; html: string }[] = []
+    for (let i = 0; i < styles.length; i++) {
+      const style = styles[i]
+      setBatchProgress({ done: i, total: styles.length, current: style.label })
+      const prompt =
+        '根据以下画布蓝图生成一个完整的 HTML 页面。' +
+        '元素映射：section→<section>，container→<div>，heading→<h1-h6>，button→<button>，input→<input>，image→<img>，text→<p>，link→<a>，raw 的 html 原样嵌入，note 便签作为设计意图参考。' +
+        '重叠元素按 zIndex 设 z-index；layout: free 用 position:absolute，row/column/grid/wrap 用 flex/grid。' +
+        `\n\n【风格要求】${style.desc}` +
+        '\n\n必须输出完整可运行的单个 HTML 文件（含 <!DOCTYPE html> 与内联 CSS），不要输出任何解释文字。\n\n```json\n' +
+        JSON.stringify(bp, null, 2) +
+        '\n```'
+      try {
+        const text = await chatOnce(provider, apiKey, modelId, [{ role: 'user', content: prompt }], controller.signal)
+        const html = extractHTML(text)
+        if (html) results.push({ id: `V${i + 1}`, label: style.label, html })
+      } catch (e: any) {
+        if ((e as Error)?.name === 'AbortError') break
+        // Keep going with the remaining styles on a single failure.
+        console.error(`Variant ${style.label} failed:`, e)
+      }
+    }
+
+    batchAbortRef.current = null
+    setBatchGenerating(false)
+    setBatchProgress(null)
+    if (results.length > 0) {
+      setVariants(results)
+      setActiveVariant(0)
+    } else {
+      alert(t('variant.failed'))
+    }
+  }, [provider, apiKey, modelId, needsKey, t])
 
   // Export selected sources as images
   // If no frames exist, always send full canvas (images alone don't isolate)
@@ -734,8 +795,6 @@ ${SYSTEM_PROMPT}`
     }
   }, [provider, apiKey, modelId, generating, lastHTML, capturePreview, getSelectedFrameImages, addChip, runPlanPhase, t])
 
-  const needsKey = apiKey.length <= 4
-
   return (
     <>
       <Header
@@ -793,6 +852,12 @@ ${SYSTEM_PROMPT}`
             hasKey={!needsKey}
             onUseBlueprint={handleUseBlueprint}
           />
+          <VariantPanel
+            onGenerate={handleVariantsGenerate}
+            generating={batchGenerating}
+            progress={batchProgress}
+            disabled={needsKey || !editor}
+          />
           <LayersPanel
             editor={editor}
             canvasVersion={canvasVersion}
@@ -800,7 +865,37 @@ ${SYSTEM_PROMPT}`
             onAddFrame={handleAddFrame}
           />
           <div className="preview-container">
-            <Preview html={lastHTML} iframeRef={previewRef} device={device} />
+            {variants.length > 0 && (
+              <div className="variants-bar">
+                <span className="variants-bar-label">{t('variant.barLabel')}</span>
+                {variants.map((v, i) => (
+                  <div key={v.id} className={`variants-item ${activeVariant === i ? 'on' : ''}`}>
+                    <button className="variants-tab" onClick={() => setActiveVariant(i)}>
+                      {v.id} · {v.label}
+                    </button>
+                    <button
+                      className="variants-dl"
+                      title={t('variant.download')}
+                      onClick={() => {
+                        const blob = new Blob([v.html], { type: 'text/html' })
+                        const url = URL.createObjectURL(blob)
+                        const a = document.createElement('a')
+                        a.href = url
+                        a.download = `${v.id}-${v.label.replace(/[^\w\u4e00-\u9fa5]/g, '')}.html`
+                        a.click()
+                        URL.revokeObjectURL(url)
+                      }}
+                    >
+                      ⇩
+                    </button>
+                  </div>
+                ))}
+                <button className="variants-exit" onClick={() => setActiveVariant(-1)} title={t('variant.exit')}>
+                  ✕
+                </button>
+              </div>
+            )}
+            <Preview html={activeVariant >= 0 && variants[activeVariant] ? variants[activeVariant].html : lastHTML} iframeRef={previewRef} device={device} />
             {generating && !planMode && (
               <StreamOverlay
                 streamText={streamText}
@@ -821,7 +916,7 @@ ${SYSTEM_PROMPT}`
               />
             )}
           </div>
-          {lastHTML && (
+          {(lastHTML || variants.length > 0) && (
             <div className="preview-toolbar">
               <div className="preview-toolbar-left">
                 <div className="device-switch" role="group" aria-label="预览设备尺寸">
@@ -840,12 +935,24 @@ ${SYSTEM_PROMPT}`
                   {device === 'desktop' ? t('app.desktop') : device === 'tablet' ? '768px' : '375px'}
                 </span>
                 <button className="btn btn-secondary" onClick={() => {
-                  navigator.clipboard.writeText(lastHTML)
+                  const html = activeVariant >= 0 && variants[activeVariant] ? variants[activeVariant].html : lastHTML
+                  navigator.clipboard.writeText(html)
                 }}>{t('app.copy')}</button>
                 <button className="btn btn-secondary" onClick={() => {
+                  const html = activeVariant >= 0 && variants[activeVariant] ? variants[activeVariant].html : lastHTML
                   const w = window.open()
-                  if (w) { w.document.write(lastHTML); w.document.close() }
+                  if (w) { w.document.write(html); w.document.close() }
                 }}>{t('app.openNew')}</button>
+                <button className="btn btn-secondary" onClick={() => {
+                  const html = activeVariant >= 0 && variants[activeVariant] ? variants[activeVariant].html : lastHTML
+                  const blob = new Blob([html], { type: 'text/html' })
+                  const url = URL.createObjectURL(blob)
+                  const a = document.createElement('a')
+                  a.href = url
+                  a.download = `PandaGuGu-${new Date().toISOString().slice(0, 10)}.html`
+                  a.click()
+                  URL.revokeObjectURL(url)
+                }}>{t('app.download')}</button>
               </div>
               <span className="mono preview-meta">
                 {iteration > 0 && `#${iteration}`}
