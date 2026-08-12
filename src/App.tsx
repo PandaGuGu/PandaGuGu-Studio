@@ -751,6 +751,9 @@ ${SYSTEM_PROMPT}`
             previewScreenshot={previewScreenshot}
           />
           <MessageStrip chips={chips} />
+        </div>
+        <ResizeHandle onResize={handleResize} />
+        <div className="panel-right">
           <PromptBar
             onGenerate={planMode ? handlePlanGenerate : handleGenerate}
             onRefine={planMode ? handlePlanRefine : handleRefine}
@@ -761,32 +764,6 @@ ${SYSTEM_PROMPT}`
             onPlanModeToggle={() => setPlanMode(p => !p)}
             hasKey={!needsKey}
           />
-        </div>
-        <ResizeHandle onResize={handleResize} />
-        <div className="panel-right">
-          {needsKey && (
-            <div className="api-key-overlay">
-              <div className="api-key-overlay-card">
-                <div className="api-key-overlay-icon">
-                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                    <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4" />
-                  </svg>
-                </div>
-                <h2 className="api-key-overlay-title">{t('app.apiKeyTitle')}</h2>
-                <p className="api-key-overlay-desc">
-                  {t('app.apiKeyDesc', { url: provider.keyUrlLabel, provider: provider.name })}
-                </p>
-                <div className="api-key-overlay-steps">
-                  <div className="api-key-step"><span className="api-key-step-num">1</span><span className="api-key-step-text">{t('app.apiKeyStep1', { url: provider.keyUrlLabel })}</span></div>
-                  <div className="api-key-step"><span className="api-key-step-num">2</span><span className="api-key-step-text">{t('app.apiKeyStep2')}</span></div>
-                  <div className="api-key-step"><span className="api-key-step-num">3</span><span className="api-key-step-text">{t('app.apiKeyStep3', { provider: provider.name })}</span></div>
-                </div>
-                <button className="btn btn-primary" style={{ marginTop: '16px', width: '100%' }} onClick={() => setShowSettings(true)}>
-                  {t('app.openSettings')}
-                </button>
-              </div>
-            </div>
-          )}
           <div className="preview-container">
             <Preview html={lastHTML} iframeRef={previewRef} device={device} />
             {generating && !planMode && (
