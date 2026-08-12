@@ -743,6 +743,7 @@ ${SYSTEM_PROMPT}`
             onCanvasChange={handleCanvasChange}
             onSelectElement={(el) => setSelectedElementId(el?.id || null)}
             autoTag={autoTag}
+            onAutoTagChange={setAutoTag}
             theme={canvasTheme}
             langCode={langCode}
           />

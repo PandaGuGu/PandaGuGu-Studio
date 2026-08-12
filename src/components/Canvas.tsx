@@ -18,6 +18,7 @@ interface Props {
   onCanvasChange?: () => void
   onSelectElement?: (el: ExcalidrawElement | null) => void
   autoTag?: boolean
+  onAutoTagChange?: (v: boolean) => void
   theme?: 'light' | 'dark'
   langCode?: string
 }
@@ -35,7 +36,7 @@ const SHAPE_TO_SEMANTIC: Record<string, SemanticType | null> = {
   frame: null,
 }
 
-export function Canvas({ onEditorReady, onCanvasChange, onSelectElement, autoTag = true, theme = 'light', langCode = 'zh-CN' }: Props) {
+export function Canvas({ onEditorReady, onCanvasChange, onSelectElement, autoTag = true, onAutoTagChange, theme = 'light', langCode = 'zh-CN' }: Props) {
   const [editor, setEditor] = useState<ExcalidrawImperativeAPI | null>(null)
   const [selected, setSelected] = useState<ExcalidrawElement | null>(null)
   const autoTagTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -136,7 +137,7 @@ export function Canvas({ onEditorReady, onCanvasChange, onSelectElement, autoTag
       {showPanel && (
         <PropsPanel editor={editor} element={selected!} onChanged={onCanvasChange} />
       )}
-      <SemanticRail editor={editor} selected={selected} onChanged={onCanvasChange} />
+      <SemanticRail editor={editor} selected={selected} onChanged={onCanvasChange} autoTag={autoTag} onAutoTagChange={onAutoTagChange} />
     </div>
   )
 }
