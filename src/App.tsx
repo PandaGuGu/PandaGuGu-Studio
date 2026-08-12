@@ -15,6 +15,9 @@ import { ResizeHandle } from './components/ResizeHandle'
 import { LayersPanel } from './components/LayersPanel'
 import { VariantPanel } from './components/VariantPanel'
 import type { VariantStyle } from './components/VariantPanel'
+import { HistoryPanel } from './components/HistoryPanel'
+import { loadHistory, appendHistory, removeHistory, clearHistory } from './lib/history'
+import type { HistoryItem } from './lib/history'
 import { streamChat, chatOnce, extractHTML } from './lib/api'
 import { exportSourceAsPng, exportAllAsPng, getSources, brandFilename } from './lib/export'
 import { toBlueprint } from './lib/blueprint'
@@ -164,6 +167,22 @@ export function App() {
   const [batchGenerating, setBatchGenerating] = useState(false)
   const [batchProgress, setBatchProgress] = useState<{ done: number; total: number; current: string } | null>(null)
   const batchAbortRef = useRef<AbortController | null>(null)
+
+  // ── Generation history ──
+  const [history, setHistory] = useState<HistoryItem[]>(() => loadHistory())
+  const [activeHistoryId, setActiveHistoryId] = useState<string | null>(null)
+  const historyRef = useRef<HistoryItem[]>([])
+  historyRef.current = history
+  const loadingHistoryRef = useRef(false)
+
+  // Auto-save every new generated HTML (deduped; skipped while loading history).
+  useEffect(() => {
+    if (!lastHTML) return
+    if (loadingHistoryRef.current) return
+    if (historyRef.current.some((h) => h.html === lastHTML)) return
+    const next = appendHistory({ html: lastHTML })
+    setHistory(next)
+  }, [lastHTML])
 
   const previewRef = useRef<HTMLIFrameElement>(null)
   const panelLeftRef = useRef<HTMLDivElement>(null)
@@ -324,6 +343,28 @@ export function App() {
       alert(t('variant.failed'))
     }
   }, [provider, apiKey, modelId, needsKey, t])
+
+  const handleLoadHistory = useCallback((item: HistoryItem) => {
+    loadingHistoryRef.current = true
+    setActiveVariant(-1)
+    setActiveHistoryId(item.id)
+    setLastHTML(item.html)
+    // Reset the flag after React commits the state update.
+    setTimeout(() => { loadingHistoryRef.current = false }, 0)
+  }, [])
+
+  const handleDeleteHistory = useCallback((id: string) => {
+    if (activeHistoryId === id) {
+      setActiveHistoryId(null)
+      setLastHTML('')
+    }
+    setHistory(removeHistory(id))
+  }, [activeHistoryId])
+
+  const handleClearHistory = useCallback(() => {
+    setActiveHistoryId(null)
+    setHistory(clearHistory())
+  }, [])
 
   // Export selected sources as images
   // If no frames exist, always send full canvas (images alone don't isolate)
@@ -863,6 +904,13 @@ ${SYSTEM_PROMPT}`
             canvasVersion={canvasVersion}
             selectedElementId={selectedElementId}
             onAddFrame={handleAddFrame}
+          />
+          <HistoryPanel
+            items={history}
+            activeId={activeHistoryId}
+            onLoad={handleLoadHistory}
+            onDelete={handleDeleteHistory}
+            onClear={handleClearHistory}
           />
           <div className="preview-container">
             {variants.length > 0 && (
