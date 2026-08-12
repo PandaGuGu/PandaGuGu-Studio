@@ -37,16 +37,36 @@ const SHAPE_TO_SEMANTIC: Record<string, SemanticType | null> = {
   frame: null,
 }
 
+/** Map semantic type → Excalidraw drawing tool (drag-to-create). */
+const TOOL_OF: Record<SemanticType, string> = {
+  container: 'rectangle', section: 'rectangle', card: 'rectangle', nav: 'rectangle',
+  heading: 'text', text: 'text', link: 'text',
+  button: 'rectangle', input: 'rectangle',
+  image: 'image',
+  raw: 'rectangle', note: 'rectangle',
+}
+
 export function Canvas({ onEditorReady, onCanvasChange, onSelectElement, autoTag = true, onAutoTagChange, theme = 'light', langCode = 'zh-CN' }: Props) {
   const t = useI18n()
   const [editor, setEditor] = useState<ExcalidrawImperativeAPI | null>(null)
   const [selected, setSelected] = useState<ExcalidrawElement | null>(null)
   const autoTagTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const pendingTagRef = useRef<SemanticType | null>(null)
 
   const handleReady = useCallback((api: ExcalidrawImperativeAPI) => {
     setEditor(api)
     onEditorReady(api)
   }, [onEditorReady])
+
+  /** Drag-to-create: pick a semantic type, then draw the matching shape. */
+  const handleDrawTag = useCallback((type: SemanticType) => {
+    if (!editor) return
+    const tool = TOOL_OF[type]
+    try {
+      ;(editor as any).setActiveTool?.({ type: tool })
+    } catch { /* ignore */ }
+    pendingTagRef.current = type
+  }, [editor])
 
   const handleChange = useCallback((
     els: readonly ExcalidrawElement[],
@@ -84,12 +104,15 @@ export function Canvas({ onEditorReady, onCanvasChange, onSelectElement, autoTag
         // Keep every other element's original reference — only tag targets.
         const byId = new Map(targets.map((t) => [t.id, t]))
         const mutated = current.map((x) => {
-          const t = byId.get(x.id)
-          if (!t) return x
-          const st = SHAPE_TO_SEMANTIC[t.type]
+          const tgt = byId.get(x.id)
+          if (!tgt) return x
+          // Pending type (drag-to-create) wins; else shape→semantic mapping.
+          const st = pendingTagRef.current || SHAPE_TO_SEMANTIC[tgt.type]
           if (!st) return x
-          return setSemantic(t, { type: st, layout: DEFAULT_LAYOUT, props: {} })
+          return setSemantic(tgt, { type: st, layout: DEFAULT_LAYOUT, props: {} })
         })
+        // Only one element is created per drag — consume the pending tag.
+        pendingTagRef.current = null
         editor.updateScene({ elements: mutated as any })
       }, 250)
     }
@@ -147,7 +170,7 @@ export function Canvas({ onEditorReady, onCanvasChange, onSelectElement, autoTag
         <span className="canvas-auto-tag-icon">⚡</span>
         {t('semantic.autoTag')}
       </button>
-      <SemanticRail editor={editor} selected={selected} onChanged={onCanvasChange} />
+      <SemanticRail editor={editor} selected={selected} onChanged={onCanvasChange} onDrawTag={handleDrawTag} />
     </div>
   )
 }

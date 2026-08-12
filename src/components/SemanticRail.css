@@ -46,6 +46,12 @@
   cursor: not-allowed;
 }
 
+.semantic-rail-btn.draw-mode:hover:not(:disabled) {
+  border-color: var(--orange);
+  color: var(--orange);
+  background: rgba(200, 155, 74, 0.08);
+}
+
 .semantic-rail-icon {
   font-size: 11px;
   line-height: 1;

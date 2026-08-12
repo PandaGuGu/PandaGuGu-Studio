@@ -17,6 +17,8 @@ interface Props {
   editor: ExcalidrawImperativeAPI | null
   selected: ExcalidrawElement | null
   onChanged?: () => void
+  /** No selection → switch Excalidraw tool & tag the next drawn element. */
+  onDrawTag?: (type: SemanticType) => void
 }
 
 const TYPE_ICONS: Record<SemanticType, string> = {
@@ -27,22 +29,27 @@ const TYPE_ICONS: Record<SemanticType, string> = {
   raw: '</>', note: '✎',
 }
 
-export function SemanticRail({ editor, selected, onChanged }: Props) {
+export function SemanticRail({ editor, selected, onChanged, onDrawTag }: Props) {
   const t = useI18n()
   const taggable = !!editor && !!selected && canTag(selected!)
   const [menuOpen, setMenuOpen] = useState(false)
   const [query, setQuery] = useState('')
 
   const handleTag = (type: SemanticType) => {
-    if (!editor || !selected || !canTag(selected)) return
-    // Tag only — keep the user's drawing exactly as-is (no restyle).
-    const meta: SemanticMeta = { type, layout: DEFAULT_LAYOUT, props: {} }
-    const tagged = setSemantic(selected, meta)
-    const elements = editor
-      .getSceneElements()
-      .map((el) => (el.id === tagged.id ? tagged : el))
-    editor.updateScene({ elements })
-    onChanged?.()
+    if (!editor) return
+    if (selected && canTag(selected)) {
+      // Tag the selected element — keep the drawing exactly as-is.
+      const meta: SemanticMeta = { type, layout: DEFAULT_LAYOUT, props: {} }
+      const tagged = setSemantic(selected, meta)
+      const elements = editor
+        .getSceneElements()
+        .map((el) => (el.id === tagged.id ? tagged : el))
+      editor.updateScene({ elements })
+      onChanged?.()
+    } else {
+      // No selection → drag-to-create: switch tool, tag the next drawn shape.
+      onDrawTag?.(type)
+    }
   }
 
   const handleClear = () => {
@@ -93,10 +100,10 @@ export function SemanticRail({ editor, selected, onChanged }: Props) {
           {group.types.map((type) => (
             <button
               key={type}
-              className="semantic-rail-btn"
-              disabled={!taggable}
+              className={`semantic-rail-btn ${taggable ? 'has-sel' : 'draw-mode'}`}
+              disabled={!editor}
               onClick={() => handleTag(type)}
-              title={t(`semantic.${type}`)}
+              title={taggable ? t(`semantic.${type}`) : t('semantic.drawHint')}
             >
               <span className="semantic-rail-icon">{TYPE_ICONS[type]}</span>
               {t(`semantic.${type}`)}
@@ -140,7 +147,7 @@ export function SemanticRail({ editor, selected, onChanged }: Props) {
               <button
                 key={type}
                 className="semantic-rail-menu-item"
-                disabled={!taggable}
+                disabled={!editor}
                 onClick={() => {
                   handleTag(type)
                   setMenuOpen(false)
