@@ -15,6 +15,7 @@ import { ResizeHandle } from './components/ResizeHandle'
 import { LayersPanel } from './components/LayersPanel'
 import { streamChat, extractHTML } from './lib/api'
 import { exportSourceAsPng, exportAllAsPng, getSources } from './lib/export'
+import { toBlueprint } from './lib/blueprint'
 import { getProvider, loadProviderState, saveProviderState } from './lib/providers'
 import { useI18n } from './lib/i18n'
 import type { ProviderState } from './lib/providers'
@@ -243,6 +244,24 @@ export function App() {
   const handleCanvasChange = useCallback(() => {
     if (canvasChangeTimer.current) clearTimeout(canvasChangeTimer.current)
     canvasChangeTimer.current = setTimeout(() => setCanvasVersion(v => v + 1), 400)
+  }, [])
+
+  /** One-click: serialize current canvas blueprint into a prompt for the AI. */
+  const handleUseBlueprint = useCallback((): string | null => {
+    const api = editorRef.current
+    if (!api) return null
+    const bp = toBlueprint(api)
+    if (!bp) return null
+    return (
+      '使用以下画布蓝图生成完整的 HTML 页面。' +
+      '蓝图元素按语义类型映射为 HTML 结构（section→<section>，container→<div>，heading→<h1-h6>，button→<button>，input→<input>，image→<img>，text→<p>，link→<a>，raw 的 html 原样嵌入，note 便签作为设计意图参考）。' +
+      '重叠元素按 zIndex 设置 z-index。' +
+      '坐标单位为 CSS 像素（1 单位 = 1px @ 100% zoom），layout:' +
+      ' free 用 position:absolute，row/column/grid/wrap 用 flex/grid。\n\n' +
+      '```json\n' +
+      JSON.stringify(bp, null, 2) +
+      '\n```'
+    )
   }, [])
 
   // Export selected sources as images
@@ -770,6 +789,7 @@ ${SYSTEM_PROMPT}`
             planMode={planMode}
             onPlanModeToggle={() => setPlanMode(p => !p)}
             hasKey={!needsKey}
+            onUseBlueprint={handleUseBlueprint}
           />
           <LayersPanel
             editor={editor}

@@ -31,6 +31,8 @@ const translations: Record<Lang, Record<string, string>> = {
     'theme.toggleLight': '切换为浅色背景',
 
     'prompt.inspirationArt': '生成艺术',
+    'prompt.useBlueprint': '用画布蓝图生成',
+    'prompt.useBlueprintHint': '把当前画布的 JSON 蓝图填入提示词,让 AI 按蓝图生成 HTML',
     'prompt.inspirationApp': '线框 → 应用',
     'prompt.inspirationLanding': '落地页',
     'prompt.inspirationDash': '数据看板',
@@ -212,6 +214,8 @@ const translations: Record<Lang, Record<string, string>> = {
     'theme.toggleLight': 'Switch to light background',
 
     'prompt.inspirationArt': 'Generative Art',
+    'prompt.useBlueprint': 'Use canvas blueprint',
+    'prompt.useBlueprintHint': 'Fill prompt with the current canvas blueprint JSON for AI to generate HTML',
     'prompt.inspirationApp': 'Wireframe → App',
     'prompt.inspirationLanding': 'Landing Page',
     'prompt.inspirationDash': 'Dashboard',

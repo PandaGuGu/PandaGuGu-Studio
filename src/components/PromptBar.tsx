@@ -3,7 +3,6 @@ import './PromptBar.css'
 import { useI18n } from '../lib/i18n'
 
 const INSPIRATION = [
-  { labelKey: 'prompt.inspirationArt', prompt: 'As a master of creative programming, create an interactive generative art piece with given reference image as direction / inspiration. You may use canvas2d, shader, p5.js or similar.' },
   { labelKey: 'prompt.inspirationApp', prompt: 'As a frontend expert, turn this wireframe into a polished, production-ready web application with clean UI and good UX, take reference image as direction & inspiration.' },
   { labelKey: 'prompt.inspirationLanding', prompt: 'As a frontend expert, Build a modern SaaS landing page with hero, features, pricing, and CTA sections, make use of stock CSS and Font library instead of improvising.' },
   { labelKey: 'prompt.inspirationDash', prompt: 'Create a data dashboard with charts, stats cards, and a clean sidebar navigation' }
@@ -18,9 +17,11 @@ interface Props {
   planMode: boolean
   onPlanModeToggle: () => void
   hasKey: boolean
+  /** Serialize the current canvas blueprint into a prompt string (or null). */
+  onUseBlueprint?: () => string | null
 }
 
-export function PromptBar({ onGenerate, onRefine, onClear, hasOutput, generating, planMode, onPlanModeToggle, hasKey }: Props) {
+export function PromptBar({ onGenerate, onRefine, onClear, hasOutput, generating, planMode, onPlanModeToggle, hasKey, onUseBlueprint }: Props) {
   const t = useI18n()
   const [prompt, setPrompt] = useState('')
   const textareaRef = useRef<HTMLTextAreaElement>(null)
@@ -53,6 +54,17 @@ export function PromptBar({ onGenerate, onRefine, onClear, hasOutput, generating
     <div className={`prompt-bar ${planMode ? 'plan-active' : ''}`}>
       {!hasOutput && !prompt && (
         <div className="inspiration-strip">
+          <button
+            className="inspiration-chip blueprint-chip"
+            onClick={() => {
+              const bp = onUseBlueprint?.()
+              if (bp) setPrompt(bp)
+            }}
+            disabled={generating}
+            title={t('prompt.useBlueprintHint')}
+          >
+            ✨ {t('prompt.useBlueprint')}
+          </button>
           {INSPIRATION.map((item) => (
             <button
               key={item.labelKey}

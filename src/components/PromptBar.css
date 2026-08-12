@@ -37,6 +37,19 @@
   pointer-events: none;
 }
 
+.blueprint-chip {
+  background: var(--accent-dim);
+  border-color: rgba(74, 158, 142, 0.4);
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.blueprint-chip:hover {
+  border-color: var(--accent);
+  background: rgba(74, 158, 142, 0.16);
+  color: var(--accent-hover);
+}
+
 /* ── Textarea ── */
 .prompt-input {
   width: 100%;
