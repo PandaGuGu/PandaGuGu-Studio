@@ -248,8 +248,10 @@ export function applyStyle(el: ExcalidrawElement, meta: SemanticMeta): Excalidra
 
 /**
  * Serialize the current scene into a blueprint tree (v2).
- * Only semantically-tagged elements are included; parent/child relations come
- * from Excalidraw's containerBinding (containerId).
+ * - Frames (画框) become top-level `section` nodes; elements inside them
+ *   (frameId match) become their children. A frame maps to <section> in HTML.
+ * - Semantically-tagged elements outside frames become top-level roots.
+ * - Parent/child relations come from containerBinding (containerId).
  * Pass { frameId } to export only the elements inside that frame (画框圈选).
  */
 export function toBlueprint(
@@ -271,20 +273,26 @@ export function toBlueprint(
 
   const build = (el: ExcalidrawElement): BlueprintElement => {
     const meta = getSemantic(el)
-    const children = elements
-      .filter((c) => (c as any).containerId === el.id && getSemantic(c))
-      .map(build)
+    const isFrame = el.type === 'frame'
     const out: BlueprintElement = {
       id: el.id,
-      type: (meta?.type || 'container') as SemanticType,
+      type: (isFrame ? 'section' : meta?.type || 'container') as SemanticType,
       x: Math.round(el.x),
       y: Math.round(el.y),
       w: Math.round(el.width || 0),
       h: Math.round(el.height || 0),
       angle: el.angle,
       layout: meta?.layout || DEFAULT_LAYOUT,
-      props: meta?.props || {},
-      children,
+      props: isFrame
+        ? { label: (el as any).name || 'Section', ...(meta?.props || {}) }
+        : meta?.props || {},
+      children: isFrame
+        ? elements
+            .filter((c) => (c as any).frameId === el.id && getSemantic(c))
+            .map(build)
+        : elements
+            .filter((c) => (c as any).containerId === el.id && getSemantic(c))
+            .map(build),
     }
     if (meta?.style)  out.style  = meta.style
     if (meta?.events && Object.keys(meta.events).length) out.events = meta.events
@@ -292,14 +300,21 @@ export function toBlueprint(
     return out
   }
 
-  const roots = elements.filter(
-    (el) => getSemantic(el) && !(el as any).containerId
-  )
+  const roots = elements.filter((el) => {
+    if (el.type === 'frame') return true
+    return (
+      getSemantic(el) &&
+      !(el as any).containerId &&
+      !(el as any).frameId
+    )
+  })
   if (roots.length === 0) return null
 
+  const firstFrame = roots.find((e) => e.type === 'frame') as any
   const firstContainer = roots.find((e) => getSemantic(e)?.type === 'container')
   const title =
     titleHint ||
+    (firstFrame && firstFrame.name) ||
     ((firstContainer && getSemantic(firstContainer)?.props.label) || 'Untitled')
 
   const appState: any = api.getAppState()
@@ -309,7 +324,7 @@ export function toBlueprint(
     version: 2,
     title: String(title || 'Untitled'),
     theme: appState.theme === 'dark' ? 'dark' : 'light',
-    note: 'Coordinates are Excalidraw logical units (1 unit = 1 CSS px at 100% zoom). x/y = top-left corner. layout hints: free|row|column|grid|wrap — AI decides flex/grid vs absolute.',
+    note: 'Frames map to <section>. Coordinates are Excalidraw logical units (1 unit = 1 CSS px at 100% zoom). x/y = top-left corner. layout hints: free|row|column|grid|wrap — AI decides flex/grid vs absolute.',
     elements: roots.map(build),
   }
 }
