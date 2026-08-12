@@ -15,6 +15,7 @@ import { ResizeHandle } from './components/ResizeHandle'
 import { LayersPanel } from './components/LayersPanel'
 import { VariantPanel } from './components/VariantPanel'
 import type { VariantStyle } from './components/VariantPanel'
+import { TEMPLATES } from './lib/templates'
 import type { Template } from './lib/templates'
 import { HistoryPanel } from './components/HistoryPanel'
 import { ImportHtmlModal } from './components/ImportHtmlModal'
@@ -194,6 +195,18 @@ export function App() {
   // ── Classic templates ──
   const [showTemplates, setShowTemplates] = useState(false)
 
+  // URL shortcut: ?tpl=<templateId> auto-applies a template (shareable deep link).
+  useEffect(() => {
+    if (!editor) return
+    const tplId = new URLSearchParams(window.location.search).get('tpl')
+    if (!tplId) return
+    const tp = TEMPLATES.find((x) => x.id === tplId)
+    if (!tp) return
+    const ok = applyBlueprintToScene(editor, tp.build())
+    if (ok) handleCanvasChange()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editor])
+
   const previewRef = useRef<HTMLIFrameElement>(null)
   const panelLeftRef = useRef<HTMLDivElement>(null)
   const [selectedElementId, setSelectedElementId] = useState<string | null>(null)
@@ -297,9 +310,14 @@ export function App() {
   const handleApplyTemplate = useCallback((template: Template) => {
     const api = editorRef.current
     if (!api) return
-    const ok = applyBlueprintToScene(api, template.build())
-    if (ok) handleCanvasChange()
-    setShowTemplates(false)
+    try {
+      const ok = applyBlueprintToScene(api, template.build())
+      if (ok) handleCanvasChange()
+      setShowTemplates(false)
+    } catch (e) {
+      console.error('Template apply failed:', e)
+      alert(`模板生成失败: ${(e as Error)?.message || e}`)
+    }
   }, [handleCanvasChange])
 
   /** One-click: serialize current canvas blueprint into a prompt for the AI. */

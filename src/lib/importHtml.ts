@@ -309,6 +309,7 @@ export function importHtmlToScene(api: ExcalidrawImperativeAPI, html: string): b
   if (!bp) return false
   const elements = blueprintToElements(bp)
   api.updateScene({ elements: elements as any })
+  scrollToContentSafe(api)
   return true
 }
 
@@ -317,5 +318,15 @@ export function applyBlueprintToScene(api: ExcalidrawImperativeAPI, bp: Blueprin
   if (!bp || bp.elements.length === 0) return false
   const elements = blueprintToElements(bp)
   api.updateScene({ elements: elements as any })
+  scrollToContentSafe(api)
   return true
+}
+
+/** Scroll the viewport to the scene content so freshly generated elements are visible. */
+function scrollToContentSafe(api: ExcalidrawImperativeAPI) {
+  try {
+    api.scrollToContent()
+  } catch {
+    // viewport already sensible — ignore
+  }
 }

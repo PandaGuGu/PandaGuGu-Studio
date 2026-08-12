@@ -52,12 +52,16 @@ const card = (x: number, y: number, w: number, h: number, title: string, body: s
 const section = (x: number, y: number, w: number, h: number, label: string, children: BlueprintElement[]) =>
   mk('section', x, y, w, h, { label }, children)
 
+// Root container for templates (avoids Excalidraw frame-render crash).
+const root = (x: number, y: number, w: number, h: number, label: string, children: BlueprintElement[]) =>
+  mk('container', x, y, w, h, { label }, children)
+
 // ── Mobile templates ──
 
 function mobileAppHome(): Blueprint {
   const W = 375, H = 667
   return {
-    elements: [section(40, 40, W, H, '1', [
+    elements: [root(40, 40, W, H, '1', [
       c(60, 60, W - 40, 44, [
         mk('heading', 60, 60, 120, 36, { content: '我的 App', level: 3, fontSize: 18, fontWeight: 700 }),
         input(250, 62, 105, '搜索'),
@@ -87,7 +91,7 @@ function mobileAppHome(): Blueprint {
 function mobileLogin(): Blueprint {
   const W = 375, H = 667
   return {
-    elements: [section(40, 40, W, H, '2', [
+    elements: [root(40, 40, W, H, '2', [
       h1(60, 110, 200, '欢迎回来'),
       txt(60, 160, 260, '登录你的账户，继续创作之旅'),
       input(60, 210, W - 40, '手机号 / 邮箱'),
@@ -105,7 +109,7 @@ function mobileLogin(): Blueprint {
 function saasLanding(): Blueprint {
   const W = 1360, H = 860
   return {
-    elements: [section(40, 40, W, H, '1', [
+    elements: [root(40, 40, W, H, '1', [
       c(40, 40, W, 56, [
         mk('heading', 40, 50, 160, 36, { content: 'Nova', level: 3, fontSize: 20, fontWeight: 700 }),
         link(240, 56, 80, '产品'), link(340, 56, 80, '定价'),
@@ -134,7 +138,7 @@ function saasLanding(): Blueprint {
 function dashboard(): Blueprint {
   const W = 1360, H = 860
   return {
-    elements: [section(40, 40, W, H, '2', [
+    elements: [root(40, 40, W, H, '2', [
       c(40, 40, 220, H - 80, [
         mk('heading', 60, 60, 160, 36, { content: '控制台', level: 3, fontSize: 18, fontWeight: 700 }),
         txt(60, 120, 160, '总览'), txt(60, 160, 160, '用户'),
@@ -172,7 +176,7 @@ function dashboard(): Blueprint {
 function ecommerceHome(): Blueprint {
   const W = 1360, H = 920
   return {
-    elements: [section(40, 40, W, H, '3', [
+    elements: [root(40, 40, W, H, '3', [
       c(40, 40, W, 56, [
         mk('heading', 40, 50, 140, 36, { content: '潮集', level: 3, fontSize: 20, fontWeight: 700 }),
         input(220, 48, 320, '搜索商品'),
@@ -202,7 +206,7 @@ function ecommerceHome(): Blueprint {
 function portfolio(): Blueprint {
   const W = 1360, H = 920
   return {
-    elements: [section(40, 40, W, H, '4', [
+    elements: [root(40, 40, W, H, '4', [
       c(40, 40, W, 56, [
         mk('heading', 40, 50, 160, 36, { content: '林夕设计', level: 3, fontSize: 20, fontWeight: 700 }),
         link(1100, 56, 60, '作品'), link(1180, 56, 60, '关于'),
