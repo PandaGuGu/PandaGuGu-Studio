@@ -1,5 +1,5 @@
 import React, { useCallback, useState, useRef, useEffect } from 'react'
-import { Excalidraw, THEME } from '@excalidraw/excalidraw'
+import { Excalidraw, THEME, viewportCoordsToSceneCoords } from '@excalidraw/excalidraw'
 import '@excalidraw/excalidraw/index.css'
 import type { ExcalidrawImperativeAPI } from '@excalidraw/excalidraw/types'
 import type { ExcalidrawElement } from '@excalidraw/excalidraw/element/types'
@@ -53,6 +53,45 @@ export function Canvas({ onEditorReady, onCanvasChange, onSelectElement, autoTag
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const autoTagTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const pendingTagRef = useRef<SemanticType | null>(null)
+  const wrapperRef = useRef<HTMLDivElement>(null)
+
+  // Ctrl/⌘ + click → toggle element in the multi-selection.
+  useEffect(() => {
+    if (!editor) return
+    const wrapper = wrapperRef.current
+    if (!wrapper) return
+    const handleClick = (e: MouseEvent) => {
+      if (!e.ctrlKey && !e.metaKey) return
+      const rect = wrapper.getBoundingClientRect()
+      const scenePt = viewportCoordsToSceneCoords({
+        clientX: e.clientX - rect.left,
+        clientY: e.clientY - rect.top,
+      })
+      const hit = editor
+        .getSceneElements()
+        .filter((el) => !(el as any).isDeleted)
+        .find((el) => {
+          const w = el.width
+          const h = el.height
+          if (w == null || h == null) return false
+          const pad = 4
+          return (
+            scenePt.x >= el.x - pad &&
+            scenePt.x <= el.x + w + pad &&
+            scenePt.y >= el.y - pad &&
+            scenePt.y <= el.y + h + pad
+          )
+        })
+      if (!hit) return
+      e.preventDefault()
+      const current = { ...editor.getAppState().selectedElementIds }
+      if (current[hit.id]) delete current[hit.id]
+      else current[hit.id] = true
+      editor.updateScene({ appState: { selectedElementIds: current } as any })
+    }
+    wrapper.addEventListener('click', handleClick)
+    return () => wrapper.removeEventListener('click', handleClick)
+  }, [editor])
 
   const handleReady = useCallback((api: ExcalidrawImperativeAPI) => {
     setEditor(api)
@@ -140,7 +179,7 @@ export function Canvas({ onEditorReady, onCanvasChange, onSelectElement, autoTag
   const showPanel = !!selected && !!getSemantic(selected)
 
   return (
-    <div className="canvas-wrapper">
+    <div className="canvas-wrapper" ref={wrapperRef}>
       <Excalidraw
         excalidrawAPI={handleReady}
         onChange={handleChange}
