@@ -116,6 +116,7 @@ export function App() {
   const [providerState, setProviderState] = useState<ProviderState>(loadProviderState)
   const [showSettings, setShowSettings] = useState(false)
   const [canvasTheme, setCanvasTheme] = useState<'light' | 'dark'>('light')
+  const [autoTag, setAutoTag] = useState(true)
   const [device, setDevice] = useState<'desktop' | 'tablet' | 'mobile'>('desktop')
   const [langCode, setLangCode] = useState<string>(
     () => localStorage.getItem('vcanvas-lang') || 'zh-CN'
@@ -741,6 +742,7 @@ ${SYSTEM_PROMPT}`
             onEditorReady={(e) => { editorRef.current = e; setEditor(e) }}
             onCanvasChange={handleCanvasChange}
             onSelectElement={(el) => setSelectedElementId(el?.id || null)}
+            autoTag={autoTag}
             theme={canvasTheme}
             langCode={langCode}
           />

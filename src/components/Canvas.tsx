@@ -5,18 +5,39 @@ import type { ExcalidrawImperativeAPI } from '@excalidraw/excalidraw/types'
 import type { ExcalidrawElement } from '@excalidraw/excalidraw/element/types'
 import { SemanticRail } from './SemanticRail'
 import { PropsPanel } from './PropsPanel'
-import { getSemantic } from '../lib/blueprint'
+import {
+  getSemantic,
+  setSemantic,
+  applyStyle,
+  DEFAULT_PROPS,
+  DEFAULT_LAYOUT,
+} from '../lib/blueprint'
+import type { SemanticType } from '../lib/blueprint'
 import './Canvas.css'
 
 interface Props {
   onEditorReady: (api: ExcalidrawImperativeAPI) => void
   onCanvasChange?: () => void
   onSelectElement?: (el: ExcalidrawElement | null) => void
+  autoTag?: boolean
   theme?: 'light' | 'dark'
   langCode?: string
 }
 
-export function Canvas({ onEditorReady, onCanvasChange, onSelectElement, theme = 'light', langCode = 'zh-CN' }: Props) {
+/** Map Excalidraw shape type → semantic type for auto-tagging. */
+const SHAPE_TO_SEMANTIC: Record<string, SemanticType | null> = {
+  rectangle: 'container',
+  ellipse: 'button',
+  text: 'text',
+  image: 'image',
+  diamond: 'button',
+  arrow: null,
+  line: null,
+  freedraw: null,
+  frame: null,
+}
+
+export function Canvas({ onEditorReady, onCanvasChange, onSelectElement, autoTag = true, theme = 'light', langCode = 'zh-CN' }: Props) {
   const [editor, setEditor] = useState<ExcalidrawImperativeAPI | null>(null)
   const [selected, setSelected] = useState<ExcalidrawElement | null>(null)
 
@@ -34,8 +55,42 @@ export function Canvas({ onEditorReady, onCanvasChange, onSelectElement, theme =
     const el = firstId ? els.find((e) => e.id === firstId) || null : null
     setSelected(el)
     onSelectElement?.(el)
+
+    // Auto-tag new elements when not currently dragging/resizing.
+    if (autoTag && editor && !appState.draggingElement && !appState.resizingElement && !appState.editingElement) {
+      // Find elements added since last tick.
+      // We approximate by comparing current scene to a cached previous snapshot.
+      const cached = (window as any).__vcanvasPrevEls as readonly ExcalidrawElement[] | undefined
+      const prevIds = new Set((cached || []).map((e) => e.id))
+      const newEls = els.filter((e) => {
+        if (prevIds.has(e.id)) return false
+        if ((e as any).isDeleted) return false
+        if ((e as any).containerId) return false
+        if ((e as any).frameId) return false
+        if (getSemantic(e)) return false
+        return SHAPE_TO_SEMANTIC[e.type] != null
+      })
+
+      if (newEls.length > 0) {
+        let mutated: readonly ExcalidrawElement[] = els
+        for (const ne of newEls) {
+          const semanticType = SHAPE_TO_SEMANTIC[ne.type]
+          if (!semanticType) continue
+          const meta = {
+            type: semanticType,
+            layout: DEFAULT_LAYOUT,
+            props: { ...DEFAULT_PROPS[semanticType] },
+          }
+          const styled = applyStyle(setSemantic(ne, meta), meta)
+          mutated = mutated.map((x) => (x.id === ne.id ? styled : x))
+        }
+        editor.updateScene({ elements: mutated as any })
+      }
+    }
+    // Cache for next tick.
+    ;(window as any).__vcanvasPrevEls = els
     onCanvasChange?.()
-  }, [onSelectElement, onCanvasChange])
+  }, [onSelectElement, onCanvasChange, autoTag, editor])
 
   const showPanel = !!selected && !!getSemantic(selected)
 

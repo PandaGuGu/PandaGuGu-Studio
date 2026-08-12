@@ -110,6 +110,7 @@ const translations: Record<Lang, Record<string, string>> = {
     'plan.phase': '阶段',
 
     'semantic.title': '语义标记',
+    'semantic.autoTag': '智能打标',
     'semantic.container': '容器',
     'semantic.section': '区段',
     'semantic.card': '卡片',
@@ -280,6 +281,7 @@ const translations: Record<Lang, Record<string, string>> = {
     'plan.phase': 'Phase',
 
     'semantic.title': 'Semantic',
+    'semantic.autoTag': 'Auto-tag',
     'semantic.container': 'Container',
     'semantic.section': 'Section',
     'semantic.card': 'Card',

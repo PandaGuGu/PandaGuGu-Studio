@@ -19,6 +19,8 @@ interface Props {
   editor: ExcalidrawImperativeAPI | null
   selected: ExcalidrawElement | null
   onChanged?: () => void
+  autoTag?: boolean
+  onAutoTagChange?: (v: boolean) => void
 }
 
 const TYPE_ICONS: Record<SemanticType, string> = {
@@ -29,7 +31,7 @@ const TYPE_ICONS: Record<SemanticType, string> = {
   raw: '</>', note: '✎',
 }
 
-export function SemanticRail({ editor, selected, onChanged }: Props) {
+export function SemanticRail({ editor, selected, onChanged, autoTag = true, onAutoTagChange }: Props) {
   const t = useI18n()
   const taggable = !!editor && !!selected && canTag(selected!)
   const [menuOpen, setMenuOpen] = useState(false)
@@ -82,6 +84,17 @@ export function SemanticRail({ editor, selected, onChanged }: Props) {
 
   return (
     <div className="semantic-rail">
+      <button
+        className={`semantic-rail-btn semantic-rail-auto-tag ${autoTag ? 'on' : ''}`}
+        onClick={() => onAutoTagChange?.(!autoTag)}
+        title={t('semantic.autoTag')}
+      >
+        <span className="semantic-rail-icon">⚡</span>
+        {t('semantic.autoTag')}
+      </button>
+
+      <div className="semantic-rail-divider" />
+
       <button
         className={`semantic-rail-btn semantic-rail-search-btn ${menuOpen ? 'open' : ''}`}
         onClick={() => setMenuOpen((v) => !v)}
