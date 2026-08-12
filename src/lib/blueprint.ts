@@ -270,7 +270,7 @@ export function toBlueprint(
   const build = (el: ExcalidrawElement): BlueprintElement => {
     const meta = getSemantic(el)
     const isFrame = el.type === 'frame'
-    const zIndex = all.indexOf(el)
+    const zIndex = all.findIndex((x) => x.id === el.id)
     const out: BlueprintElement = {
       id: el.id,
       type: (isFrame ? 'section' : meta?.type || 'container') as SemanticType,
