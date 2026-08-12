@@ -108,7 +108,7 @@ export function SemanticRail({ editor, selected, onChanged, onDrawTag }: Props) 
         onClick={() => setMenuOpen((v) => !v)}
         title={t('semantic.search')}
       >
-        <span className="semantic-rail-icon">▾</span>
+        <span className="semantic-rail-icon">▲</span>
         {t('semantic.search')}
       </button>
 
@@ -149,7 +149,7 @@ export function SemanticRail({ editor, selected, onChanged, onDrawTag }: Props) 
         onClick={() => setExportMenuOpen((v) => !v)}
         title={t('semantic.exportMenu')}
       >
-        <span className="semantic-rail-icon">⌄</span>
+        <span className="semantic-rail-icon">▲</span>
       </button>
 
       {exportMenuOpen && (
