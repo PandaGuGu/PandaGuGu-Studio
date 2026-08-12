@@ -29,14 +29,6 @@ const TYPE_ICONS: Record<SemanticType, string> = {
   raw: '</>', note: '✎',
 }
 
-const GROUP_LABEL_KEY: Record<string, string> = {
-  container: 'semantic.groupContainer',
-  content: 'semantic.groupContent',
-  control: 'semantic.groupControl',
-  media: 'semantic.groupMedia',
-  special: 'semantic.groupSpecial',
-}
-
 export function SemanticRail({ editor, selected, onChanged }: Props) {
   const t = useI18n()
   const taggable = !!editor && !!selected && canTag(selected!)
@@ -91,20 +83,19 @@ export function SemanticRail({ editor, selected, onChanged }: Props) {
   return (
     <>
       <div className="semantic-rail">
-        <div className="semantic-rail-head">
-          <span className="semantic-rail-title">{t('semantic.title')}</span>
-          <button
-            className={`semantic-rail-menu-btn ${menuOpen ? 'open' : ''}`}
-            onClick={() => setMenuOpen((v) => !v)}
-            title={t('semantic.search')}
-          >
-            ▾
-          </button>
-        </div>
+        <button
+          className={`semantic-rail-btn semantic-rail-search-btn ${menuOpen ? 'open' : ''}`}
+          onClick={() => setMenuOpen((v) => !v)}
+          title={t('semantic.search')}
+        >
+          <span className="semantic-rail-icon">▾</span>
+          {t('semantic.search')}
+        </button>
 
-        {SEMANTIC_GROUPS.map((group) => (
+        <div className="semantic-rail-divider" />
+
+        {SEMANTIC_GROUPS.map((group, gi) => (
           <React.Fragment key={group.label}>
-            <div className="semantic-rail-group">{t(GROUP_LABEL_KEY[group.label])}</div>
             {group.types.map((type) => (
               <button
                 key={type}
@@ -117,9 +108,14 @@ export function SemanticRail({ editor, selected, onChanged }: Props) {
                 {t(`semantic.${type}`)}
               </button>
             ))}
+            {gi < SEMANTIC_GROUPS.length - 1 && (
+              <div className="semantic-rail-divider" />
+            )}
           </React.Fragment>
         ))}
-        <div className="semantic-rail-sep" />
+
+        <div className="semantic-rail-divider" />
+
         <button
           className="semantic-rail-btn semantic-rail-clear"
           disabled={!taggable}
@@ -127,11 +123,13 @@ export function SemanticRail({ editor, selected, onChanged }: Props) {
           title={t('semantic.untag')}
         >
           <span className="semantic-rail-icon">✕</span>
-          {t('semantic.untag')}
         </button>
-        <button className="semantic-rail-btn semantic-rail-export" onClick={handleExport}>
+        <button
+          className="semantic-rail-btn semantic-rail-export"
+          onClick={handleExport}
+          title={t('semantic.exportBlueprint')}
+        >
           <span className="semantic-rail-icon">⇩</span>
-          {t('semantic.exportBlueprint')}
         </button>
       </div>
 
