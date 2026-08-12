@@ -66,9 +66,6 @@ const translations: Record<Lang, Record<string, string>> = {
     'layers.empty': '画布为空,画一个元素试试',
     'frame.exportJson': '导出该画框的 JSON 蓝图',
 
-    'preview.emptyText': '在画布上绘制或拖入参考图,描述需求后点“生成”',
-    'preview.emptyHint': 'AI 将把你的草图变成代码',
-
     'app.apiKeyTitle': '需要配置 API Key',
     'app.apiKeyDesc': '从 {url} 获取 {provider} 的 API Key。',
     'app.apiKeyStep1': '从 {url} 获取 Key',
@@ -251,9 +248,6 @@ const translations: Record<Lang, Record<string, string>> = {
     'layers.delete': 'Delete layer',
     'layers.empty': 'Canvas is empty — draw something to get started',
     'frame.exportJson': 'Export this frame as JSON blueprint',
-
-    'preview.emptyText': 'Draw or drop references in frames, describe it, and hit Generate',
-    'preview.emptyHint': 'GLM-5V will turn your sketch into code',
 
     'app.apiKeyTitle': 'API Key Required',
     'app.apiKeyDesc': 'Get an API key from {url} for {provider}.',

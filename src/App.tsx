@@ -217,7 +217,7 @@ export function App() {
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = `glm5v-drawing-${Date.now()}.json`
+    a.download = `pandagugu-canvas-${Date.now()}.json`
     a.click()
     URL.revokeObjectURL(url)
   }, [])

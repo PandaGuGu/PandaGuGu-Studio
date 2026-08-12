@@ -1,94 +1,110 @@
-# VCanvas
+# PandaGuGu Studio
 
-A visual canvas playground for vision-language models. Draw sketches, describe what you want, and the model generates complete HTML/CSS/JS — rendered live in a side-by-side preview.
+**画布式 HTML 生成器**——在画布上画元素、自动打语义标记、画框圈成页面区块，一键导出 JSON 蓝图交给 AI 生成完整 HTML。
 
-BYOK (Bring Your Own Key). No backend. Runs entirely in the browser.
+纯前端，BYOK（自带 API Key），无需后端，运行在浏览器里。
 
-![VCanvas screenshot](screenshot/sc.png)
+![PandaGuGu Studio screenshot](screenshot/sc.png)
 
-> A demo recording is available at [`screenshot/rec.mp4`](screenshot/rec.mp4).
+## 核心工作流
 
-## How it works
+```
+① 画      — 用 Excalidraw 画矩形/文字/图片/椭圆…
+② 标记    — 智能打标：矩形→容器、椭圆→按钮、文字→文本、图片→图片（画完自动标）
+③ 圈区    — 画框圈住一块区域 = 一个 <section>（页面区块/一屏）
+④ 生成    — 点「✨ 用画布蓝图生成」→ JSON 蓝图自动进提示词 → AI 生成 HTML
+```
 
-1. **Draw** — Sketch wireframes, paste screenshots, drop reference images onto an Excalidraw canvas
-2. **Describe** — Type a prompt: "Turn this into a landing page", "Generative art piece", or just "Make it beautiful"
-3. **Generate** — The model sees your canvas + prompt and streams a complete, self-contained HTML file
-4. **Refine** — Click Refine to iterate. The model sees the original sketch, a screenshot of the current output, and your feedback
+## 功能
 
-## Providers
+- **语义类型系统（12 种）**：容器/区段/卡片/导航 + 标题/文本/链接 + 按钮/输入框 + 图片 + HTML片段/便签
+- **智能打标**：画图自动匹配语义类型（顶部 ⚡ 开关）；也支持拖拽创建（点类型→画→自动标）
+- **属性面板**：选中元素按类型编辑属性（颜色/文字/圆角…），编辑才同步画布，绝不改你的画
+- **画框 = `<section>`**：画框圈出的区域导出为顶层 section 节点，框内元素成为 children
+- **图层面板**：IDE 风格树形分级（画框=文件夹带 ▸/▾ 箭头），点击选中、− 删除
+- **对齐工具**：左/右/水平居中 + 顶/底/垂直居中 + 等距分布（8 种，多选后底部 ▲ 菜单）
+- **多选**：Ctrl/⌘+点击 切换选中（点选中的取消，未选中的加入）
+- **JSON 蓝图导出**：画框级（缩略图 ⇩）或整画布（▲ 菜单），含 zIndex（叠层顺序）和 layout 提示
+- **自动吸附**：Excalidraw 原生 smart guides（拖动红参考线）；元素拖进画框自动归属
+- **主题**：浅色/深色切换，全站跟随
+- **9 个模型服务商**：z.ai / DeepSeek / Kimi / 通义千问 / 火山方舟 / Google / Fireworks / OpenRouter / Custom
 
-| Provider | Models | Get a key |
-|----------|--------|-----------|
-| **z.ai** | GLM-5V Turbo | [z.ai](https://z.ai) |
-| **Google** | Gemini 3.1 Pro, Flash, Flash Lite | [AI Studio](https://aistudio.google.com/apikey) |
-| **Fireworks** | Kimi K2.5 Turbo (Fire Pass) | [Fire Pass](https://app.fireworks.ai/fire-pass) |
-| **OpenRouter** | Claude 4.6, Gemini 3, Grok 4.1, Qwen 3.5, MiMo V2, Kimi K2.5 | [OpenRouter](https://openrouter.ai/keys) |
-| **Custom** | Any OpenAI-compatible endpoint | — |
+## 蓝图数据模型（v2）
 
-OpenRouter also supports searching and selecting from 100+ vision models via the API.
+```json
+{
+  "app": "pandagugu-studio", "kind": "blueprint", "version": 2,
+  "title": "Hero", "theme": "dark",
+  "elements": [
+    { "type": "section", "label": "Hero", "x": 100, "y": 80, "w": 800, "h": 500,
+      "zIndex": 0, "layout": "column",
+      "props": { "label": "Hero" },
+      "children": [
+        { "type": "heading", "props": { "content": "新一代视觉画布" } },
+        { "type": "text", "props": { "content": "画、标、生成" } },
+        { "type": "button", "props": { "label": "立即开始" } }
+      ] }
+  ]
+}
+```
 
-## Setup
+- **语义类型 → HTML**：section→`<section>`、container→`<div>`、heading→`<h1-h6>`、button→`<button>`、input→`<input>`、image→`<img>`、text→`<p>`、link→`<a>`、raw→原样嵌入、note→设计意图参考
+- **layout 提示**：free→absolute，row/column/grid/wrap→flex/grid
+- **zIndex**：重叠元素按它设 `z-index`
+
+## 模型服务商
+
+| 服务 | 端点 | 模型 |
+|------|------|------|
+| z.ai | api.z.ai | GLM-5V Turbo |
+| DeepSeek | api.deepseek.com | deepseek-chat / deepseek-reasoner |
+| Kimi | api.moonshot.cn | moonshot-v1 / kimi-k2 |
+| 通义千问 | dashscope 兼容模式 | qwen-vl-plus / qwen-plus / qwen-max |
+| 火山方舟 | ark.cn-beijing.volces.com | doubao-1.5-pro/lite、seed-1.6 |
+| Google | generativelanguage | Gemini 3.1 Pro / Flash / Lite |
+| Fireworks | api.fireworks.ai | Kimi K2.5 Turbo |
+| OpenRouter | openrouter.ai | 100+ 模型（自动拉取） |
+| Custom | 任意 | 任何 OpenAI 兼容端点 |
+
+Key 存在浏览器 localStorage，不上传。
+
+## 快捷键
+
+- `Cmd/Ctrl + Enter`：提交生成/细化
+- `Ctrl/⌘ + 点击`：切换多选
+- `Shift + 点击` / 框选：多选
+
+## 开发
 
 ```bash
 npm install
-npm run dev
+npm run dev       # 开发，http://localhost:5173
+npm run build     # 生产构建
+npm run build:gh  # 部署到 /vcanvas/ 路径
 ```
 
-Open `http://localhost:5173`. Click the model button in the header to configure your provider and API key.
-
-## Build
-
-```bash
-# Default (base path /)
-npm run build
-
-# For deployment at /vcanvas/
-npm run build:gh
-
-# Custom base path
-VCANVAS_BASE=/your/path/ npm run build
-```
-
-## Features
-
-- **Multi-provider** — Switch between providers and models in one click. Keys stored per-provider in localStorage.
-- **Frame selection** — Create named frames on the canvas to send specific regions to the model instead of the full canvas.
-- **Plan mode** — Three-phase generation: Gaze (deep image analysis) → Dream (creative ideation) → Create (implementation). Slower but more intentional results.
-- **Thinking visualization** — Models that use chain-of-thought reasoning (DeepSeek, Kimi, Gemini) show their thinking process in a collapsible panel during streaming.
-- **Live streaming** — Watch the HTML stream in with token count, speed graph, and phase detection.
-- **Refinement loop** — The model captures a screenshot of the current output and uses it alongside your sketch for iterative improvement.
-- **Save/Load** — Export and import canvas drawings as JSON.
-
-## Architecture
+## 架构
 
 ```
 src/
-  App.tsx                     — Main orchestrator, state management
-  main.tsx                    — Entry point
-  components/
-    Canvas.tsx                — Excalidraw instance
-    FramePicker.tsx           — Frame thumbnail strip, selection
-    PromptBar.tsx             — Text input, Generate/Refine, Plan toggle
-    Preview.tsx               — Sandboxed iframe renderer
-    StreamOverlay.tsx         — Live code viewer, thinking, speed graph
-    PlanOverlay.tsx           — Gaze/Dream/Create phase viewer
-    ProviderModal.tsx         — Provider/model settings popup
-    Header.tsx                — App header, model status
-    MessageStrip.tsx          — Chat history chips
-    ResizeHandle.tsx          — Panel resize
+  App.tsx                 — 编排中枢、状态、AI 管线（生成/细化/Plan）
   lib/
-    api.ts                    — Streaming (OpenAI-compat + Gemini), HTML extraction
-    providers.ts              — Provider configs, model lists, state persistence
-    export.ts                 — Canvas → PNG export
-    store.ts                  — Shared types
-  styles/
-    globals.css               — Design tokens, base styles
-    app.css                   — Layout, overlays
+    blueprint.ts          — 语义类型 v2、蓝图序列化、zIndex/layout
+    align.ts              — 8 种对齐/分布算法（纯坐标）
+    providers.ts          — 9 服务商配置、状态持久化
+    api.ts                — OpenAI 兼容 + Gemini 双协议 SSE 流式
+    export.ts             — 画框/整画布 PNG 导出
+    i18n.tsx              — 中英双语
+  components/
+    Canvas.tsx            — Excalidraw 实例、智能打标、Ctrl 多选
+    SemanticRail.tsx      — 底部浮动工具条（12 类型 + 搜索 + 导出/对齐 ▲）
+    PropsPanel.tsx        — 按类型属性编辑面板
+    LayersPanel.tsx       — IDE 树形图层面板
+    FramePicker.tsx       — 画框管理、缩略图、画框级 JSON 导出
+    PromptBar.tsx         — AI 输入（✨蓝图生成 + 场景预设）
+    Preview.tsx           — 沙箱 iframe 预览 + 设备切换
+    ...
 ```
-
-## Acknowledgments
-
-Built on [Excalidraw](https://github.com/excalidraw/excalidraw) — the open-source virtual whiteboard that powers the drawing canvas. Excalidraw is licensed under MIT.
 
 ## License
 
