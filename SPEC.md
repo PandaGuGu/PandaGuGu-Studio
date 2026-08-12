@@ -29,7 +29,15 @@
 1. **批量变体**：蓝图 + N 组风格描述 → AI 批量生成多份 HTML → 变体栏切换预览
 2. **生成历史库**：每次生成自动存档 localStorage，可回看/重新载入/删除/下载
 3. **一键下载生成的 HTML 文件**（当前仅复制/新窗口）
-4. **git 推远端** + CI 上线
+4. **CLI / 接口，方便 AI 操控**（2026-08-12 用户提出）：
+   - 形态：本地 Node CLI `pandagugu`（或 `pgg`）+ 核心逻辑抽成与 React 无关的纯库
+   - 关键前置：把 `blueprint.ts` 中不依赖 Excalidraw 的部分（类型系统、序列化、映射规则）抽成 `lib/core/`，浏览器与 Node 双端复用
+   - 命令示例：`pgg plan <blueprint.json> <prompt>`（蓝图→AI→HTML）、`pgg import <file.html>`（HTML→蓝图，正好服务需求 5）、`pgg serve`（本地 REST API 供 AI 调用）
+   - AI 接入方式：文件级交互（读写 .blueprint.json/.html）+ 可选 HTTP API
+5. **导入 HTML → 简化 → 自动布局到画布**（2026-08-12 用户提出）：
+   - 流程：HTML → 解析（jsdom/DOMParser）→ 简化（inline style → props、去 script/冗余嵌套、DOM 树 → 语义类型映射）→ 布局推断（块级纵向 column / 行内横向 row / box 估算 x/y/w/h）→ 生成 BlueprintElement 树 → 用 Excalidraw API 反向画出带语义标记的元素 → 用户直接在画布上改
+   - 价值：与需求 4 组成"旧网站逆向 → 画布重设计 → 导出蓝图 → 生成新版"完整闭环
+6. **git 推远端** + CI 上线（✅ 已完成 2026-08-12，远端 github.com/PandaGuGu/PandaGuGu-Studio）
 
 ---
 
