@@ -30,7 +30,6 @@ export interface SemanticMeta {
 }
 
 export interface BlueprintElement {
-  id: string
   type: SemanticType
   x: number
   y: number
@@ -264,7 +263,6 @@ export function toBlueprint(
     const isFrame = el.type === 'frame'
     const zIndex = all.findIndex((x) => x.id === el.id)
     const out: BlueprintElement = {
-      id: el.id,
       type: (isFrame ? 'section' : meta?.type || 'container') as SemanticType,
       x: Math.round(el.x),
       y: Math.round(el.y),

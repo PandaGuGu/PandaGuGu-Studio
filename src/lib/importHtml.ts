@@ -99,7 +99,7 @@ function simplify(el: Element, ctx: LayoutContext): BlueprintElement | null {
     // Collapse: if root has a single child, return it directly.
     if (out.length === 1) return out[0]
     const root: BlueprintElement = {
-      id: nextId(), type: 'section', x: ctx.x, y: ctx.y, w: ctx.w,
+      type: 'section', x: ctx.x, y: ctx.y, w: ctx.w,
       h: y - ctx.y - GAP, angle: 0, layout: 'column', props: {}, children: out, zIndex: 0,
     }
     return root
@@ -167,7 +167,6 @@ function simplify(el: Element, ctx: LayoutContext): BlueprintElement | null {
   }
 
   const out: BlueprintElement = {
-    id: nextId(),
     type: semantic,
     x: ctx.x,
     y: ctx.y,
@@ -200,7 +199,7 @@ export function htmlToBlueprint(html: string): Blueprint | null {
 
 function makeRect(semantic: SemanticType, b: BlueprintElement, props: Record<string, any>): any {
   return {
-    id: b.id,
+    id: nextId(),
     type: 'rectangle',
     x: b.x, y: b.y, width: Math.max(b.w, 20), height: Math.max(b.h, 16),
     angle: 0,
@@ -219,7 +218,7 @@ function makeRect(semantic: SemanticType, b: BlueprintElement, props: Record<str
 
 function makeText(semantic: SemanticType, b: BlueprintElement, props: Record<string, any>): any {
   return {
-    id: b.id,
+    id: nextId(),
     type: 'text',
     x: b.x, y: b.y, width: Math.max(b.w, 60), height: Math.max(b.h, 20),
     angle: 0,
@@ -257,7 +256,7 @@ function blueprintElementToExcalidraw(b: BlueprintElement, indexSeed: { n: numbe
     // Containers: keep absolute positions as estimated; children nest via containerId.
     const childEls = blueprintElementToExcalidraw(child, indexSeed)
     for (const ce of childEls) {
-      ;(ce as any).containerId = b.id
+      ;(ce as any).containerId = el.id
     }
     els.push(...childEls)
   }
