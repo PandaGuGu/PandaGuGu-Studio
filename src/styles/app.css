@@ -69,6 +69,13 @@
   font-family: var(--font-sans);
 }
 
+.api-key-step-text {
+  flex: 1;
+  min-width: 0;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
 .api-key-step a {
   color: var(--accent);
   text-decoration: none;

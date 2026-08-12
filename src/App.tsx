@@ -15,7 +15,7 @@ import { ResizeHandle } from './components/ResizeHandle'
 import { streamChat, extractHTML } from './lib/api'
 import { exportSourceAsPng, exportAllAsPng, getSources } from './lib/export'
 import { getProvider, loadProviderState, saveProviderState } from './lib/providers'
-import { I18nProvider, useI18n, type Lang } from './lib/i18n'
+import { useI18n } from './lib/i18n'
 import type { ProviderState } from './lib/providers'
 import type { Message } from './lib/api'
 import type { ChatChip } from './lib/store'
@@ -714,7 +714,6 @@ ${SYSTEM_PROMPT}`
   const needsKey = apiKey.length <= 4
 
   return (
-    <I18nProvider lang={langCode as Lang}>
     <>
       <Header
         providerName={provider.name}
@@ -778,9 +777,9 @@ ${SYSTEM_PROMPT}`
                   {t('app.apiKeyDesc', { url: provider.keyUrlLabel, provider: provider.name })}
                 </p>
                 <div className="api-key-overlay-steps">
-                  <div className="api-key-step"><span className="api-key-step-num">1</span> {t('app.apiKeyStep1', { url: provider.keyUrlLabel })}</div>
-                  <div className="api-key-step"><span className="api-key-step-num">2</span> {t('app.apiKeyStep2')}</div>
-                  <div className="api-key-step"><span className="api-key-step-num">3</span> {t('app.apiKeyStep3', { provider: provider.name })}</div>
+                  <div className="api-key-step"><span className="api-key-step-num">1</span><span className="api-key-step-text">{t('app.apiKeyStep1', { url: provider.keyUrlLabel })}</span></div>
+                  <div className="api-key-step"><span className="api-key-step-num">2</span><span className="api-key-step-text">{t('app.apiKeyStep2')}</span></div>
+                  <div className="api-key-step"><span className="api-key-step-num">3</span><span className="api-key-step-text">{t('app.apiKeyStep3', { provider: provider.name })}</span></div>
                 </div>
                 <button className="btn btn-primary" style={{ marginTop: '16px', width: '100%' }} onClick={() => setShowSettings(true)}>
                   {t('app.openSettings')}
@@ -845,6 +844,5 @@ ${SYSTEM_PROMPT}`
         </div>
       </div>
     </>
-    </I18nProvider>
   )
 }
