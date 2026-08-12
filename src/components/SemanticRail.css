@@ -81,29 +81,6 @@
   border-color: var(--accent);
 }
 
-.semantic-rail-auto-tag {
-  color: var(--orange);
-  border-color: var(--border);
-}
-
-.semantic-rail-auto-tag.on {
-  color: var(--bg-primary);
-  background: var(--orange);
-  border-color: var(--orange);
-}
-
-.semantic-rail-auto-tag.on:hover:not(:disabled) {
-  background: var(--orange);
-  border-color: var(--orange);
-  color: var(--bg-primary);
-}
-
-.semantic-rail-auto-tag:not(.on):hover:not(:disabled) {
-  border-color: var(--orange);
-  color: var(--orange);
-  background: rgba(200, 155, 74, 0.08);
-}
-
 .semantic-rail-clear {
   color: var(--red);
 }

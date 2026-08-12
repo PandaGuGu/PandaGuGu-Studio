@@ -11,6 +11,7 @@ import {
   DEFAULT_LAYOUT,
 } from '../lib/blueprint'
 import type { SemanticType } from '../lib/blueprint'
+import { useI18n } from '../lib/i18n'
 import './Canvas.css'
 
 interface Props {
@@ -37,6 +38,7 @@ const SHAPE_TO_SEMANTIC: Record<string, SemanticType | null> = {
 }
 
 export function Canvas({ onEditorReady, onCanvasChange, onSelectElement, autoTag = true, onAutoTagChange, theme = 'light', langCode = 'zh-CN' }: Props) {
+  const t = useI18n()
   const [editor, setEditor] = useState<ExcalidrawImperativeAPI | null>(null)
   const [selected, setSelected] = useState<ExcalidrawElement | null>(null)
   const autoTagTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -137,7 +139,15 @@ export function Canvas({ onEditorReady, onCanvasChange, onSelectElement, autoTag
       {showPanel && (
         <PropsPanel editor={editor} element={selected!} onChanged={onCanvasChange} />
       )}
-      <SemanticRail editor={editor} selected={selected} onChanged={onCanvasChange} autoTag={autoTag} onAutoTagChange={onAutoTagChange} />
+      <button
+        className={`canvas-auto-tag ${autoTag ? 'on' : ''}`}
+        onClick={() => onAutoTagChange?.(!autoTag)}
+        title={t('semantic.autoTag')}
+      >
+        <span className="canvas-auto-tag-icon">⚡</span>
+        {t('semantic.autoTag')}
+      </button>
+      <SemanticRail editor={editor} selected={selected} onChanged={onCanvasChange} />
     </div>
   )
 }

@@ -26,3 +26,47 @@
 .canvas-wrapper .App-menu_top__left .dropdown-menu-button {
   display: none !important;
 }
+
+/* ⚡ Auto-tag toggle — top toolbar, left-most */
+.canvas-auto-tag {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  z-index: 15;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 9px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.12s;
+}
+
+.canvas-auto-tag-icon {
+  font-size: 11px;
+  line-height: 1;
+}
+
+.canvas-auto-tag:hover:not(.on) {
+  border-color: var(--orange);
+  color: var(--orange);
+  background: rgba(200, 155, 74, 0.08);
+}
+
+.canvas-auto-tag.on {
+  background: var(--orange);
+  border-color: var(--orange);
+  color: var(--bg-primary);
+}
+
+.canvas-auto-tag.on:hover {
+  background: var(--orange);
+  border-color: var(--orange);
+  color: var(--bg-primary);
+}
