@@ -198,23 +198,19 @@ export function SemanticRail({ editor, selected, selectedIds = new Set(), onChan
             <span className="semantic-rail-icon">🖼</span>
             {t('semantic.exportPng')}
           </button>
-          {multiSelect && (
-            <>
-              <div className="semantic-rail-menu-divider" />
-              <div className="semantic-rail-menu-group">{t('align.title')}</div>
-              {ALIGN_BTNS.map(({ op, icon }) => (
-                <button
-                  key={op}
-                  className="semantic-rail-menu-item"
-                  onClick={() => handleAlign(op)}
-                  title={t(`align.${op}`)}
-                >
-                  <span className="semantic-rail-icon">{icon}</span>
-                  {t(`align.${op}`)}
-                </button>
-              ))}
-            </>
-          )}
+          <div className="semantic-rail-menu-divider" />
+          <div className="semantic-rail-menu-group">{t('align.title')}</div>
+          {ALIGN_BTNS.map(({ op, icon }) => (
+            <button
+              key={op}
+              className={`semantic-rail-menu-item ${multiSelect ? '' : 'disabled'}`}
+              onClick={() => handleAlign(op)}
+              title={multiSelect ? t(`align.${op}`) : t('align.needMulti')}
+            >
+              <span className="semantic-rail-icon">{icon}</span>
+              {t(`align.${op}`)}
+            </button>
+          ))}
         </div>
       )}
 

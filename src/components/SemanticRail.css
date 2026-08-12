@@ -208,6 +208,11 @@
   cursor: not-allowed;
 }
 
+.semantic-rail-menu-item.disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
 .semantic-rail-menu-empty {
   padding: 8px 6px;
   font-size: 11px;
