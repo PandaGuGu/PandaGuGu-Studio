@@ -107,3 +107,44 @@
   resize: vertical;
   min-height: 40px;
 }
+
+.pp-area-lg {
+  min-height: 100px;
+  font-family: var(--font-mono);
+}
+
+.pp-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 4px 0 2px;
+}
+
+.pp-advanced-toggle {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 4px 0;
+  text-align: left;
+  cursor: pointer;
+  transition: color 0.12s;
+}
+
+.pp-advanced-toggle:hover {
+  color: var(--accent);
+}
+
+.pp-advanced {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.pp-hint {
+  font-size: 10px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}

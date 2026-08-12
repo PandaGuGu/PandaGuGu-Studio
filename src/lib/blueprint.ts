@@ -1,16 +1,32 @@
-// Semantic element types + blueprint serialization.
+// Blueprint v2 — semantic element types + serialization.
 // A "blueprint" is an open, human-editable JSON description of the canvas
 // layout with semantic tags — the input contract for AI generation and
 // batch variants.
+//
+// v2 adds: layout hint, free CSS, events contract, raw HTML escape,
+// note (sticky text for AI), and 12 semantic types total.
 
 import type { ExcalidrawImperativeAPI } from '@excalidraw/excalidraw/types'
 import type { ExcalidrawElement } from '@excalidraw/excalidraw/element/types'
 
-export type SemanticType = 'container' | 'text' | 'button' | 'image'
+// ── Semantic type catalog (v2) ──
+
+export type SemanticType =
+  | 'container' | 'section' | 'card' | 'nav'
+  | 'heading' | 'text' | 'link'
+  | 'button' | 'input'
+  | 'image'
+  | 'raw' | 'note'
+
+export type LayoutHint = 'free' | 'row' | 'column' | 'grid' | 'wrap'
 
 export interface SemanticMeta {
   type: SemanticType
+  layout: LayoutHint
   props: Record<string, any>
+  style?: string
+  events?: Record<string, string>
+  html?: string
 }
 
 export interface BlueprintElement {
@@ -21,55 +37,95 @@ export interface BlueprintElement {
   w: number
   h: number
   angle: number
+  layout: LayoutHint
   props: Record<string, any>
+  style?: string
+  events?: Record<string, string>
+  html?: string
   children: BlueprintElement[]
 }
 
 export interface Blueprint {
   app: 'pandagugu-studio'
   kind: 'blueprint'
-  version: number
+  version: 2
   title: string
   theme: 'light' | 'dark'
   note: string
   elements: BlueprintElement[]
 }
 
-export const SEMANTIC_TYPES: SemanticType[] = ['container', 'text', 'button', 'image']
+export const SEMANTIC_TYPES: SemanticType[] = [
+  'container', 'section', 'card', 'nav',
+  'heading', 'text', 'link',
+  'button', 'input',
+  'image',
+  'raw', 'note',
+]
 
+/** Grouping for toolbar rendering. */
+export const SEMANTIC_GROUPS: { label: string; types: SemanticType[] }[] = [
+  { label: 'container',  types: ['container', 'section', 'card', 'nav'] },
+  { label: 'content',    types: ['heading', 'text', 'link'] },
+  { label: 'control',    types: ['button', 'input'] },
+  { label: 'media',      types: ['image'] },
+  { label: 'special',    types: ['raw', 'note'] },
+]
+
+export const LAYOUTS: LayoutHint[] = ['free', 'row', 'column', 'grid', 'wrap']
+
+export const DEFAULT_LAYOUT: LayoutHint = 'free'
+
+/** Default props per type — populated when user tags an element. */
 export const DEFAULT_PROPS: Record<SemanticType, Record<string, any>> = {
-  container: { label: '容器', bg: '#d4d4d8', radius: 12, padding: 16 },
-  text: { content: '文本', fontSize: 20, color: '#18181b', bold: false, align: 'left' },
-  button: { label: '按钮', bg: '#2563eb', color: '#ffffff', radius: 8 },
-  image: { alt: '图片', src: '' },
+  container: { label: '容器',   bg: '#d4d4d8', radius: 12, padding: 16 },
+  section:   { label: '区段',   bg: '#f4f6f9', radius: 16, padding: 32, border: '#d6dbe5' },
+  card:      { label: '卡片',   bg: '#ffffff', radius: 12, padding: 20, shadow: 'sm' },
+  nav:       { label: '导航',   bg: '#ffffff', padding: 12, align: 'left' },
+
+  heading:   { content: '标题',  level: 1, fontSize: 36, fontWeight: 700, color: '#18181b', align: 'left' },
+  text:      { content: '文本',  fontSize: 16, color: '#3f3f46', bold: false, align: 'left' },
+  link:      { label: '链接',    href: '#', color: '#2e7d6f' },
+
+  button:    { label: '按钮',    bg: '#2563eb', color: '#ffffff', radius: 8 },
+  input:     { placeholder: '请输入…', type: 'text', label: '输入框', bg: '#ffffff', border: '#d6dbe5' },
+
+  image:     { alt: '图片', src: '', fit: 'cover' },
+
+  raw:       { html: '<!-- raw HTML 片段 -->' },
+  note:      { content: '便签:写给 AI 的注释', color: '#854F0B' },
 }
 
-/** Types that Excalidraw shapes map to for each semantic type. */
-export const SHAPE_OF: Record<SemanticType, string> = {
-  container: 'rectangle',
-  text: 'text',
-  button: 'rectangle',
+/** Map semantic type → Excalidraw shape kind. */
+export const SHAPE_OF: Record<SemanticType, 'rectangle' | 'text' | 'image'> = {
+  container: 'rectangle', section: 'rectangle', card: 'rectangle', nav: 'rectangle',
+  heading: 'text', text: 'text', link: 'text',
+  button: 'rectangle', input: 'rectangle',
   image: 'image',
+  raw: 'rectangle', note: 'rectangle',
 }
 
-/** Whether an Excalidraw element can carry a semantic tag. */
+/** Heading level → default font size. */
+export const HEADING_SIZES: Record<number, number> = {
+  1: 48, 2: 36, 3: 24, 4: 20, 5: 18, 6: 16,
+}
+
+// ── Helpers ──
+
 export function canTag(el: ExcalidrawElement): boolean {
   return (
     el.type === 'rectangle' ||
     el.type === 'text' ||
-    el.type === 'image' ||
-    el.type === 'ellipse'
+    el.type === 'image'
   )
 }
 
-/** Read the semantic meta attached to an element (via customData). */
 export function getSemantic(el: ExcalidrawElement): SemanticMeta | null {
   const cd = (el as any).customData as { semantic?: SemanticMeta } | undefined
   if (cd?.semantic?.type) return cd.semantic
   return null
 }
 
-/** Attach (or clear) a semantic tag on a copy of the element. */
 export function setSemantic(
   el: ExcalidrawElement,
   meta: SemanticMeta | null
@@ -85,7 +141,6 @@ export function setSemantic(
   return next as ExcalidrawElement
 }
 
-/** Replace semantic props on a copy of the element (keeps type). */
 export function setSemanticProps(
   el: ExcalidrawElement,
   patch: Record<string, any>
@@ -95,34 +150,104 @@ export function setSemanticProps(
   return setSemantic(el, { ...meta, props: { ...meta.props, ...patch } })
 }
 
-/** Merge style fields back onto the Excalidraw element so the canvas is WYSIWYG. */
-export function applyStyle(el: ExcalidrawElement, meta: SemanticMeta): ExcalidrawElement {
-  const p = meta.props
-  const next = { ...el } as any
+export function setSemanticLayout(
+  el: ExcalidrawElement,
+  layout: LayoutHint
+): ExcalidrawElement {
+  const meta = getSemantic(el)
+  if (!meta) return el
+  return setSemantic(el, { ...meta, layout })
+}
 
-  if (meta.type === 'container' || meta.type === 'button') {
+export function setSemanticStyle(
+  el: ExcalidrawElement,
+  style: string | undefined
+): ExcalidrawElement {
+  const meta = getSemantic(el)
+  if (!meta) return el
+  const m = { ...meta }
+  if (style?.trim()) m.style = style
+  else delete m.style
+  return setSemantic(el, m)
+}
+
+export function setSemanticEvents(
+  el: ExcalidrawElement,
+  events: Record<string, string> | undefined
+): ExcalidrawElement {
+  const meta = getSemantic(el)
+  if (!meta) return el
+  const m = { ...meta }
+  if (events && Object.keys(events).length) m.events = events
+  else delete m.events
+  return setSemantic(el, m)
+}
+
+export function setSemanticHtml(
+  el: ExcalidrawElement,
+  html: string | undefined
+): ExcalidrawElement {
+  const meta = getSemantic(el)
+  if (!meta) return el
+  const m = { ...meta }
+  if (html?.trim()) m.html = html
+  else delete m.html
+  return setSemantic(el, m)
+}
+
+/** Apply style fields back onto the Excalidraw element so the canvas is WYSIWYG. */
+export function applyStyle(el: ExcalidrawElement, meta: SemanticMeta): ExcalidrawElement {
+  const p = meta.props || {}
+  const next = { ...el } as any
+  const t = meta.type
+
+  // Container-like (rect + bg + radius)
+  if (t === 'container' || t === 'section' || t === 'card' || t === 'nav' ||
+      t === 'button' || t === 'input') {
     next.backgroundColor = p.bg ?? el.backgroundColor
-    next.strokeColor = meta.type === 'button' ? p.color ?? el.strokeColor : el.strokeColor
+    if (t === 'button') next.strokeColor = p.color ?? el.strokeColor
+    else if (t === 'input') {
+      next.strokeColor = p.border ?? el.strokeColor
+      next.backgroundColor = p.bg ?? '#ffffff'
+    } else {
+      next.strokeColor = el.strokeColor
+    }
     next.roundness =
       typeof p.radius === 'number'
         ? { type: 'proportional' as const, value: Math.min(1, (p.radius || 0) / 60) }
         : el.roundness
-    next.strokeWidth = 2
+    next.strokeWidth = t === 'input' ? 1.5 : 2
     next.fillStyle = 'solid'
-  } else if (meta.type === 'text') {
-    next.text = p.content ?? (el as any).text
+  } else if (t === 'heading' || t === 'text' || t === 'link') {
+    next.text = (t === 'link' ? p.label : p.content) ?? (el as any).text
     next.fontSize = p.fontSize ?? (el as any).fontSize
     next.strokeColor = p.color ?? el.strokeColor
-    if (typeof p.bold === 'boolean') next.fontFamily = p.bold ? 2 : 1
-  } else if (meta.type === 'image') {
-    // nothing to style — alt/src live in props for the blueprint
+    if (t === 'heading') next.fontFamily = p.fontWeight && p.fontWeight >= 600 ? 2 : 1
+    else if (t === 'text') next.fontFamily = p.bold ? 2 : 1
+    else if (t === 'link') next.fontFamily = 1
+  } else if (t === 'raw') {
+    // Render a small marker text on the rect so the canvas hints at content
+    next.text = '[raw]'
+    next.fontSize = 12
+    next.strokeColor = '#888780'
+  } else if (t === 'note') {
+    // Note: warm beige fill, dark amber text
+    next.backgroundColor = '#FAEEDA'
+    next.strokeColor = '#EF9F27'
+    next.text = p.content ?? ''
+    next.fontSize = 13
+    next.strokeWidth = 1
+    next.fillStyle = 'solid'
   }
+  // image: nothing to style — props live in blueprint
 
   return next as ExcalidrawElement
 }
 
+// ── Serialization ──
+
 /**
- * Serialize the current scene into a blueprint tree.
+ * Serialize the current scene into a blueprint tree (v2).
  * Only semantically-tagged elements are included; parent/child relations come
  * from Excalidraw's containerBinding (containerId).
  */
@@ -130,25 +255,27 @@ export function toBlueprint(api: ExcalidrawImperativeAPI): Blueprint | null {
   const elements = api.getSceneElements()
   if (elements.length === 0) return null
 
-  const byId = new Map<string, ExcalidrawElement>()
-  for (const el of elements) byId.set(el.id, el)
-
   const build = (el: ExcalidrawElement): BlueprintElement => {
     const meta = getSemantic(el)
     const children = elements
       .filter((c) => (c as any).containerId === el.id && getSemantic(c))
       .map(build)
-    return {
+    const out: BlueprintElement = {
       id: el.id,
-      type: meta?.type || 'container',
+      type: (meta?.type || 'container') as SemanticType,
       x: Math.round(el.x),
       y: Math.round(el.y),
       w: Math.round(el.width || 0),
       h: Math.round(el.height || 0),
       angle: el.angle,
-      props: meta?.props || DEFAULT_PROPS.container,
+      layout: meta?.layout || DEFAULT_LAYOUT,
+      props: meta?.props || {},
       children,
     }
+    if (meta?.style)  out.style  = meta.style
+    if (meta?.events && Object.keys(meta.events).length) out.events = meta.events
+    if (meta?.html)   out.html   = meta.html
+    return out
   }
 
   const roots = elements.filter(
@@ -164,10 +291,10 @@ export function toBlueprint(api: ExcalidrawImperativeAPI): Blueprint | null {
   return {
     app: 'pandagugu-studio',
     kind: 'blueprint',
-    version: 1,
+    version: 2,
     title: String(title || 'Untitled'),
     theme: appState.theme === 'dark' ? 'dark' : 'light',
-    note: 'Coordinates are Excalidraw logical units (1 unit = 1 CSS px at 100% zoom). x/y = top-left corner.',
+    note: 'Coordinates are Excalidraw logical units (1 unit = 1 CSS px at 100% zoom). x/y = top-left corner. layout hints: free|row|column|grid|wrap — AI decides flex/grid vs absolute.',
     elements: roots.map(build),
   }
 }

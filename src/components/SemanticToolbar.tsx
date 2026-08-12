@@ -2,15 +2,16 @@ import React from 'react'
 import type { ExcalidrawImperativeAPI } from '@excalidraw/excalidraw/types'
 import type { ExcalidrawElement } from '@excalidraw/excalidraw/element/types'
 import {
-  SEMANTIC_TYPES,
+  SEMANTIC_GROUPS,
   DEFAULT_PROPS,
+  DEFAULT_LAYOUT,
   canTag,
   setSemantic,
   applyStyle,
   toBlueprint,
   downloadJSON,
 } from '../lib/blueprint'
-import type { SemanticType, SemanticMeta } from '../lib/blueprint'
+import type { SemanticType, LayoutHint, SemanticMeta } from '../lib/blueprint'
 import { useI18n } from '../lib/i18n'
 import './SemanticToolbar.css'
 
@@ -21,10 +22,19 @@ interface Props {
 }
 
 const TYPE_ICONS: Record<SemanticType, string> = {
-  container: '▭',
-  text: 'T',
-  button: '⬭',
+  container: '▭', section: '▤', card: '▢', nav: '☰',
+  heading: 'H', text: 'T', link: '↗',
+  button: '⬭', input: '▭',
   image: '◫',
+  raw: '</>', note: '✎',
+}
+
+const GROUP_LABEL_KEY: Record<string, string> = {
+  container: 'semantic.groupContainer',
+  content: 'semantic.groupContent',
+  control: 'semantic.groupControl',
+  media: 'semantic.groupMedia',
+  special: 'semantic.groupSpecial',
 }
 
 export function SemanticToolbar({ editor, selected, onChanged }: Props) {
@@ -33,7 +43,11 @@ export function SemanticToolbar({ editor, selected, onChanged }: Props) {
 
   const handleTag = (type: SemanticType) => {
     if (!editor || !selected || !canTag(selected)) return
-    const meta: SemanticMeta = { type, props: { ...DEFAULT_PROPS[type] } }
+    const meta: SemanticMeta = {
+      type,
+      layout: DEFAULT_LAYOUT,
+      props: { ...DEFAULT_PROPS[type] },
+    }
     const tagged = applyStyle(setSemantic(selected, meta), meta)
     const elements = editor
       .getSceneElements()
@@ -65,18 +79,24 @@ export function SemanticToolbar({ editor, selected, onChanged }: Props) {
   return (
     <div className="semantic-toolbar">
       <span className="semantic-toolbar-label">{t('semantic.title')}</span>
-      {SEMANTIC_TYPES.map((type) => (
-        <button
-          key={type}
-          className="semantic-btn"
-          disabled={!taggable}
-          onClick={() => handleTag(type)}
-          title={t(`semantic.${type}`)}
-        >
-          <span className="semantic-btn-icon">{TYPE_ICONS[type]}</span>
-          {t(`semantic.${type}`)}
-        </button>
+      {SEMANTIC_GROUPS.map((group) => (
+        <React.Fragment key={group.label}>
+          <span className="semantic-group-label">{t(GROUP_LABEL_KEY[group.label])}</span>
+          {group.types.map((type) => (
+            <button
+              key={type}
+              className="semantic-btn"
+              disabled={!taggable}
+              onClick={() => handleTag(type)}
+              title={t(`semantic.${type}`)}
+            >
+              <span className="semantic-btn-icon">{TYPE_ICONS[type]}</span>
+              {t(`semantic.${type}`)}
+            </button>
+          ))}
+        </React.Fragment>
       ))}
+      <span className="semantic-toolbar-sep" />
       <button
         className="semantic-btn semantic-btn-clear"
         disabled={!taggable}
@@ -85,7 +105,6 @@ export function SemanticToolbar({ editor, selected, onChanged }: Props) {
       >
         ✕
       </button>
-      <span className="semantic-toolbar-sep" />
       <button className="semantic-btn semantic-btn-export" onClick={handleExport}>
         {t('semantic.exportBlueprint')}
       </button>
