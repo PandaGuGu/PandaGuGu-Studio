@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import type { ProviderDef } from '../lib/providers'
+import type { ProviderDef, ModelDef } from '../lib/providers'
 import { useI18n } from '../lib/i18n'
 import './Header.css'
 
@@ -7,12 +7,14 @@ interface Props {
   providerName: string
   modelLabel: string
   hasKey: boolean
+  provider?: ProviderDef | null
+  model?: ModelDef | null
   onOpenSettings: () => void
   theme?: 'light' | 'dark'
   onToggleTheme?: () => void
 }
 
-export function Header({ providerName, modelLabel, hasKey, onOpenSettings, theme = 'light', onToggleTheme }: Props) {
+export function Header({ providerName, modelLabel, hasKey, provider, model, onOpenSettings, theme = 'light', onToggleTheme }: Props) {
   const t = useI18n()
   const [showAbout, setShowAbout] = useState(false)
 
@@ -53,11 +55,36 @@ export function Header({ providerName, modelLabel, hasKey, onOpenSettings, theme
             ) : (
               <span className="header-model-name header-model-unset">{t('header.modelNotSet')}</span>
             )}
-            <span className="header-model-action">{t('header.openSettings')}</span>
             <svg className="header-gear" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
               <circle cx="12" cy="12" r="3" />
             </svg>
+
+            {/* Hover tooltip — full model info */}
+            <div className="header-model-tip">
+              <div className="tip-title">{hasKey ? (model?.label || modelLabel) : t('header.modelNotSet')}</div>
+              {hasKey ? (
+                <>
+                  <div className="tip-row">
+                    <span className="tip-k">{t('header.tipProvider')}</span>
+                    <span className="tip-v">{provider?.name || providerName}</span>
+                  </div>
+                  {model?.vision && (
+                    <div className="tip-row">
+                      <span className="tip-k">{t('header.tipVision')}</span>
+                      <span className="tip-v tip-vision">{t('header.tipVisionYes')}</span>
+                    </div>
+                  )}
+                  <div className="tip-row">
+                    <span className="tip-k">{t('header.tipEndpoint')}</span>
+                    <span className="tip-v tip-endpoint">{provider?.endpoint || '—'}</span>
+                  </div>
+                </>
+              ) : (
+                <div className="tip-note">{t('header.tipNotSet')}</div>
+              )}
+              <div className="tip-foot">{t('header.tipOpenSettings')}</div>
+            </div>
           </button>
         </div>
       </header>

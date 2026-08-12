@@ -124,22 +124,77 @@
 }
 
 /* "Settings" action label — hidden by default, slides in on hover */
-.header-model-action {
-  font-size: 10px;
-  font-weight: 500;
-  color: var(--accent);
-  letter-spacing: 0.04em;
-  max-width: 0;
-  opacity: 0;
-  overflow: hidden;
-  margin-left: -3px;
-  transition: max-width 0.18s ease, opacity 0.18s ease, margin-left 0.18s ease;
-  white-space: nowrap;
+.header-model-btn {
+  position: relative;
 }
-.header-model-btn:hover .header-model-action {
-  max-width: 60px;
+
+.header-model-tip {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 300px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  z-index: 40;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-4px);
+  transition: opacity 0.15s, transform 0.15s, visibility 0.15s;
+  pointer-events: none;
+}
+.header-model-btn:hover .header-model-tip {
   opacity: 1;
-  margin-left: 0;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.tip-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-primary);
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--border);
+  letter-spacing: 0.03em;
+}
+.tip-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 10px;
+}
+.tip-k {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+.tip-v {
+  color: var(--text-secondary);
+  text-align: right;
+  word-break: break-all;
+}
+.tip-vision {
+  color: var(--accent);
+  font-weight: 600;
+}
+.tip-endpoint {
+  font-family: var(--font-mono);
+  font-size: 9px;
+}
+.tip-note {
+  font-size: 10px;
+  color: var(--text-secondary);
+}
+.tip-foot {
+  margin-top: 4px;
+  padding-top: 6px;
+  border-top: 1px solid var(--border);
+  font-size: 9px;
+  color: var(--accent);
 }
 
 /* Theme toggle button */

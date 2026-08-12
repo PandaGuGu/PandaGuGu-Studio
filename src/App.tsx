@@ -742,6 +742,8 @@ ${SYSTEM_PROMPT}`
         providerName={provider.name}
         modelLabel={modelLabel}
         hasKey={!needsKey}
+        provider={provider}
+        model={provider.models.find(m => m.id === modelId) || null}
         onOpenSettings={() => setShowSettings(true)}
         theme={canvasTheme}
         onToggleTheme={() => setCanvasTheme(t => (t === 'dark' ? 'light' : 'dark'))}
