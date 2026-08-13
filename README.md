@@ -4,9 +4,11 @@
 
 # PandaGuGu Studio
 
-**画布式 HTML 生成器** —— 画元素 · 打语义标 · 圈成区块 → 一键导出 JSON 蓝图 → AI 生成完整 HTML
+**A canvas-based HTML generator** — draw elements · tag them with semantics · group them into sections → export a JSON blueprint with one click → AI turns it into a complete HTML page
 
-纯前端，无后端，完全在浏览器里运行。AI 能力走 **BYOK**（Bring Your Own Key）——你在设置页自行填入模型 API Key（应用不内置任何 key），Key 只存浏览器本地，绝不上传。配套 **pgg CLI**：蓝图 ⇄ AI ⇄ HTML 的文件级工作流。
+[English](README.md) | [简体中文](README.zh-CN.md)
+
+Pure frontend, no backend, runs entirely in the browser. AI capabilities are **BYOK** (Bring Your Own Key) — you fill in your own model API key in the settings page (the app embeds no keys). Keys are stored only in your browser's localStorage and never uploaded. Ships with the **pgg CLI** for a file-level workflow: blueprint ⇄ AI ⇄ HTML.
 
 [![GitHub stars](https://img.shields.io/github/stars/PandaGuGu/PandaGuGu-Studio?style=for-the-badge&logo=github&color=2e7d6f)](https://github.com/PandaGuGu/PandaGuGu-Studio/stargazers)
 [![License](https://img.shields.io/github/license/PandaGuGu/PandaGuGu-Studio?style=for-the-badge&color=2563eb)](LICENSE)
@@ -17,80 +19,80 @@
 
 ![PandaGuGu Studio screenshot](screenshot/sc.png)
 
-## 与 Excalidraw 的关系（我们的优势）
+## Relationship with Excalidraw (our advantage)
 
-PandaGuGu Studio 基于 MIT 开源的 [Excalidraw](https://github.com/excalidraw/excalidraw) 构建——它是成熟的开源无限画布引擎。我们不重复造轮子，而是把画布从"绘图白板"升级为**"视觉 → 代码"管线**：
+PandaGuGu Studio is built on the MIT-licensed open-source [Excalidraw](https://github.com/excalidraw/excalidraw) — a mature infinite-canvas engine. Instead of reinventing the wheel, we upgrade the canvas from a "drawing whiteboard" into a **"visual → code" pipeline**:
 
-| Excalidraw 原生 | PandaGuGu Studio 叠加 |
+| Excalidraw native | PandaGuGu Studio adds |
 |---|---|
-| 形状：矩形 / 椭圆 / 文字 / 图片 | **语义**：容器 / 标题 / 按钮 / 图片… 12 种页面元素 |
-| 导出 PNG / 自有 JSON | **开放蓝图 JSON**：语义类型 + layout + zIndex，AI 直接消费生成 HTML |
-| 画完即止（白板） | **AI 生成闭环**：画布 → 蓝图 → 流式生成 HTML → 沙箱预览 → 细化 |
-| 画框 = 框选工具 | 画框 = `<section>` 页面结构（多画框 = 多区块页面） |
-| 形状属性很少、靠手调 | 按语义类型属性面板（颜色/文字/圆角…），编辑实时 WYSIWYG |
-| 元素列表扁平 | IDE 树形图层（画框 = 文件夹，▸/▾ 折叠，点击选中） |
-| Shift 多选 | Ctrl/⌘ 多选 + 8 种对齐/等距分布（嘉立创风格） |
+| Shapes: rectangle / ellipse / text / image | **Semantics**: container / heading / button / image… 12 page element types |
+| Export PNG / proprietary JSON | **Open blueprint JSON**: semantic types + layout + zIndex, consumed directly by AI to generate HTML |
+| Stops at drawing (whiteboard) | **AI generation loop**: canvas → blueprint → streaming HTML → sandbox preview → refine |
+| Frame = marquee selection tool | Frame = `<section>` page structure (multiple frames = multi-section page) |
+| Few shape props, manually tuned | Property panel per semantic type (color / text / radius…), live WYSIWYG editing |
+| Flat element list | IDE-style tree layers (frame = folder, ▸/▾ collapse, click to select) |
+| Shift multi-select | Ctrl/⌘ multi-select + 8 align/distribute actions (EASYEDA-style) |
 
-**一句话定位**：Excalidraw 是引擎，PandaGuGu Studio 是把它变成"画出来 → AI 写出代码"的产品。
+**One-liner positioning**: Excalidraw is the engine; PandaGuGu Studio is the product that turns it into "draw it → AI writes the code".
 
-## 核心工作流
+## Core workflow
 
 ```
-① 画      — 用 Excalidraw 画矩形/文字/图片/椭圆…
-② 标记    — 智能打标：矩形→容器、椭圆→按钮、文字→文本、图片→图片（画完自动标）
-③ 圈区    — 画框圈住一块区域 = 一个 <section>（页面区块/一屏）
-④ 生成    — 点「✨ 用画布蓝图生成」→ JSON 蓝图自动进提示词 → AI 生成 HTML
+① Draw    — draw rectangles / text / images / ellipses… with Excalidraw
+② Tag     — smart tagging: rectangle→container, ellipse→button, text→text, image→image (auto-tagged as you draw)
+③ Frame   — draw a frame around a region = one <section> (page section / one screen)
+④ Generate — click「✨ Generate from canvas blueprint」→ the JSON blueprint feeds the prompt automatically → AI generates the HTML
 ```
 
-## 功能
+## Features
 
-- **语义类型系统（12 种）**：容器/区段/卡片/导航 + 标题/文本/链接 + 按钮/输入框 + 图片 + HTML片段/便签
-- **智能打标**：画图自动匹配语义类型（顶部 ⚡ 开关）；也支持拖拽创建（点类型→画→自动标）
-- **属性面板**：选中元素按类型编辑属性（颜色/文字/圆角…），编辑才同步画布，绝不改你的画
-- **画框 = `<section>`**：画框圈出的区域导出为顶层 section 节点，框内元素成为 children
-- **图层面板**：IDE 风格树形分级（画框=文件夹带 ▸/▾ 箭头），点击选中、− 删除
-- **对齐工具**：左/右/水平居中 + 顶/底/垂直居中 + 等距分布（8 种，多选后底部 ▲ 菜单）
-- **多选**：Ctrl/⌘+点击 切换选中（点选中的取消，未选中的加入）
-- **JSON 蓝图导出**：画框级（缩略图 ⇩）或整画布（▲ 菜单），含 zIndex（叠层顺序）和 layout 提示
-- **图片导出三模式**：嵌入 dataURL（自包含 HTML）/ 文件名引用（配合 DeepSeek 纯文本模型）/ HTML 内嵌（离线出稿）
-- **批量变体**：8 种预置风格 + 自定义描述，一键生成 N 份变体切换预览
-- **生成历史**：每次生成自动存档 localStorage，可回看/重载/删除
-- **经典模板库**：6 套模板（手机 App 首页/登录页 + SaaS 落地/仪表盘/电商/作品集），一键生成画框 + 语义元素
-- **导入 HTML → 画布**：旧网页解析简化、自动布局到画布，逆向重设计闭环
-- **自动吸附**：Excalidraw 原生 smart guides（拖动红参考线）；元素拖进画框自动归属
-- **主题**：浅色/深色切换，全站跟随
-- **9 个模型服务商**：z.ai / DeepSeek / Kimi / 通义千问 / 火山方舟 / Google / Fireworks / OpenRouter / Custom
-- **pgg CLI**：`pgg plan`（蓝图→AI→HTML）、`pgg import`（HTML→蓝图）、`pgg render`（离线出稿）、`pgg history`（生成历史）、`pgg serve`（本地 REST API），与网页版共用同一套 core 逻辑
+- **Semantic type system (12 types)**: container / section / card / nav + heading / text / link + button / input + image + HTML snippet / note
+- **Smart tagging**: auto-matches semantic types as you draw (⚡ toggle at the top); drag-to-create is also supported (pick a type → draw → auto-tagged)
+- **Property panel**: edit per-type props of the selected element (color / text / radius…), syncs to the canvas only on edit — never modifies your drawing
+- **Frame = `<section>`**: areas framed by a rectangle export as top-level section nodes, with inner elements as children
+- **Layers panel**: IDE-style tree hierarchy (frame = folder with ▸/▾ arrows), click to select, − to delete
+- **Align tools**: left / right / horizontal center + top / bottom / vertical center + even distribution (8 actions, bottom ▲ menu after multi-select)
+- **Multi-select**: Ctrl/⌘+click toggles selection (click selected to deselect, click unselected to add)
+- **JSON blueprint export**: per-frame (thumbnail ⇩) or whole canvas (▲ menu), including zIndex (stacking order) and layout hints
+- **Three image export modes**: embed dataURL (self-contained HTML) / filename reference (for DeepSeek text-only models) / inline HTML (offline output)
+- **Batch variants**: 8 preset styles + custom descriptions, generate N variants in one click with toggle preview
+- **Generation history**: every generation auto-archives to localStorage; review / reload / delete anytime
+- **Classic template library**: 6 templates (mobile app home / login + SaaS landing / dashboard / e-commerce / portfolio), one-click to generate frames + semantic elements
+- **Import HTML → canvas**: parse legacy pages, simplify, auto-layout onto the canvas — closes the reverse-redesign loop
+- **Smart guides**: Excalidraw native smart guides (red guides while dragging); elements dragged into a frame auto-assign to it
+- **Theme**: light / dark toggle, applied across the whole site
+- **9 model providers**: z.ai / DeepSeek / Kimi / Tongyi Qianwen / Volcano Ark / Google / Fireworks / OpenRouter / Custom
+- **pgg CLI**: `pgg plan` (blueprint→AI→HTML), `pgg import` (HTML→blueprint), `pgg render` (offline output), `pgg history` (generation history), `pgg serve` (local REST API) — all sharing the same core logic as the web app
 
-## CLI（pgg）
+## CLI (pgg)
 
-蓝图与 HTML 的文件级工作流,方便 AI 或脚本直接操控,与网页版共用同一套 core(类型/提示词/HTML 渲染/导入解析)。
+A file-level workflow between blueprints and HTML, convenient for AI or scripts to drive directly — shares the same core (types / prompts / HTML rendering / import parsing) as the web app.
 
 ```bash
-npm run build:cli          # 打包 dist-cli/pgg.mjs(rolldown,单文件 ESM)
+npm run build:cli          # bundles dist-cli/pgg.mjs (rolldown, single-file ESM)
 node dist-cli/pgg.mjs help
 
-# ① 蓝图 → AI → 完整 HTML(与网页版「✨ 用画布蓝图生成」同一提示词契约)
-node dist-cli/pgg.mjs plan design.blueprint.json "做成深色科技风" \
+# ① blueprint → AI → complete HTML (same prompt contract as the web app's「✨ Generate from canvas blueprint」)
+node dist-cli/pgg.mjs plan design.blueprint.json "make it a dark tech style" \
   --provider=qwen --model=qwen-plus --key=sk-xxx --out=out.html
 
-# ② HTML → 蓝图 JSON(逆向,可在画布载入继续编辑)
+# ② HTML → blueprint JSON (reverse; load it back into the canvas for further editing)
 node dist-cli/pgg.mjs import old-site.html -o old-site.blueprint.json
 
-# ③ 蓝图 → HTML(离线渲染,不经 AI,不耗 token;与网页版「🧾 导出 HTML」同一渲染器)
-node dist-cli/pgg.mjs render old-site.blueprint.json --title="新页面" -o new.html
+# ③ blueprint → HTML (offline render, no AI, no token cost; same renderer as the web app's「🧾 Export HTML」)
+node dist-cli/pgg.mjs render old-site.blueprint.json --title="New page" -o new.html
 
-# ④ 生成历史(文件级,~/.pandagugu/history.json)
+# ④ generation history (file-level, ~/.pandagugu/history.json)
 node dist-cli/pgg.mjs history list
-node dist-cli/pgg.mjs history show <id> -o 某次生成.html
+node dist-cli/pgg.mjs history show <id> -o some-generation.html
 
-# ⑤ 本地 REST API(GET /health · POST /api/plan · POST /api/import)
+# ⑤ local REST API (GET /health · POST /api/plan · POST /api/import)
 node dist-cli/pgg.mjs serve --port 8787
 ```
 
-配置优先级:**命令行参数 > 环境变量(`PGG_PROVIDER/PGG_MODEL/PGG_API_KEY/PGG_ENDPOINT`)> `~/.pandagugu.json`**。Key 只在本地,不上传。短参数 `-o/-p/-k/-m` 分别是 `--out/--port/--key/--model` 的别名。
+Config precedence: **CLI args > environment variables (`PGG_PROVIDER/PGG_MODEL/PGG_API_KEY/PGG_ENDPOINT`) > `~/.pandagugu.json`**. Keys stay local, never uploaded. Short flags `-o/-p/-k/-m` are aliases for `--out/--port/--key/--model`.
 
-## 蓝图数据模型（v2）
+## Blueprint data model (v2)
 
 ```json
 {
@@ -99,91 +101,91 @@ node dist-cli/pgg.mjs serve --port 8787
       "zIndex": 0, "layout": "column",
       "props": { "label": "Hero" },
       "children": [
-        { "type": "heading", "props": { "content": "新一代视觉画布" } },
-        { "type": "text", "props": { "content": "画、标、生成" } },
-        { "type": "button", "props": { "label": "立即开始" } }
+        { "type": "heading", "props": { "content": "A new visual canvas" } },
+        { "type": "text", "props": { "content": "Draw, tag, generate" } },
+        { "type": "button", "props": { "label": "Get started" } }
       ] }
   ]
 }
 ```
 
-- **语义类型 → HTML**：section→`<section>`、container→`<div>`、heading→`<h1-h6>`、button→`<button>`、input→`<input>`、image→`<img>`、text→`<p>`、link→`<a>`、raw→原样嵌入、note→设计意图参考
-- **layout 提示**：free→absolute，row/column/grid/wrap→flex/grid
-- **zIndex**：重叠元素按它设 `z-index`
+- **Semantic types → HTML**: section→`<section>`, container→`<div>`, heading→`<h1-h6>`, button→`<button>`, input→`<input>`, image→`<img>`, text→`<p>`, link→`<a>`, raw→embedded verbatim, note→design intent reference
+- **layout hints**: free→absolute, row/column/grid/wrap→flex/grid
+- **zIndex**: overlapping elements get `z-index` from it
 
-## 模型服务商
+## Model providers
 
-| 服务 | 端点 | 模型 |
+| Provider | Endpoint | Models |
 |------|------|------|
 | z.ai | api.z.ai | GLM-5V Turbo |
 | DeepSeek | api.deepseek.com | deepseek-chat / deepseek-reasoner |
 | Kimi | api.moonshot.cn | moonshot-v1 / kimi-k2 |
-| 通义千问 | dashscope 兼容模式 | qwen-vl-plus / qwen-plus / qwen-max |
-| 火山方舟 | ark.cn-beijing.volces.com | doubao-1.5-pro/lite、seed-1.6 |
+| Tongyi Qianwen | dashscope compatible mode | qwen-vl-plus / qwen-plus / qwen-max |
+| Volcano Ark | ark.cn-beijing.volces.com | doubao-1.5-pro/lite, seed-1.6 |
 | Google | generativelanguage | Gemini 3.1 Pro / Flash / Lite |
 | Fireworks | api.fireworks.ai | Kimi K2.5 Turbo |
-| OpenRouter | openrouter.ai | 100+ 模型（自动拉取） |
-| Custom | 任意 | 任何 OpenAI 兼容端点 |
+| OpenRouter | openrouter.ai | 100+ models (auto-fetched) |
+| Custom | any | any OpenAI-compatible endpoint |
 
-Key 存在浏览器 localStorage，不上传。
+Keys are stored in browser localStorage and never uploaded.
 
-## 快捷键
+## Keyboard shortcuts
 
-- `Cmd/Ctrl + Enter`：提交生成/细化
-- `Ctrl/⌘ + 点击`：切换多选
-- `Shift + 点击` / 框选：多选
+- `Cmd/Ctrl + Enter`: submit generate / refine
+- `Ctrl/⌘ + click`: toggle multi-select
+- `Shift + click` / marquee: multi-select
 
-## 开发
+## Development
 
 ```bash
 npm install
-npm run dev       # 开发，http://localhost:5173
-npm run build     # 生产构建
-npm run build:cli # 打包 pgg CLI → dist-cli/pgg.mjs
-npm test          # core 单元测试（node:test）
-npm run check     # 质量检查：tsc + 测试 + 构建 + 品牌扫描
+npm run dev       # dev server, http://localhost:5173
+npm run build     # production build
+npm run build:cli # bundle the pgg CLI → dist-cli/pgg.mjs
+npm test          # core unit tests (node:test)
+npm run check     # quality checks: tsc + tests + build + brand scan
 ```
 
-## 架构
+## Architecture
 
 ```
 src/
-  App.tsx                 — 编排中枢、状态、AI 管线（生成/细化/Plan）
+  App.tsx                 — orchestration hub, state, AI pipeline (generate / refine / plan)
   lib/
-    core/                 — 纯 TS 零依赖，浏览器 + Node 双端复用
-      types.ts            — 语义类型 v2、蓝图模型、常量、纯工具
-      blueprintToHtml.ts  — 蓝图 → 自包含 HTML（图片 base64 内嵌）
-      prompt.ts           — 蓝图 → AI 提示词（生成/变体/网页 AI 三处共用）
-      htmlToBlueprint.ts  — HTML → 蓝图（简化 + 自动布局）
-    blueprint.ts          — Excalidraw 层：打标、样式同步、toBlueprint 序列化（re-export core）
-    align.ts              — 8 种对齐/分布算法（纯坐标）
-    providers.ts          — 9 服务商配置、状态持久化
-    api.ts                — OpenAI 兼容 + Gemini 双协议 SSE 流式
-    export.ts             — 画框/整画布 PNG 导出
-    i18n.tsx              — 中英双语
+    core/                 — pure TS, zero deps, shared between browser & Node
+      types.ts            — semantic types v2, blueprint model, constants, pure utils
+      blueprintToHtml.ts  — blueprint → self-contained HTML (images embedded as base64)
+      prompt.ts           — blueprint → AI prompt (shared by generate / variants / web AI)
+      htmlToBlueprint.ts  — HTML → blueprint (simplify + auto layout)
+    blueprint.ts          — Excalidraw layer: tagging, style sync, toBlueprint serialization (re-exports core)
+    align.ts              — 8 align/distribute algorithms (pure coordinates)
+    providers.ts          — 9 provider configs, state persistence
+    api.ts                — OpenAI-compatible + Gemini dual-protocol SSE streaming
+    export.ts             — frame / full-canvas PNG export
+    i18n.tsx              — English & Chinese
   components/
-    Canvas.tsx            — Excalidraw 实例、智能打标、Ctrl 多选
-    SemanticRail.tsx      — 底部浮动工具条（12 类型 + 搜索 + 导出/对齐 ▲）
-    PropsPanel.tsx        — 按类型属性编辑面板
-    LayersPanel.tsx       — IDE 树形图层面板
-    FramePicker.tsx       — 画框管理、缩略图、画框级 JSON 导出
-    PromptBar.tsx         — AI 输入（✨蓝图生成 + 场景预设）
-    Preview.tsx           — 沙箱 iframe 预览 + 设备切换
+    Canvas.tsx            — Excalidraw instance, smart tagging, Ctrl multi-select
+    SemanticRail.tsx      — bottom floating toolbar (12 types + search + export/align ▲)
+    PropsPanel.tsx        — per-type property editor panel
+    LayersPanel.tsx       — IDE-style tree layers panel
+    FramePicker.tsx       — frame management, thumbnails, per-frame JSON export
+    PromptBar.tsx         — AI input (✨ blueprint generate + scenario presets)
+    Preview.tsx           — sandboxed iframe preview + device switching
     ...
 cli/
-  pgg.ts                  — CLI 入口（plan / import / render / history / serve / version）
-  commands/plan.ts        — 蓝图 → AI → HTML（planToHtml 供 serve 复用）
-  commands/import.ts      — HTML → 蓝图（linkedom 解析）
-  commands/render.ts      — 蓝图 → HTML（离线，不经 AI）
-  commands/history.ts     — 生成历史（~/.pandagugu/history.json）
-  commands/serve.ts       — 本地 REST API
-  config.ts               — 参数解析 + 配置合并（flag > env > ~/.pandagugu.json）
+  pgg.ts                  — CLI entry (plan / import / render / history / serve / version)
+  commands/plan.ts        — blueprint → AI → HTML (planToHtml reused by serve)
+  commands/import.ts      — HTML → blueprint (linkedom parsing)
+  commands/render.ts      — blueprint → HTML (offline, no AI)
+  commands/history.ts     — generation history (~/.pandagugu/history.json)
+  commands/serve.ts       — local REST API
+  config.ts               — arg parsing + config merging (flag > env > ~/.pandagugu.json)
 ```
 
 ## License
 
-MIT — 保留所有上游版权声明：
+MIT — upstream copyright notices are preserved:
 
-- **Excalidraw**（底层画布引擎，MIT）— Copyright (c) 2020 Excalidraw
-- **VCanvas**（上游项目，MIT）— Copyright (c) 2026 E01.ai
-- **PandaGuGu Studio**（本项目）— Copyright (c) 2026 PandaGuGu Studio
+- **Excalidraw** (underlying canvas engine, MIT) — Copyright (c) 2020 Excalidraw
+- **VCanvas** (upstream project, MIT) — Copyright (c) 2026 E01.ai
+- **PandaGuGu Studio** (this project) — Copyright (c) 2026 PandaGuGu Studio

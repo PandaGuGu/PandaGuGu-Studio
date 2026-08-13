@@ -13,7 +13,8 @@
 
 | 文件 | 说明 |
 |------|------|
-| `README.md` | 对外介绍（功能 / CLI 用法 / 数据模型简介 / 服务商 / 开发） |
+| `README.md` | 对外介绍 · 英文（功能 / CLI 用法 / 数据模型简介 / 服务商 / 开发） |
+| `README.zh-CN.md` | 对外介绍 · 简体中文（与 README.md 内容一致） |
 | `LICENSE` | MIT 三层版权声明（Excalidraw / VCanvas / PandaGuGu） |
 | `package.json` | npm 脚本（dev/build/test/check/build:cli）+ bin `pgg` |
 | `package-lock.json` | 依赖锁定（勿手改，用 `npm install` 刷新） |
