@@ -68,6 +68,9 @@ const translations: Record<Lang, Record<string, string>> = {
     'frame.none': '取消',
     'frame.lastOutput': '上次输出',
     'frame.preview': '预览',
+    'frame.collapse': '折叠',
+    'frame.expand': '展开',
+    'frame.frames': '个画框',
 
     'layers.title': '图层',
     'layers.add': '添加画框',

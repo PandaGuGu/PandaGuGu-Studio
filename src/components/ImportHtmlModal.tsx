@@ -74,6 +74,7 @@ export function ImportHtmlModal({ onImport, onClose }: Props) {
         {error && <div className="import-error">{error}</div>}
 
         <div className="import-foot">
+          <button className="import-cancel" onClick={onClose} disabled={loading}>{t('import.cancel')}</button>
           <button className="import-ok" onClick={doImport} disabled={!html.trim() || loading}>
             {loading ? t('import.importing') : t('import.confirm')}
           </button>

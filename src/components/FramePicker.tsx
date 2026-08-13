@@ -67,10 +67,6 @@ export function FramePicker({ editor, selectedIds, onSelectionChange, onAddFrame
     onSelectionChange(new Set(sources.map((s) => s.id)))
   }, [sources, onSelectionChange])
 
-  const selectNone = useCallback(() => {
-    onSelectionChange(new Set())
-  }, [onSelectionChange])
-
   const handleExportFrameJson = useCallback(async (frameId: string) => {
     if (!editor) return
     const bp = await toBlueprintAsync(editor, { frameId })
@@ -132,7 +128,6 @@ export function FramePicker({ editor, selectedIds, onSelectionChange, onAddFrame
           </button>
           <button className="btn btn-ghost" onClick={onAddFrame}>+ {t('frame.add')}</button>
           <button className="btn btn-ghost" onClick={selectAll}>{t('frame.all')}</button>
-          <button className="btn btn-ghost" onClick={selectNone}>{t('frame.none')}</button>
           <span className="fpb-sep" />
           <button className="btn btn-ghost" onClick={onSave}>{t('frame.save')}</button>
           <button className="btn btn-ghost" onClick={onLoad}>{t('frame.load')}</button>
