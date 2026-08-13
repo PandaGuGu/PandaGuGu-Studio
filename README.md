@@ -44,6 +44,28 @@ PandaGuGu Studio 基于 MIT 开源的 [Excalidraw](https://github.com/excalidraw
 - **自动吸附**：Excalidraw 原生 smart guides（拖动红参考线）；元素拖进画框自动归属
 - **主题**：浅色/深色切换，全站跟随
 - **9 个模型服务商**：z.ai / DeepSeek / Kimi / 通义千问 / 火山方舟 / Google / Fireworks / OpenRouter / Custom
+- **pgg CLI**：`pgg plan`（蓝图→AI→HTML）、`pgg import`（HTML→蓝图）、`pgg serve`（本地 REST API），与网页版共用同一套 core 逻辑
+
+## CLI（pgg）
+
+蓝图与 HTML 的文件级工作流,方便 AI 或脚本直接操控,与网页版共用同一套 core(类型/提示词/HTML 渲染/导入解析)。
+
+```bash
+npm run build:cli          # 打包 dist-cli/pgg.mjs(rolldown,单文件 ESM)
+node dist-cli/pgg.mjs help
+
+# ① 蓝图 → AI → 完整 HTML(与网页版「✨ 用画布蓝图生成」同一提示词契约)
+node dist-cli/pgg.mjs plan design.blueprint.json "做成深色科技风" \
+  --provider=qwen --model=qwen-plus --key=sk-xxx --out=out.html
+
+# ② HTML → 蓝图 JSON(逆向,可在画布载入继续编辑)
+node dist-cli/pgg.mjs import old-site.html -o old-site.blueprint.json
+
+# ③ 本地 REST API(GET /health · POST /api/plan · POST /api/import)
+node dist-cli/pgg.mjs serve --port 8787
+```
+
+配置优先级:**命令行参数 > 环境变量(`PGG_PROVIDER/PGG_MODEL/PGG_API_KEY/PGG_ENDPOINT`)> `~/.pandagugu.json`**。Key 只在本地,不上传。
 
 ## 蓝图数据模型（v2）
 
@@ -103,7 +125,12 @@ npm run build:gh  # 部署到 /vcanvas/ 路径
 src/
   App.tsx                 — 编排中枢、状态、AI 管线（生成/细化/Plan）
   lib/
-    blueprint.ts          — 语义类型 v2、蓝图序列化、zIndex/layout
+    core/                 — 纯 TS 零依赖，浏览器 + Node 双端复用
+      types.ts            — 语义类型 v2、蓝图模型、常量、纯工具
+      blueprintToHtml.ts  — 蓝图 → 自包含 HTML（图片 base64 内嵌）
+      prompt.ts           — 蓝图 → AI 提示词（生成/变体/网页 AI 三处共用）
+      htmlToBlueprint.ts  — HTML → 蓝图（简化 + 自动布局）
+    blueprint.ts          — Excalidraw 层：打标、样式同步、toBlueprint 序列化（re-export core）
     align.ts              — 8 种对齐/分布算法（纯坐标）
     providers.ts          — 9 服务商配置、状态持久化
     api.ts                — OpenAI 兼容 + Gemini 双协议 SSE 流式
@@ -118,6 +145,12 @@ src/
     PromptBar.tsx         — AI 输入（✨蓝图生成 + 场景预设）
     Preview.tsx           — 沙箱 iframe 预览 + 设备切换
     ...
+cli/
+  pgg.ts                  — CLI 入口（plan / import / serve / version）
+  commands/plan.ts        — 蓝图 → AI → HTML（planToHtml 供 serve 复用）
+  commands/import.ts      — HTML → 蓝图（linkedom 解析）
+  commands/serve.ts       — 本地 REST API
+  config.ts               — 参数解析 + 配置合并（flag > env > ~/.pandagugu.json）
 ```
 
 ## License

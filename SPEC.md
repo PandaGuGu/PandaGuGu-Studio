@@ -26,18 +26,23 @@
 - **不做商业化功能**
 
 #### 1.3 未来规划
-1. **批量变体**：蓝图 + N 组风格描述 → AI 批量生成多份 HTML → 变体栏切换预览
-2. **生成历史库**：每次生成自动存档 localStorage，可回看/重新载入/删除/下载
-3. **一键下载生成的 HTML 文件**（当前仅复制/新窗口）
-4. **CLI / 接口，方便 AI 操控**（2026-08-12 用户提出）：
-   - 形态：本地 Node CLI `pandagugu`（或 `pgg`）+ 核心逻辑抽成与 React 无关的纯库
-   - 关键前置：把 `blueprint.ts` 中不依赖 Excalidraw 的部分（类型系统、序列化、映射规则）抽成 `lib/core/`，浏览器与 Node 双端复用
-   - 命令示例：`pgg plan <blueprint.json> <prompt>`（蓝图→AI→HTML）、`pgg import <file.html>`（HTML→蓝图，正好服务需求 5）、`pgg serve`（本地 REST API 供 AI 调用）
-   - AI 接入方式：文件级交互（读写 .blueprint.json/.html）+ 可选 HTTP API
-5. **导入 HTML → 简化 → 自动布局到画布**（2026-08-12 用户提出）：
-   - 流程：HTML → 解析（jsdom/DOMParser）→ 简化（inline style → props、去 script/冗余嵌套、DOM 树 → 语义类型映射）→ 布局推断（块级纵向 column / 行内横向 row / box 估算 x/y/w/h）→ 生成 BlueprintElement 树 → 用 Excalidraw API 反向画出带语义标记的元素 → 用户直接在画布上改
-   - 价值：与需求 4 组成"旧网站逆向 → 画布重设计 → 导出蓝图 → 生成新版"完整闭环
+1. **批量变体**：蓝图 + N 组风格描述 → AI 批量生成多份 HTML → 变体栏切换预览（✅ 已完成 2026-08-12，commit f01bcc2）
+2. **生成历史库**：每次生成自动存档 localStorage，可回看/重新载入/删除/下载（✅ 已完成 2026-08-12，commit 5270ac1）
+3. **一键下载生成的 HTML 文件**（✅ 已完成 2026-08-12，preview-toolbar 下载按钮 + 变体独立下载）
+4. **CLI / 接口，方便 AI 操控**（✅ 已完成 2026-08-13，commit 待记录）：
+   - 形态：本地 Node CLI `pgg`（`node dist-cli/pgg.mjs`，`npm run build:cli` 打包）
+   - 双端复用：`src/lib/core/`（types / blueprintToHtml / prompt / htmlToBlueprint）为纯 TS 零依赖，浏览器与 Node 共用同一份源码
+   - 命令：`pgg plan <blueprint.json> [prompt]`（蓝图→AI→HTML，流式）、`pgg import <file.html> [-o out.json]`（HTML→蓝图，linkedom 解析）、`pgg serve [--port 8787]`（本地 REST API：GET /health · POST /api/plan · POST /api/import）
+   - 配置：命令行参数 > 环境变量（`PGG_PROVIDER/PGG_MODEL/PGG_API_KEY/PGG_ENDPOINT`）> `~/.pandagugu.json`
+   - AI 接入方式：文件级交互（读写 .blueprint.json/.html）+ HTTP API
+5. **导入 HTML → 简化 → 自动布局到画布**（✅ 已完成 2026-08-12，commit fcd8488 + 后续 importHtml 增强）
 6. **git 推远端** + CI 上线（✅ 已完成 2026-08-12，远端 github.com/PandaGuGu/PandaGuGu-Studio）
+
+#### 1.4 后续规划（CLI 完成后的下一步）
+1. **`pgg render <blueprint.json> [-o out.html]`**：蓝图 → 自包含 HTML（不经 AI，直接复用 core/blueprintToHtml），把"AI 才出 HTML"变成"离线也能出"
+2. **`pgg serve` 接入浏览器**：网页版"生成"按钮可切换到本地 serve 模式（省 token 调试 / 固定 endpoint）
+3. **蓝图 → PNG 预览**：CLI 内渲染蓝图为图片（Node 侧 canvas 或导出 SVG），便于快速检查布局
+4. **生成历史库 CLI 化**：`pgg history` 管理本地生成记录（与网页版 localStorage 同步或独立）
 
 ---
 

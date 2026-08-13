@@ -49,7 +49,8 @@
 | **R-QA-1** | **提交前必须 tsc 零错误 + 构建通过**             | `npx tsc --noEmit` 必须 0 错误，`npm run build` 必须成功，才能提交。 |
 | **R-QA-2** | **组件文件必须成对（.tsx + .css）**              | 新组件 = `组件名.tsx` + `组件名.css`，样式不要写进 globals.css（全局变量除外）。 |
 | **R-QA-3** | **提交信息必须遵循 Conventional Commits**        | `feat:` / `fix:` / `refactor:` / `chore:` + 中文描述，正文列要点。git 作者固定 `PandaGuGu Studio <pandagugu@studio.local>`。 |
-| **R-QA-4** | **API Key 严禁提交**                              | `.env`、真实 key、token 严禁进入 git。Key 存浏览器 localStorage（providerState），代码里只存占位符。 |
+| **R-QA-4** | **API Key 严禁提交**                              | `.env`、真实 key、token 严禁进入 git。Key 存浏览器 localStorage（providerState），代码里只存占位符。CLI 的 key 走 `~/.pandagugu.json`（gitignore 范围外，用户主目录，不随项目提交）。 |
+| **R-QA-5** | **core 必须零依赖、双端复用**                     | 浏览器与 CLI 共用的逻辑（类型/常量/提示词/HTML 渲染/导入解析）一律放 `src/lib/core/`，纯 TS 零依赖（禁 import Excalidraw/React/DOM）。`blueprint.ts` 只保留 Excalidraw 层并 re-export core。新增双端逻辑不得写进组件或 Excalidraw 层。 |
 
 ---
 

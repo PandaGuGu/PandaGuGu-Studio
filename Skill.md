@@ -73,3 +73,16 @@ git -c user.email="pandagugu@studio.local" -c user.name="PandaGuGu Studio" commi
 - 类型检查：`npx tsc --noEmit`
 - 生产构建：`npm run build`（产物在 dist/）
 - 快捷键：`Cmd/Ctrl+Enter` 提交生成（PromptBar）
+
+### S-009 pgg CLI（蓝图 ⇄ AI ⇄ HTML）
+
+- 构建：`npm run build:cli` → `dist-cli/pgg.mjs`（rolldown 单文件 ESM，**不要手动提交 dist-cli，已 gitignore**）
+- 命令：
+  - `node dist-cli/pgg.mjs plan <blueprint.json> [prompt]` 蓝图→AI→HTML（流式，`--provider/--model/--key/--endpoint/--style/--out/--no-stream`）
+  - `node dist-cli/pgg.mjs import <file.html> [-o out.json]` HTML→蓝图（Node 端用 linkedom 解析后注入）
+  - `node dist-cli/pgg.mjs serve [--port 8787]` 本地 REST API（GET /health · POST /api/plan · POST /api/import）
+- 配置优先级：命令行参数 > 环境变量（`PGG_PROVIDER/PGG_MODEL/PGG_API_KEY/PGG_ENDPOINT`）> `~/.pandagugu.json`
+- **双端复用铁律**：浏览器与 CLI 共用的逻辑必须放 `src/lib/core/`（纯 TS 零依赖，禁 import Excalidraw/React/DOM）；`blueprint.ts` 只留 Excalidraw 层并 re-export core
+- **TS 6.0 坑**：`export * from` 不再把导出带入当前模块自身作用域——本地要用的成员必须显式 `import`（blueprint.ts 头部有示范）
+- **serve 场景禁 fail()**：`fail()` 会 `process.exit(1)` 杀死服务进程；可被 serve 复用的逻辑（如 planToHtml）抛 Error，由 CLI 层 catch 后转 fail
+- **rolldown 坑**：`bundle.write({ banner })` 在 rc 版会清空产物；shebang 靠源文件首行保留，`banner` 参数不要用

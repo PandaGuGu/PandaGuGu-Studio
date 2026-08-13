@@ -1,11 +1,15 @@
 {
-  "name": "vcanvas",
+  "name": "pandagugu-studio",
   "version": "1.0.0",
-  "description": "A visual canvas playground for vision-language models. Draw, describe, generate.",
+  "description": "PandaGuGu Studio — 画布式 HTML 生成器 + pgg CLI(蓝图 ⇄ AI ⇄ HTML)",
   "private": true,
+  "bin": {
+    "pgg": "dist-cli/pgg.mjs"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:cli": "node scripts/build-cli.mjs",
     "build:gh": "VCANVAS_BASE=/vcanvas/ vite build",
     "preview": "vite preview",
     "check": "bash scripts/check.sh"
@@ -20,5 +24,8 @@
     "react-dom": "^19.2.4",
     "typescript": "^6.0.2",
     "vite": "^8.0.3"
+  },
+  "devDependencies": {
+    "linkedom": "^0.18.13"
   }
 }
