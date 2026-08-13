@@ -944,17 +944,17 @@ ${SYSTEM_PROMPT}`
         <ResizeHandle onResize={handleResize} />
         <div className="panel-right">
           <div className="side-panels">
-            <VariantPanel
-              onGenerate={handleVariantsGenerate}
-              generating={batchGenerating}
-              progress={batchProgress}
-              disabled={needsKey || !editor}
-            />
             <LayersPanel
               editor={editor}
               canvasVersion={canvasVersion}
               selectedElementId={selectedElementId}
               onAddFrame={handleAddFrame}
+            />
+            <VariantPanel
+              onGenerate={handleVariantsGenerate}
+              generating={batchGenerating}
+              progress={batchProgress}
+              disabled={needsKey || !editor}
             />
             <HistoryPanel
               items={history}
