@@ -1,6 +1,6 @@
 # PandaGuGu Studio
 
-**画布式 HTML 生成器**——在画布上画元素、自动打语义标记、画框圈成页面区块，一键导出 JSON 蓝图交给 AI 生成完整 HTML。
+**画布式 HTML 生成器**——在画布上画元素、自动打语义标记、画框圈成页面区块，一键导出 JSON 蓝图交给 AI 生成完整 HTML。配套 **pgg CLI**：蓝图 ⇄ AI ⇄ HTML 的文件级工作流，AI 与脚本可直接操控。
 
 纯前端，无后端，完全在浏览器里运行。AI 能力走 **BYOK**（Bring Your Own Key）——你在设置页自行填入模型 API Key（应用不内置任何 key），Key 只存浏览器本地，绝不上传。
 
@@ -41,10 +41,15 @@ PandaGuGu Studio 基于 MIT 开源的 [Excalidraw](https://github.com/excalidraw
 - **对齐工具**：左/右/水平居中 + 顶/底/垂直居中 + 等距分布（8 种，多选后底部 ▲ 菜单）
 - **多选**：Ctrl/⌘+点击 切换选中（点选中的取消，未选中的加入）
 - **JSON 蓝图导出**：画框级（缩略图 ⇩）或整画布（▲ 菜单），含 zIndex（叠层顺序）和 layout 提示
+- **图片导出三模式**：嵌入 dataURL（自包含 HTML）/ 文件名引用（配合 DeepSeek 纯文本模型）/ HTML 内嵌（离线出稿）
+- **批量变体**：8 种预置风格 + 自定义描述，一键生成 N 份变体切换预览
+- **生成历史**：每次生成自动存档 localStorage，可回看/重载/删除
+- **经典模板库**：6 套模板（手机 App 首页/登录页 + SaaS 落地/仪表盘/电商/作品集），一键生成画框 + 语义元素
+- **导入 HTML → 画布**：旧网页解析简化、自动布局到画布，逆向重设计闭环
 - **自动吸附**：Excalidraw 原生 smart guides（拖动红参考线）；元素拖进画框自动归属
 - **主题**：浅色/深色切换，全站跟随
 - **9 个模型服务商**：z.ai / DeepSeek / Kimi / 通义千问 / 火山方舟 / Google / Fireworks / OpenRouter / Custom
-- **pgg CLI**：`pgg plan`（蓝图→AI→HTML）、`pgg import`（HTML→蓝图）、`pgg serve`（本地 REST API），与网页版共用同一套 core 逻辑
+- **pgg CLI**：`pgg plan`（蓝图→AI→HTML）、`pgg import`（HTML→蓝图）、`pgg render`（离线出稿）、`pgg history`（生成历史）、`pgg serve`（本地 REST API），与网页版共用同一套 core 逻辑
 
 ## CLI（pgg）
 
@@ -123,7 +128,9 @@ Key 存在浏览器 localStorage，不上传。
 npm install
 npm run dev       # 开发，http://localhost:5173
 npm run build     # 生产构建
-npm run build:gh  # 部署到 /vcanvas/ 路径
+npm run build:cli # 打包 pgg CLI → dist-cli/pgg.mjs
+npm test          # core 单元测试（node:test）
+npm run check     # 质量检查：tsc + 测试 + 构建 + 品牌扫描
 ```
 
 ## 架构
@@ -153,9 +160,11 @@ src/
     Preview.tsx           — 沙箱 iframe 预览 + 设备切换
     ...
 cli/
-  pgg.ts                  — CLI 入口（plan / import / serve / version）
+  pgg.ts                  — CLI 入口（plan / import / render / history / serve / version）
   commands/plan.ts        — 蓝图 → AI → HTML（planToHtml 供 serve 复用）
   commands/import.ts      — HTML → 蓝图（linkedom 解析）
+  commands/render.ts      — 蓝图 → HTML（离线，不经 AI）
+  commands/history.ts     — 生成历史（~/.pandagugu/history.json）
   commands/serve.ts       — 本地 REST API
   config.ts               — 参数解析 + 配置合并（flag > env > ~/.pandagugu.json）
 ```
