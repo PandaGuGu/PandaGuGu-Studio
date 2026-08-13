@@ -62,12 +62,21 @@
 .preview-container {
   flex: 1 1 auto;
   min-height: 160px;
-  position: relative;
-  overflow: hidden;
-  margin: 0 12px 12px;
+  display: flex;
+  flex-direction: column;
+  margin: 0 12px 0;
   border: 1px solid var(--border);
   border-radius: var(--radius);
   background: var(--bg-secondary);
+  overflow: hidden;
+}
+
+/* 画布区域(flex 撑满,工具条作为卡片底部一条) */
+.preview-canvas {
+  flex: 1;
+  min-height: 120px;
+  position: relative;
+  overflow: hidden;
 }
 
 /* Variants switching bar — floating at the top of the preview */
@@ -163,10 +172,8 @@
   align-items: center;
   justify-content: space-between;
   gap: 6px;
-  padding: 5px 14px;
-  margin: 0 12px 12px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
+  padding: 6px 14px;
+  border-top: 1px solid var(--border);
   background: var(--bg-elevated);
   flex-shrink: 0;
 }

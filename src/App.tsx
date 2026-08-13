@@ -964,7 +964,8 @@ ${SYSTEM_PROMPT}`
             onClear={handleClearHistory}
           />
           <div className="preview-container">
-            {variants.length > 0 && (
+            <div className="preview-canvas">
+              {variants.length > 0 && (
               <div className="variants-bar">
                 <span className="variants-bar-label">{t('variant.barLabel')}</span>
                 {variants.map((v, i) => (
@@ -1014,8 +1015,8 @@ ${SYSTEM_PROMPT}`
                 streamDone={streamDone}
               />
             )}
-          </div>
-          {(lastHTML || variants.length > 0) && (
+            </div>
+            {(lastHTML || variants.length > 0) && (
             <div className="preview-toolbar">
               <div className="preview-toolbar-left">
                 <div className="device-switch" role="group" aria-label="预览设备尺寸">
@@ -1059,6 +1060,7 @@ ${SYSTEM_PROMPT}`
               </span>
             </div>
           )}
+          </div>
           <PromptBar
             onGenerate={planMode ? handlePlanGenerate : handleGenerate}
             onRefine={planMode ? handlePlanRefine : handleRefine}
