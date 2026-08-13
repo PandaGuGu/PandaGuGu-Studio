@@ -4,7 +4,7 @@
   border: 1px solid var(--border);
   border-radius: var(--radius);
   background: var(--bg-secondary);
-  margin: 0 0 8px;
+  margin: 0 12px 8px;
   overflow: hidden;
 }
 

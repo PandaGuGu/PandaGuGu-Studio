@@ -954,26 +954,6 @@ ${SYSTEM_PROMPT}`
             hasKey={!needsKey}
             onUseBlueprint={handleUseBlueprint}
           />
-          <VariantPanel
-            onGenerate={handleVariantsGenerate}
-            generating={batchGenerating}
-            progress={batchProgress}
-            disabled={needsKey || !editor}
-          />
-          <LayersPanel
-            editor={editor}
-            canvasVersion={canvasVersion}
-            selectedElementId={selectedElementId}
-            onAddFrame={handleAddFrame}
-          />
-          <HistoryPanel
-            items={history}
-            activeId={activeHistoryId}
-            modelLabel={modelLabel}
-            onLoad={handleLoadHistory}
-            onDelete={handleDeleteHistory}
-            onClear={handleClearHistory}
-          />
           <div className="preview-container">
             {variants.length > 0 && (
               <div className="variants-bar">
@@ -1070,6 +1050,26 @@ ${SYSTEM_PROMPT}`
               </span>
             </div>
           )}
+          <VariantPanel
+            onGenerate={handleVariantsGenerate}
+            generating={batchGenerating}
+            progress={batchProgress}
+            disabled={needsKey || !editor}
+          />
+          <LayersPanel
+            editor={editor}
+            canvasVersion={canvasVersion}
+            selectedElementId={selectedElementId}
+            onAddFrame={handleAddFrame}
+          />
+          <HistoryPanel
+            items={history}
+            activeId={activeHistoryId}
+            modelLabel={modelLabel}
+            onLoad={handleLoadHistory}
+            onDelete={handleDeleteHistory}
+            onClear={handleClearHistory}
+          />
         </div>
       </div>
     </>
