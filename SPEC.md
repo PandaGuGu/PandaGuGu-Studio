@@ -1,48 +1,38 @@
 # PandaGuGu Studio 设计规格文档（SPEC）
 
-**版本**：v2.0
-**最后更新**：2026-08-12
+**版本**：v2.1
+**最后更新**：2026-08-13
 **性质**：确定性需求规格
 
-> PandaGuGu Studio 是"画布式页面编辑器"：在 Excalidraw 画布上画元素 → 语义标记 → 画框圈成区块 → 导出结构化 JSON 蓝图 → AI 消费蓝图生成 HTML。核心价值是把"画布意图"无损、合理地映射到前端代码。
+> PandaGuGu Studio 是"画布式页面编辑器"：在 Excalidraw 画布上画元素 → 语义标记 → 画框圈成区块 → 导出结构化 JSON 蓝图 → AI 消费蓝图生成 HTML。核心价值是把"画布意图"无损、合理地映射到前端代码。功能清单与 CLI 用法见 README，本文档专注规格契约。
 
 ---
 
 ### 一、版本目标与范围
 
-#### 1.1 当前能力（v2.0，已完成）
-1. **画布**：Excalidraw 0.18 深度集成，桌布格（40px 经纬棋盘格）定位背景，画框自动半透明白背景
-2. **语义标记**：12 种类型分 5 组（容器/内容/控件/媒体/特殊），智能打标（形状自动映射）+ 手动打标 + 拖拽创建 + 可搜索下拉
-3. **属性面板**：按类型渲染表单（布局切换 + 主属性 + 高级折叠面板 style/events/html），编辑实时 WYSIWYG
-4. **图层面板**：IDE 风格树（画框顶级 + ▾ 折叠 + 缩进 + 点击选中 + − 删除）
-5. **蓝图导出**：JSON（整画布 / 画框级 / PNG），文件名 `PandaGuGu-YYYY-MM-DD`
-6. **AI 生成闭环**：✨ 用画布蓝图生成（蓝图自动填入 prompt）→ 流式生成 HTML → 沙箱预览 → 细化迭代
-7. **对齐工具**：8 种对齐/分布（嘉立创风格），Ctrl+点击多选
-8. **模型服务**：9 个服务商（z.ai / Google / Fireworks / OpenRouter / DeepSeek / Kimi / 通义千问 / 火山方舟 / Custom），OpenAI 兼容 + Gemini 双协议，SSE 流式
+#### 1.1 当前能力（v2.x，已完成）
+功能清单见 **README.md「功能」章节**（语义标记 / 属性面板 / 图层 / 蓝图导出 / AI 生成闭环 / 批量变体 / 生成历史 / 模板库 / 导入 HTML / 图片导出三模式 / 9 模型服务商 / pgg CLI）。本文档不再重复罗列，只保留规格锚点：
+- 蓝图导出文件名：**纯日期** `YYYY-MM-DD.ext`（用户 2026-08-12 要求，无品牌前缀）
 
 #### 1.2 明确排除
 - **不做 js.behaviors 行为库**（蓝图级）：AI 自身具备程序逻辑能力，生成时自行实现交互，蓝图不需要定义行为契约
 - **不做蓝图级 css.fonts/vars/global 顶层字段**：排版配色交给 AI 自行决策，避免过度约束
 - **不做商业化功能**
 
-#### 1.3 未来规划
-1. **批量变体**：蓝图 + N 组风格描述 → AI 批量生成多份 HTML → 变体栏切换预览（✅ 已完成 2026-08-12，commit f01bcc2）
-2. **生成历史库**：每次生成自动存档 localStorage，可回看/重新载入/删除/下载（✅ 已完成 2026-08-12，commit 5270ac1）
-3. **一键下载生成的 HTML 文件**（✅ 已完成 2026-08-12，preview-toolbar 下载按钮 + 变体独立下载）
-4. **CLI / 接口，方便 AI 操控**（✅ 已完成 2026-08-13，commit 待记录）：
-   - 形态：本地 Node CLI `pgg`（`node dist-cli/pgg.mjs`，`npm run build:cli` 打包）
-   - 双端复用：`src/lib/core/`（types / blueprintToHtml / prompt / htmlToBlueprint）为纯 TS 零依赖，浏览器与 Node 共用同一份源码
-   - 命令：`pgg plan <blueprint.json> [prompt]`（蓝图→AI→HTML，流式）、`pgg import <file.html> [-o out.json]`（HTML→蓝图，linkedom 解析）、`pgg serve [--port 8787]`（本地 REST API：GET /health · POST /api/plan · POST /api/import）
-   - 配置：命令行参数 > 环境变量（`PGG_PROVIDER/PGG_MODEL/PGG_API_KEY/PGG_ENDPOINT`）> `~/.pandagugu.json`
-   - AI 接入方式：文件级交互（读写 .blueprint.json/.html）+ HTTP API
-5. **导入 HTML → 简化 → 自动布局到画布**（✅ 已完成 2026-08-12，commit fcd8488 + 后续 importHtml 增强）
-6. **git 推远端** + CI 上线（✅ 已完成 2026-08-12，远端 github.com/PandaGuGu/PandaGuGu-Studio）
+#### 1.3 历史规划（2026-08 全部落地 ✅）
+| 规划 | 完成情况 |
+|------|----------|
+| 批量变体（N 风格 → N HTML） | ✅ 2026-08-12 f01bcc2 |
+| 生成历史库（localStorage 存档/回看/删除） | ✅ 2026-08-12 5270ac1 |
+| 一键下载生成的 HTML | ✅ 2026-08-12 |
+| CLI / 接口（pgg: plan/import/render/history/serve） | ✅ 2026-08-13 |
+| 导入 HTML → 简化 → 自动布局到画布 | ✅ 2026-08-12 fcd8488 + 增强 |
+| git 推远端 + CI 上线 | ✅ 2026-08-12 |
 
-#### 1.4 后续规划（CLI 完成后的下一步）
-1. **`pgg render <blueprint.json> [-o out.html]`**：蓝图 → 自包含 HTML（✅ 已完成 2026-08-13，不经 AI，复用 core/blueprintToHtml；`--title`/`--open` 可选）
-2. **`pgg serve` 接入浏览器**：网页版"生成"按钮可切换到本地 serve 模式（省 token 调试 / 固定 endpoint）
-3. **蓝图 → PNG 预览**：CLI 内渲染蓝图为图片（Node 侧 canvas 或导出 SVG），便于快速检查布局
-4. **生成历史库 CLI 化**：`pgg history` 管理本地生成记录（✅ 已完成 2026-08-13，`~/.pandagugu/history.json` 文件级存储，list/show/add/rm/clear 五个子命令；与网页版 localStorage 独立）
+#### 1.4 后续规划（未完成项）
+1. **`pgg serve` 接入浏览器**：网页版"生成"按钮可切换到本地 serve 模式（省 token 调试 / 固定 endpoint）
+2. **蓝图 → PNG 预览**：CLI 内渲染蓝图为图片（Node 侧 canvas 或导出 SVG），便于快速检查布局
+3. （已落地项不再列：pgg render ✅ 08-13、pgg history ✅ 08-13）
 
 ---
 
@@ -54,7 +44,6 @@ Blueprint {
 }
 
 BlueprintElement {
-  id: string
   type: SemanticType            // 12 种语义类型
   x / y / w / h: number         // Excalidraw 逻辑坐标，1:1（1 单位 = 1 CSS px @100%）
   angle: number
@@ -65,6 +54,7 @@ BlueprintElement {
   html?: string                 // raw 类型专用，原样嵌入
   children: BlueprintElement[]  // containerId / frameId 建父子树
   zIndex: number                // 场景 z-order，0=底层（叠层画框用）
+  // 无 id：用户 2026-08-12 要求去 id，元素唯一性由 Excalidraw 场景保证
 }
 ```
 
@@ -89,20 +79,20 @@ BlueprintElement {
 
 ---
 
-### 三、布局架构
+### 三、布局架构（当前）
 
 ```
 ┌──────────────────────────────────────────────────────────┐
 │ Header：PandaGuGu Studio / 主题切换 / 这是什么 / ●模型⚙设置 │
 ├───────────────┬──────────────────────────────────────────┤
 │ panel-left    │ panel-right                               │
-│  ├ Canvas     │  ├ PromptBar（✨蓝图生成 + 3 场景预设）    │
-│  │  ├ ⚡智能打标│  ├ LayersPanel（IDE 树）                  │
-│  │  ├ ▲对齐    │  ├ preview-container（沙箱预览）          │
-│  │  ├ Excalidraw│  └ preview-toolbar                      │
-│  │  └ SemanticRail（底部浮动）│                            │
-│  ├ FramePicker │                                          │
-│  └ MessageStrip│                                          │
+│  ├ Canvas     │  ├ side-panels（限高 45%，区内滚动）       │
+│  │  ├ ⚡智能打标│  │   ├ 图层（200px 内滚）               │
+│  │  ├ ▲对齐    │  │   ├ 批量变体（展开=浮层盖预览）       │
+│  │  ├ Excalidraw│  │   └ 生成历史（220px 内滚）           │
+│  │  └ SemanticRail│ ├ preview-container（flex:1，对话显示）│
+│  ├ FramePicker │  │   └ preview-toolbar（嵌卡片底部）     │
+│  └ MessageStrip│  └ PromptBar（输入框，贴底卡片）         │
 └───────────────┴──────────────────────────────────────────┘
 ```
 

@@ -1,10 +1,10 @@
 # PandaGuGu Studio AI 操作指令（Skill）
 
-**版本**：v1.0
-**最后更新**：2026-08-12
-**依赖文档**：SPEC.md（规格）、Rule.md（规则）
+**版本**：v1.1
+**最后更新**：2026-08-13
+**依赖文档**：SPEC.md（规格）、Rule.md（规则）、README.md（功能与 CLI 用法）
 
-本文档是 AI 在本项目开发时的"操作手册"——先读 Rule（红线）再动手，按本文档的流程修改、验证、提交。
+本文档是 AI 在本项目开发时的"操作手册"——先读 Rule（红线）再动手，按本文档的流程修改、验证、提交。功能清单与 pgg CLI 命令用法见 README，本文档只记录操作流程与踩坑。
 
 ---
 
@@ -25,6 +25,7 @@
 - 必须在 `src/lib/i18n.tsx` 的 **zh-CN 和 en 两个字典**各加一条，key 用 `模块.子项` 语义化命名
 - 组件内用 `t('key')` 取值，严禁硬编码中文
 - 历史教训：曾经把 en 区域误改成中文导致双语错乱，编辑时注意区分两个字典块
+- 动态键（`t(\`semantic.${type}\`)`、`labelKey` 映射）不算"未引用"，清理前先确认
 
 ### S-003 新增组件
 
@@ -35,10 +36,9 @@
 
 ### S-004 导出文件
 
-- 一律用 `brandFilename(kind, tag?)`：`import { brandFilename } from '../lib/export'`
-- 格式 `PandaGuGu-YYYY-MM-DD[.tag].json|png`，禁止时间戳/自定义拼接
-- JSON 蓝图：`downloadJSON(bp, brandFilename('json', 'blueprint'))`
-- 画布完整 JSON：`brandFilename('json', 'canvas')`；PNG：`brandFilename('png')`
+- 一律用 `brandFilename(kind)`：`import { brandFilename } from '../lib/export'`
+- 格式 **纯日期** `YYYY-MM-DD.ext`（用户 2026-08-12 要求，无品牌前缀/tag）
+- JSON 蓝图：`downloadJSON(bp, brandFilename('json'))`；画布完整 JSON：`brandFilename('json')`；PNG：`brandFilename('png')`；HTML：`brandFilename('html')`
 
 ### S-005 语义打标
 
@@ -50,8 +50,7 @@
 ### S-006 验证与提交
 
 ```bash
-npx tsc --noEmit          # 必须 0 错误
-npm run build             # 必须成功
+npm run check   # 一键: tsc + npm test(core 单测) + build + 品牌残留扫描
 git add -A
 git -c user.email="pandagugu@studio.local" -c user.name="PandaGuGu Studio" commit -m "feat: 中文描述..."
 ```
@@ -66,25 +65,16 @@ git -c user.email="pandagugu@studio.local" -c user.name="PandaGuGu Studio" commi
 - `viewportCoordsToSceneCoords({clientX, clientY}, appState)` 需传 2 参（zoom/scroll）
 - 画框子元素：`frameId` 关联；容器子元素：`containerId` 关联
 - 新画框自动半透明白背景：深色 `rgba(255,255,255,0.15)`、浅色 `rgba(255,255,255,0.8)`，已有背景色不覆盖
+- 手造元素 index 必须用 `generateNKeysBetween`（fractional-indexing），自写 base-62 计数器会产生非法 key 导致渲染崩溃
 
 ### S-008 开发环境
 
-- dev server：`npm run dev`（http://localhost:5174，5173 常被占用）
-- 类型检查：`npx tsc --noEmit`
-- 生产构建：`npm run build`（产物在 dist/）
+- dev：`npm run dev` · 类型检查：`npx tsc --noEmit` · 构建：`npm run build` · 测试：`npm test` · 一键：`npm run check`
 - 快捷键：`Cmd/Ctrl+Enter` 提交生成（PromptBar）
 
 ### S-009 pgg CLI（蓝图 ⇄ AI ⇄ HTML）
 
-- 构建：`npm run build:cli` → `dist-cli/pgg.mjs`（rolldown 单文件 ESM，**不要手动提交 dist-cli，已 gitignore**）
-- 命令：
-  - `node dist-cli/pgg.mjs plan <blueprint.json> [prompt]` 蓝图→AI→HTML（流式，`--provider/--model/--key/--endpoint/--style/--out/--no-stream`）
-  - `node dist-cli/pgg.mjs import <file.html> [-o out.json]` HTML→蓝图（Node 端用 linkedom 解析后注入）
-  - `node dist-cli/pgg.mjs render <blueprint.json> [-o out.html]` 蓝图→HTML（离线，不经 AI；`--title` 覆盖页面标题，`--open` 浏览器打开）
-  - `node dist-cli/pgg.mjs history list|show|add|rm|clear` 生成历史（文件级 `~/.pandagugu/history.json`，上限 50 条）
-  - `node dist-cli/pgg.mjs serve [--port 8787]` 本地 REST API（GET /health · POST /api/plan · POST /api/import）
-- 短参数别名：`-o=--out`、`-p=--port`、`-k=--key`、`-m=--model`（parseArgs 的 ALIAS 表归一化，命令内一律读长名）
-- 配置优先级：命令行参数 > 环境变量（`PGG_PROVIDER/PGG_MODEL/PGG_API_KEY/PGG_ENDPOINT`）> `~/.pandagugu.json`
+- 构建：`npm run build:cli` → `dist-cli/pgg.mjs`（**不要手动提交 dist-cli，已 gitignore**）；命令用法见 README「CLI」章节
 - **双端复用铁律**：浏览器与 CLI 共用的逻辑必须放 `src/lib/core/`（纯 TS 零依赖，禁 import Excalidraw/React/DOM）；`blueprint.ts` 只留 Excalidraw 层并 re-export core
 - **TS 6.0 坑**：`export * from` 不再把导出带入当前模块自身作用域——本地要用的成员必须显式 `import`（blueprint.ts 头部有示范）
 - **serve 场景禁 fail()**：`fail()` 会 `process.exit(1)` 杀死服务进程；可被 serve 复用的逻辑（如 planToHtml）抛 Error，由 CLI 层 catch 后转 fail
