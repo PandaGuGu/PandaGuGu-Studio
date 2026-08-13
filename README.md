@@ -1,8 +1,19 @@
+<div align="center">
+
+<img src="public/favicon.png" width="64" alt="PandaGuGu Studio logo" />
+
 # PandaGuGu Studio
 
-**画布式 HTML 生成器**——在画布上画元素、自动打语义标记、画框圈成页面区块，一键导出 JSON 蓝图交给 AI 生成完整 HTML。配套 **pgg CLI**：蓝图 ⇄ AI ⇄ HTML 的文件级工作流，AI 与脚本可直接操控。
+**画布式 HTML 生成器** —— 画元素 · 打语义标 · 圈成区块 → 一键导出 JSON 蓝图 → AI 生成完整 HTML
 
-纯前端，无后端，完全在浏览器里运行。AI 能力走 **BYOK**（Bring Your Own Key）——你在设置页自行填入模型 API Key（应用不内置任何 key），Key 只存浏览器本地，绝不上传。
+纯前端，无后端，完全在浏览器里运行。AI 能力走 **BYOK**（Bring Your Own Key）——你在设置页自行填入模型 API Key（应用不内置任何 key），Key 只存浏览器本地，绝不上传。配套 **pgg CLI**：蓝图 ⇄ AI ⇄ HTML 的文件级工作流。
+
+[![GitHub stars](https://img.shields.io/github/stars/PandaGuGu/PandaGuGu-Studio?style=for-the-badge&logo=github&color=2e7d6f)](https://github.com/PandaGuGu/PandaGuGu-Studio/stargazers)
+[![License](https://img.shields.io/github/license/PandaGuGu/PandaGuGu-Studio?style=for-the-badge&color=2563eb)](LICENSE)
+[![CI](https://img.shields.io/github/actions/workflow/status/PandaGuGu/PandaGuGu-Studio/ci.yml?style=for-the-badge&label=CI&color=2e7d6f)](https://github.com/PandaGuGu/PandaGuGu-Studio/actions)
+[![Repo size](https://img.shields.io/github/repo-size/PandaGuGu/PandaGuGu-Studio?style=for-the-badge&color=854F0B)](https://github.com/PandaGuGu/PandaGuGu-Studio)
+
+</div>
 
 ![PandaGuGu Studio screenshot](screenshot/sc.png)
 
