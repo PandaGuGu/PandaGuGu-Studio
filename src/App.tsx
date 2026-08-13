@@ -943,26 +943,28 @@ ${SYSTEM_PROMPT}`
         </div>
         <ResizeHandle onResize={handleResize} />
         <div className="panel-right">
-          <VariantPanel
-            onGenerate={handleVariantsGenerate}
-            generating={batchGenerating}
-            progress={batchProgress}
-            disabled={needsKey || !editor}
-          />
-          <LayersPanel
-            editor={editor}
-            canvasVersion={canvasVersion}
-            selectedElementId={selectedElementId}
-            onAddFrame={handleAddFrame}
-          />
-          <HistoryPanel
-            items={history}
-            activeId={activeHistoryId}
-            modelLabel={modelLabel}
-            onLoad={handleLoadHistory}
-            onDelete={handleDeleteHistory}
-            onClear={handleClearHistory}
-          />
+          <div className="side-panels">
+            <VariantPanel
+              onGenerate={handleVariantsGenerate}
+              generating={batchGenerating}
+              progress={batchProgress}
+              disabled={needsKey || !editor}
+            />
+            <LayersPanel
+              editor={editor}
+              canvasVersion={canvasVersion}
+              selectedElementId={selectedElementId}
+              onAddFrame={handleAddFrame}
+            />
+            <HistoryPanel
+              items={history}
+              activeId={activeHistoryId}
+              modelLabel={modelLabel}
+              onLoad={handleLoadHistory}
+              onDelete={handleDeleteHistory}
+              onClear={handleClearHistory}
+            />
+          </div>
           <div className="preview-container">
             <div className="preview-canvas">
               {variants.length > 0 && (

@@ -39,6 +39,18 @@
   min-height: 0;
 }
 
+/* 辅助面板区(批量变体/图层/生成历史):整体限高 + 区内滚动。
+   任何面板内容再多(画框/条目/风格)都在这里滚动,不会顶掉下面的预览和输入框。 */
+.side-panels {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  max-height: 45%;
+  min-height: 0;
+  overflow-y: auto;
+  padding-top: 12px;
+}
+
 .panel-header {
   display: flex;
   align-items: center;

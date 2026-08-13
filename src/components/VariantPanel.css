@@ -5,6 +5,7 @@
   border-radius: var(--radius);
   background: var(--bg-secondary);
   margin: 0 12px 8px;
+  flex-shrink: 0;
   overflow: hidden;
 }
 
