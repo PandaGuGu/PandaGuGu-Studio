@@ -34,6 +34,9 @@
   position: relative;
   background-image: radial-gradient(circle, rgba(30, 37, 54, 0.5) 0.8px, transparent 0.8px);
   background-size: 16px 16px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 0;
 }
 
 .panel-header {
@@ -57,9 +60,14 @@
 
 /* ── Preview ── */
 .preview-container {
-  flex: 1;
+  flex: 1 1 auto;
+  min-height: 160px;
   position: relative;
   overflow: hidden;
+  margin: 0 12px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-secondary);
 }
 
 /* Variants switching bar — floating at the top of the preview */
@@ -155,9 +163,12 @@
   align-items: center;
   justify-content: space-between;
   gap: 6px;
-  padding: 5px 12px;
-  border-top: 1px solid var(--border);
-  background: var(--bg-secondary);
+  padding: 5px 14px;
+  margin: 0 12px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-elevated);
+  flex-shrink: 0;
 }
 
 .preview-toolbar-left {
