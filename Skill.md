@@ -81,6 +81,7 @@ git -c user.email="pandagugu@studio.local" -c user.name="PandaGuGu Studio" commi
   - `node dist-cli/pgg.mjs plan <blueprint.json> [prompt]` 蓝图→AI→HTML（流式，`--provider/--model/--key/--endpoint/--style/--out/--no-stream`）
   - `node dist-cli/pgg.mjs import <file.html> [-o out.json]` HTML→蓝图（Node 端用 linkedom 解析后注入）
   - `node dist-cli/pgg.mjs render <blueprint.json> [-o out.html]` 蓝图→HTML（离线，不经 AI；`--title` 覆盖页面标题，`--open` 浏览器打开）
+  - `node dist-cli/pgg.mjs history list|show|add|rm|clear` 生成历史（文件级 `~/.pandagugu/history.json`，上限 50 条）
   - `node dist-cli/pgg.mjs serve [--port 8787]` 本地 REST API（GET /health · POST /api/plan · POST /api/import）
 - 短参数别名：`-o=--out`、`-p=--port`、`-k=--key`、`-m=--model`（parseArgs 的 ALIAS 表归一化，命令内一律读长名）
 - 配置优先级：命令行参数 > 环境变量（`PGG_PROVIDER/PGG_MODEL/PGG_API_KEY/PGG_ENDPOINT`）> `~/.pandagugu.json`

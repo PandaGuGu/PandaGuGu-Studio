@@ -6,6 +6,7 @@ import { fail, parseArgs, readVersion } from './config'
 import { runPlan } from './commands/plan'
 import { runImport } from './commands/import'
 import { runRender } from './commands/render'
+import { runHistory } from './commands/history'
 import { runServe } from './commands/serve'
 
 const BANNER = `🐼 pgg — PandaGuGu Studio CLI v${readVersion()} (蓝图 ⇄ AI ⇄ HTML)`
@@ -28,6 +29,11 @@ async function main(): Promise<void> {
     case 'render': {
       console.log(BANNER)
       await runRender(positionals, flags)
+      break
+    }
+    case 'history': {
+      console.log(BANNER)
+      await runHistory(positionals, flags)
       break
     }
     case 'serve': {
@@ -60,6 +66,7 @@ function helpText(): string {
     '       --style="风格描述" --out=out.html --no-stream',
     '  pgg import <file.html> [-o out.json]   HTML → 蓝图 JSON',
     '  pgg render <blueprint.json> [-o out.html]  蓝图 → HTML(离线,不经 AI)',
+    '  pgg history list|show|add|rm|clear  生成历史(文件级,~/.pandagugu/history.json)',
     '  pgg serve [--port 8787]                本地 REST API (GET /health · POST /api/plan · /api/import)',
     '  pgg version / help',
     '',

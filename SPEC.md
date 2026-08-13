@@ -42,7 +42,7 @@
 1. **`pgg render <blueprint.json> [-o out.html]`**：蓝图 → 自包含 HTML（✅ 已完成 2026-08-13，不经 AI，复用 core/blueprintToHtml；`--title`/`--open` 可选）
 2. **`pgg serve` 接入浏览器**：网页版"生成"按钮可切换到本地 serve 模式（省 token 调试 / 固定 endpoint）
 3. **蓝图 → PNG 预览**：CLI 内渲染蓝图为图片（Node 侧 canvas 或导出 SVG），便于快速检查布局
-4. **生成历史库 CLI 化**：`pgg history` 管理本地生成记录（与网页版 localStorage 同步或独立）
+4. **生成历史库 CLI 化**：`pgg history` 管理本地生成记录（✅ 已完成 2026-08-13，`~/.pandagugu/history.json` 文件级存储，list/show/add/rm/clear 五个子命令；与网页版 localStorage 独立）
 
 ---
 

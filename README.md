@@ -64,7 +64,11 @@ node dist-cli/pgg.mjs import old-site.html -o old-site.blueprint.json
 # ③ 蓝图 → HTML(离线渲染,不经 AI,不耗 token;与网页版「🧾 导出 HTML」同一渲染器)
 node dist-cli/pgg.mjs render old-site.blueprint.json --title="新页面" -o new.html
 
-# ④ 本地 REST API(GET /health · POST /api/plan · POST /api/import)
+# ④ 生成历史(文件级,~/.pandagugu/history.json)
+node dist-cli/pgg.mjs history list
+node dist-cli/pgg.mjs history show <id> -o 某次生成.html
+
+# ⑤ 本地 REST API(GET /health · POST /api/plan · POST /api/import)
 node dist-cli/pgg.mjs serve --port 8787
 ```
 

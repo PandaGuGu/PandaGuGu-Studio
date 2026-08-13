@@ -23,5 +23,11 @@ jobs:
       - name: Type check
         run: npx tsc --noEmit
 
-      - name: Build
+      - name: Unit tests (core)
+        run: npm test
+
+      - name: Build (web)
         run: npm run build
+
+      - name: Build (pgg CLI)
+        run: npm run build:cli
