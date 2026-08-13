@@ -26,4 +26,4 @@ npm run build          # 产物在 dist/
 |------|------|------|
 | （无） | 项目为纯前端，无后端依赖。API Key 由用户在设置页填写，存浏览器 localStorage。 | — |
 
-如需定制构建路径（如部署到子目录），用 `build:gh`：`VCANVAS_BASE=/vcanvas/ npm run build`。
+如需部署到子目录（如 `https://example.com/pandagugu/`），构建时指定 base：`npx vite build --base=/pandagugu/`。

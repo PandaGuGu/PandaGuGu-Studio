@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import { Fragment, useEffect, useRef, useState } from 'react'
 import { StreamOverlay } from './StreamOverlay'
 import './PlanOverlay.css'
 import { useI18n } from '../lib/i18n'
@@ -69,7 +69,7 @@ export function PlanOverlay({ phases, activePhaseIndex, tokenCount, done, stream
         <div className="plan-timeline">
           <div className="plan-timeline-track">
             {phases.map((phase, i) => (
-              <React.Fragment key={phase.name}>
+              <Fragment key={phase.name}>
                 {i > 0 && (
                   <div className={`pip-line ${phases[i - 1].status === 'done' ? 'done' : ''}`} />
                 )}
@@ -77,7 +77,7 @@ export function PlanOverlay({ phases, activePhaseIndex, tokenCount, done, stream
                   <div className="pip-icon">{PHASE_ICONS[phase.name] || '○'}</div>
                   <div className="pip-label">{phase.label}</div>
                 </div>
-              </React.Fragment>
+              </Fragment>
             ))}
           </div>
         </div>

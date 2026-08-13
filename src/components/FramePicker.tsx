@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import type { ExcalidrawImperativeAPI } from '@excalidraw/excalidraw/types'
-import { getSources, exportSourceAsPng, exportAllAsPng, brandFilename } from '../lib/export'
+import { getSources, exportSourceAsPng, brandFilename } from '../lib/export'
 import type { SourceInfo } from '../lib/export'
 import { toBlueprintAsync, downloadJSON } from '../lib/blueprint'
 import './FramePicker.css'
@@ -19,10 +19,9 @@ interface Props {
   onSave: () => void
   onLoad: () => void
   previewScreenshot: string | null
-  modelLabel?: string
 }
 
-export function FramePicker({ editor, selectedIds, onSelectionChange, onAddFrame, canvasVersion, onSave, onLoad, previewScreenshot, modelLabel }: Props) {
+export function FramePicker({ editor, selectedIds, onSelectionChange, onAddFrame, canvasVersion, onSave, onLoad, previewScreenshot }: Props) {
   const t = useI18n()
   const [sources, setSources] = useState<SourceThumb[]>([])
   const [hasDrawing, setHasDrawing] = useState(false)

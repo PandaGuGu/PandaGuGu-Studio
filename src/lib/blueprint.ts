@@ -17,8 +17,7 @@ import type { ExcalidrawElement } from '@excalidraw/excalidraw/element/types'
 import {
   type SemanticType, type LayoutHint, type SemanticMeta,
   type Blueprint, type BlueprintElement,
-  SEMANTIC_TYPES, SEMANTIC_GROUPS, LAYOUTS, DEFAULT_LAYOUT,
-  DEFAULT_PROPS, SHAPE_OF, HEADING_SIZES,
+  DEFAULT_LAYOUT,
   frameLabel, mimeToExt, sanitizeFilename,
 } from './core/types'
 export * from './core/types'

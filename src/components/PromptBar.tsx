@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback } from 'react'
 import './PromptBar.css'
 import { useI18n } from '../lib/i18n'
 

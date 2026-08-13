@@ -10,13 +10,16 @@
 ## 目录约定（模仿 cakecake-project 架构）
 
 ```
-vcanvas/
+PandaGuGu Studio/
 ├── Rule.md / SPEC.md / Skill.md   # 文档体系（研发制度 + 规格 + 指令）
 ├── src/                           # 前端源码（React + Vite + TS + Excalidraw）
-├── scripts/                       # 开发脚本（dev / build / check）
+│   └── lib/core/                  # 纯 TS 核心（浏览器 + pgg CLI 双端复用）
+├── cli/                           # pgg CLI 源码（plan / import / render / history / serve）
+├── tests/                         # core 单元测试（node:test）
+├── scripts/                       # 开发脚本（check / build-cli）
 ├── deploy/                        # 部署（Dockerfile + nginx.conf + 说明）
 ├── docs/                          # 文档中心（本目录）
-├── .github/workflows/             # CI（typecheck + build）
+├── .github/workflows/             # CI（typecheck + test + build ×2）
 ├── .env.example                   # 环境变量示例
 ├── public/                        # 静态资源（favicon 等）
 └── screenshot/                    # 演示截图/录屏

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { Fragment, useState } from 'react'
 import type { ExcalidrawImperativeAPI } from '@excalidraw/excalidraw/types'
 import type { ExcalidrawElement } from '@excalidraw/excalidraw/element/types'
 import {
@@ -21,7 +21,6 @@ interface Props {
   editor: ExcalidrawImperativeAPI | null
   selected: ExcalidrawElement | null
   selectedIds?: Set<string>
-  modelLabel?: string
   onChanged?: () => void
   /** No selection → switch Excalidraw tool & tag the next drawn element. */
   onDrawTag?: (type: SemanticType) => void
@@ -50,7 +49,7 @@ const TYPE_ICONS: Record<SemanticType, string> = {
   raw: '</>', note: '✎',
 }
 
-export function SemanticRail({ editor, selected, selectedIds = new Set(), modelLabel, onChanged, onDrawTag, onImportHtml, onOpenTemplates }: Props) {
+export function SemanticRail({ editor, selected, selectedIds = new Set(), onChanged, onDrawTag, onImportHtml, onOpenTemplates }: Props) {
   const t = useI18n()
   const taggable = !!editor && !!selected && canTag(selected!)
   const multiSelect = selectedIds.size >= 2
@@ -197,7 +196,7 @@ export function SemanticRail({ editor, selected, selectedIds = new Set(), modelL
       <div className="semantic-rail-divider" />
 
       {SEMANTIC_GROUPS.map((group, gi) => (
-        <React.Fragment key={group.label}>
+        <Fragment key={group.label}>
           {group.types.map((type) => (
             <button
               key={type}
@@ -213,7 +212,7 @@ export function SemanticRail({ editor, selected, selectedIds = new Set(), modelL
           {gi < SEMANTIC_GROUPS.length - 1 && (
             <div className="semantic-rail-divider" />
           )}
-        </React.Fragment>
+        </Fragment>
       ))}
 
       <div className="semantic-rail-divider" />

@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useRef } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import { PROVIDERS, fetchOpenRouterModels, type ProviderDef, type ProviderState, type ModelDef } from '../lib/providers'
 import './ProviderModal.css'
 import { useI18n } from '../lib/i18n'

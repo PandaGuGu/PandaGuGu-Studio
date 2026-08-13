@@ -1,4 +1,4 @@
-import React, { createContext, useContext } from 'react'
+import { createContext, useContext } from 'react'
 
 export type Lang = 'zh-CN' | 'en'
 
@@ -65,7 +65,6 @@ const translations: Record<Lang, Record<string, string>> = {
     'frame.load': '载入',
     'frame.sources': '素材区',
     'frame.all': '全选',
-    'frame.none': '取消',
     'frame.lastOutput': '上次输出',
     'frame.preview': '预览',
     'frame.collapse': '折叠',
@@ -316,7 +315,6 @@ const translations: Record<Lang, Record<string, string>> = {
     'frame.load': 'Load',
     'frame.sources': 'Sources',
     'frame.all': 'All',
-    'frame.none': 'None',
     'frame.lastOutput': 'Last Output',
     'frame.preview': 'PRV',
     'frame.collapse': 'Collapse',

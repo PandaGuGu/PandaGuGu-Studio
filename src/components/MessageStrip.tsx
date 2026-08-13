@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react'
+import { Fragment, useRef, useEffect, useState } from 'react'
 import type { ChatChip } from '../lib/store'
 import './MessageStrip.css'
 
@@ -25,7 +25,7 @@ export function MessageStrip({ chips }: Props) {
         {chips.map((chip, i) => {
           const isError = chip.text.startsWith('ERR')
           return (
-            <React.Fragment key={i}>
+            <Fragment key={i}>
               {i > 0 && <span className="chip-arrow">→</span>}
               <div
                 className={`msg-chip ${chip.role} ${isError ? 'error' : ''}`}
@@ -53,7 +53,7 @@ export function MessageStrip({ chips }: Props) {
                   {isError ? 'Error' : chip.text.length > 40 ? chip.text.slice(0, 40) + '…' : chip.text}
                 </span>
               </div>
-            </React.Fragment>
+            </Fragment>
           )
         })}
       </div>

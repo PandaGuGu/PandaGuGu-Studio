@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useI18n } from '../lib/i18n'
 import './VariantPanel.css'
 

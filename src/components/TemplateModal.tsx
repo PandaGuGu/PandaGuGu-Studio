@@ -1,4 +1,3 @@
-import React from 'react'
 import { TEMPLATES } from '../lib/templates'
 import type { Template } from '../lib/templates'
 import { useI18n } from '../lib/i18n'

@@ -1,7 +1,7 @@
 import type { ExcalidrawImperativeAPI } from '@excalidraw/excalidraw/types'
 import type { ExcalidrawElement } from '@excalidraw/excalidraw/element/types'
 import type { Blueprint, BlueprintElement, SemanticType } from './blueprint'
-import { setSemantic, DEFAULT_LAYOUT } from './blueprint'
+import { DEFAULT_LAYOUT } from './blueprint'
 import { htmlToBlueprint } from './blueprint' // re-exported from core (browser + Node)
 // Excalidraw 0.18 orders elements by fractional index (a0, a1, …, az, b0, …).
 // Hand-rolled base62 counters produce invalid keys ("0", "a", …) that make

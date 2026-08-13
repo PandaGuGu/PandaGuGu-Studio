@@ -57,7 +57,6 @@ function elementCss(e: BlueprintElement): string {
 function elementHtml(e: BlueprintElement): string {
   const p = e.props || {}
   const css = elementCss(e)
-  const id = e.type === 'image' ? 'img' : 'div'
   const children = (e.children || []).map(elementHtml).join('\n')
   const styleAttr = css ? ` style="${esc(css)}"` : ''
 

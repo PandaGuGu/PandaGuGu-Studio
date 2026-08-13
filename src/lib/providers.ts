@@ -174,11 +174,12 @@ export interface ProviderState {
   customModelId?: string
 }
 
-const STORAGE_KEY = 'vcanvas_provider_state'
+const STORAGE_KEY = 'pandagugu_provider_state'
+const LEGACY_STORAGE_KEY = 'vcanvas_provider_state'
 
 export function loadProviderState(): ProviderState {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY)
+    const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem(LEGACY_STORAGE_KEY)
     if (raw) {
       const parsed = JSON.parse(raw)
       for (const p of PROVIDERS) {

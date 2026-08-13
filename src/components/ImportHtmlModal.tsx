@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'
+import { useState, useRef } from 'react'
 import { useI18n } from '../lib/i18n'
 import './ImportHtmlModal.css'
 

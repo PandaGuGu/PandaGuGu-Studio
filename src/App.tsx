@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback, useEffect } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import { convertToExcalidrawElements } from '@excalidraw/excalidraw'
 import type { ExcalidrawImperativeAPI } from '@excalidraw/excalidraw/types'
 import { Header } from './components/Header'
@@ -25,13 +25,12 @@ import { loadHistory, appendHistory, removeHistory, clearHistory } from './lib/h
 import type { HistoryItem } from './lib/history'
 import { streamChat, chatOnce, extractHTML } from './lib/api'
 import { exportSourceAsPng, exportAllAsPng, getSources, brandFilename } from './lib/export'
-import { toBlueprint, toBlueprintAsync } from './lib/blueprint'
+import { toBlueprintAsync } from './lib/blueprint'
 import { getProvider, loadProviderState, saveProviderState } from './lib/providers'
 import { useI18n } from './lib/i18n'
 import type { ProviderState } from './lib/providers'
 import type { Message } from './lib/api'
 import type { ChatChip } from './lib/store'
-import type { ExcalidrawElement } from '@excalidraw/excalidraw/element/types'
 import './styles/app.css'
 
 const SYSTEM_PROMPT = `You are an expert frontend developer. The user will show you a sketch/wireframe/reference and describe what they want. Generate a COMPLETE, self-contained HTML file.
@@ -130,7 +129,7 @@ export function App() {
   const [autoTag, setAutoTag] = useState(true)
   const [device, setDevice] = useState<'desktop' | 'tablet' | 'mobile'>('desktop')
   const [langCode, setLangCode] = useState<string>(
-    () => localStorage.getItem('vcanvas-lang') || 'zh-CN'
+    () => localStorage.getItem('pandagugu-lang') || 'zh-CN'
   )
 
   useEffect(() => {
@@ -139,7 +138,7 @@ export function App() {
 
   const handleLangChange = useCallback((lang: string) => {
     setLangCode(lang)
-    localStorage.setItem('vcanvas-lang', lang)
+    localStorage.setItem('pandagugu-lang', lang)
   }, [])
 
   const provider = getProvider(providerState.activeProviderId)
@@ -147,7 +146,7 @@ export function App() {
   const apiKey = providerState.keys[provider.id] || ''
   const modelLabel = provider.models.find(m => m.id === modelId)?.label || modelId
   const needsKey = apiKey.length <= 4
-  const [messages, setMessages] = useState<Message[]>([])
+  const [, setMessages] = useState<Message[]>([])
   const [chips, setChips] = useState<ChatChip[]>([])
   const [iteration, setIteration] = useState(0)
   const [lastHTML, setLastHTML] = useState('')
@@ -674,7 +673,6 @@ ${SYSTEM_PROMPT}`
 
   const runPlanPhase = useCallback(async (
     messages: Message[],
-    phaseIndex: number,
     onText: (text: string) => void,
   ): Promise<string> => {
     return new Promise((resolve, reject) => {
@@ -722,7 +720,7 @@ ${SYSTEM_PROMPT}`
       // Phase 1: Gaze
       const gazeResult = await runPlanPhase([
         { role: 'user', content: [...imageContent, { type: 'text', text: makeGazePrompt(prompt) }] },
-      ], 0, (text) => {
+      ], (text) => {
         setPlanPhases(prev => prev.map((p, i) => i === 0 ? { ...p, text: p.text + text } : p))
       })
 
@@ -736,7 +734,7 @@ ${SYSTEM_PROMPT}`
         { role: 'user', content: [...imageContent, { type: 'text', text: makeGazePrompt(prompt) }] },
         { role: 'assistant', content: gazeResult },
         { role: 'user', content: [{ type: 'text', text: makeDreamPrompt(prompt) }] },
-      ], 1, (text) => {
+      ], (text) => {
         setPlanPhases(prev => prev.map((p, i) => i === 1 ? { ...p, text: p.text + text } : p))
       })
 
@@ -754,7 +752,7 @@ ${SYSTEM_PROMPT}`
       ]
 
       let createTokenIdx = 0
-      const createResult = await runPlanPhase(createMessages, 2, (text) => {
+      const createResult = await runPlanPhase(createMessages, (text) => {
         createTokenIdx++
         setStreamText(prev => prev + text)
         setStreamTokenCount(createTokenIdx)
@@ -828,7 +826,7 @@ ${SYSTEM_PROMPT}`
       // Gaze at both screenshot and canvas
       const gazeResult = await runPlanPhase([
         { role: 'user', content: [...imageContent, { type: 'text', text: makeGazePrompt(refinementPrompt) + '\n\nThe first image is the current rendered output. Subsequent images are the original sketches/references.' }] },
-      ], 0, (text) => {
+      ], (text) => {
         setPlanPhases(prev => prev.map((p, i) => i === 0 ? { ...p, text: p.text + text } : p))
       })
 
@@ -839,7 +837,7 @@ ${SYSTEM_PROMPT}`
         { role: 'user', content: [...imageContent, { type: 'text', text: makeGazePrompt(refinementPrompt) }] },
         { role: 'assistant', content: gazeResult },
         { role: 'user', content: [{ type: 'text', text: makeDreamPrompt(refinementPrompt) + `\n\nThis is a REFINEMENT. Here is the current HTML to evolve:\n\`\`\`html\n${lastHTML}\n\`\`\`` }] },
-      ], 1, (text) => {
+      ], (text) => {
         setPlanPhases(prev => prev.map((p, i) => i === 1 ? { ...p, text: p.text + text } : p))
       })
 
@@ -852,7 +850,7 @@ ${SYSTEM_PROMPT}`
       let createTokenIdx2 = 0
       const createResult = await runPlanPhase([
         { role: 'user', content: [...imageContent, { type: 'text', text: makePlanCreatePrompt(gazeResult, dreamResult, refinementPrompt) + `\n\nHere is the previous HTML to improve upon:\n\`\`\`html\n${lastHTML}\n\`\`\`` }] },
-      ], 2, (text) => {
+      ], (text) => {
         createTokenIdx2++
         setStreamText(prev => prev + text)
         setStreamTokenCount(createTokenIdx2)
@@ -924,7 +922,6 @@ ${SYSTEM_PROMPT}`
             onAutoTagChange={setAutoTag}
             theme={canvasTheme}
             langCode={langCode}
-            modelLabel={modelLabel}
             onImportHtml={() => setShowImport(true)}
             onOpenTemplates={() => setShowTemplates(true)}
           />
@@ -937,7 +934,6 @@ ${SYSTEM_PROMPT}`
             onSave={handleSave}
             onLoad={handleLoad}
             previewScreenshot={previewScreenshot}
-            modelLabel={modelLabel}
           />
           <MessageStrip chips={chips} />
         </div>
@@ -959,7 +955,6 @@ ${SYSTEM_PROMPT}`
             <HistoryPanel
               items={history}
               activeId={activeHistoryId}
-              modelLabel={modelLabel}
               onLoad={handleLoadHistory}
               onDelete={handleDeleteHistory}
               onClear={handleClearHistory}

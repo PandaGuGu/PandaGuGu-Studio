@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useRef, useEffect } from 'react'
+import { useCallback, useState, useRef, useEffect } from 'react'
 import { Excalidraw, THEME, viewportCoordsToSceneCoords } from '@excalidraw/excalidraw'
 import '@excalidraw/excalidraw/index.css'
 import type { ExcalidrawImperativeAPI } from '@excalidraw/excalidraw/types'
@@ -22,7 +22,6 @@ interface Props {
   onAutoTagChange?: (v: boolean) => void
   theme?: 'light' | 'dark'
   langCode?: string
-  modelLabel?: string
   onImportHtml?: () => void
   onOpenTemplates?: () => void
 }
@@ -49,7 +48,7 @@ const TOOL_OF: Record<SemanticType, string> = {
   raw: 'rectangle', note: 'rectangle',
 }
 
-export function Canvas({ onEditorReady, onCanvasChange, onSelectElement, autoTag = true, onAutoTagChange, theme = 'light', langCode = 'zh-CN', modelLabel, onImportHtml, onOpenTemplates }: Props) {
+export function Canvas({ onEditorReady, onCanvasChange, onSelectElement, autoTag = true, onAutoTagChange, theme = 'light', langCode = 'zh-CN', onImportHtml, onOpenTemplates }: Props) {
   const t = useI18n()
   const [editor, setEditor] = useState<ExcalidrawImperativeAPI | null>(null)
   const [selected, setSelected] = useState<ExcalidrawElement | null>(null)
@@ -149,7 +148,7 @@ export function Canvas({ onEditorReady, onCanvasChange, onSelectElement, autoTag
         if (!editor) return
         const current = editor.getSceneElements()
         const prevIds = new Set(
-          ((window as any).__vcanvasPrevEls as readonly ExcalidrawElement[] | undefined || [])
+          ((window as any).__pggPrevEls as readonly ExcalidrawElement[] | undefined || [])
             .map((e) => e.id)
         )
         const targets = current.filter((e) => {
@@ -191,7 +190,7 @@ export function Canvas({ onEditorReady, onCanvasChange, onSelectElement, autoTag
       }, 250)
     }
     // Cache snapshot for the NEXT diff.
-    ;(window as any).__vcanvasPrevEls = els
+    ;(window as any).__pggPrevEls = els
     onCanvasChange?.()
   }, [onSelectElement, onCanvasChange, autoTag, editor])
 
@@ -244,7 +243,7 @@ export function Canvas({ onEditorReady, onCanvasChange, onSelectElement, autoTag
         <span className="canvas-auto-tag-icon">⚡</span>
         {t('semantic.autoTag')}
       </button>
-      <SemanticRail editor={editor} selected={selected} selectedIds={selectedIds} modelLabel={modelLabel} onChanged={onCanvasChange} onDrawTag={handleDrawTag} onImportHtml={onImportHtml} onOpenTemplates={onOpenTemplates} />
+      <SemanticRail editor={editor} selected={selected} selectedIds={selectedIds} onChanged={onCanvasChange} onDrawTag={handleDrawTag} onImportHtml={onImportHtml} onOpenTemplates={onOpenTemplates} />
     </div>
   )
 }

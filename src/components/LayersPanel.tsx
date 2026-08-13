@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react'
+import { Fragment, useEffect, useState, useCallback } from 'react'
 import type { ExcalidrawImperativeAPI } from '@excalidraw/excalidraw/types'
 import type { ExcalidrawElement } from '@excalidraw/excalidraw/element/types'
 import { getSemantic } from '../lib/blueprint'
@@ -114,7 +114,7 @@ export function LayersPanel({ editor, canvasVersion, selectedElementId, onAddFra
     const hasChildren = node.children.length > 0
     const isOpen = expanded.has(node.id)
     return (
-      <React.Fragment key={node.id}>
+      <Fragment key={node.id}>
         <div
           className={`layer-item ${selectedElementId === node.id ? 'selected' : ''} ${node.isFrame ? 'is-frame' : ''}`}
           style={{ paddingLeft: 6 + depth * 14 }}
@@ -143,7 +143,7 @@ export function LayersPanel({ editor, canvasVersion, selectedElementId, onAddFra
           </span>
         </div>
         {isOpen && node.children.map((child) => renderNode(child, depth + 1))}
-      </React.Fragment>
+      </Fragment>
     )
   }
 

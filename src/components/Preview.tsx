@@ -1,6 +1,4 @@
-import React from 'react'
 import './Preview.css'
-import { useI18n } from '../lib/i18n'
 
 interface Props {
   html: string
@@ -15,7 +13,6 @@ const DEVICE_WIDTHS: Record<NonNullable<Props['device']>, number | null> = {
 }
 
 export function Preview({ html, iframeRef, device = 'desktop' }: Props) {
-  const t = useI18n()
   if (!html) return null
 
   const width = DEVICE_WIDTHS[device]

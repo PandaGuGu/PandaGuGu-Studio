@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useMemo } from 'react'
+import { useEffect, useRef, useState, useMemo } from 'react'
 import './StreamOverlay.css'
 import { useI18n } from '../lib/i18n'
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import type { HistoryItem } from '../lib/history'
 import { brandFilename } from '../lib/export'
 import { useI18n } from '../lib/i18n'
@@ -7,7 +7,6 @@ import './HistoryPanel.css'
 interface Props {
   items: HistoryItem[]
   activeId: string | null
-  modelLabel?: string
   onLoad: (item: HistoryItem) => void
   onDelete: (id: string) => void
   onClear: () => void
@@ -26,7 +25,7 @@ function summarize(html: string): string {
   return (text || 'HTML').slice(0, 24)
 }
 
-export function HistoryPanel({ items, activeId, modelLabel, onLoad, onDelete, onClear }: Props) {
+export function HistoryPanel({ items, activeId, onLoad, onDelete, onClear }: Props) {
   const t = useI18n()
   const [open, setOpen] = useState(false)
 

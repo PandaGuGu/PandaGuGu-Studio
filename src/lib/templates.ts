@@ -7,9 +7,6 @@ export interface Template {
   build: () => Blueprint
 }
 
-let n = 0
-const rid = () => `tpl-${++n}`
-
 function mk(
   type: SemanticType,
   x: number, y: number, w: number, h: number,
@@ -40,17 +37,11 @@ const input = (x: number, y: number, w: number, placeholder: string) =>
 const link = (x: number, y: number, w: number, label: string) =>
   mk('link', x, y, w, 20, { label, href: '#' })
 
-const img = (x: number, y: number, w: number, h: number, alt: string) =>
-  mk('image', x, y, w, h, { alt, src: '' })
-
 const card = (x: number, y: number, w: number, h: number, title: string, body: string) =>
   mk('card', x, y, w, h, { label: title, radius: 12, shadow: 'md' }, [
     mk('heading', x + 16, y + 14, w - 32, 24, { content: title, level: 3, fontSize: 16, fontWeight: 600 }),
     mk('text', x + 16, y + 46, w - 32, 40, { content: body, fontSize: 12 }),
   ])
-
-const section = (x: number, y: number, w: number, h: number, label: string, children: BlueprintElement[]) =>
-  mk('section', x, y, w, h, { label }, children)
 
 // Root container for templates (avoids Excalidraw frame-render crash).
 const root = (x: number, y: number, w: number, h: number, label: string, children: BlueprintElement[]) =>
