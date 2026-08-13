@@ -12,7 +12,8 @@
     "build:cli": "node scripts/build-cli.mjs",
     "build:gh": "VCANVAS_BASE=/vcanvas/ vite build",
     "preview": "vite preview",
-    "check": "bash scripts/check.sh"
+    "check": "bash scripts/check.sh",
+    "test": "node --experimental-strip-types --test tests/core.test.ts"
   },
   "license": "MIT",
   "dependencies": {
