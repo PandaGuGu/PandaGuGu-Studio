@@ -943,16 +943,25 @@ ${SYSTEM_PROMPT}`
         </div>
         <ResizeHandle onResize={handleResize} />
         <div className="panel-right">
-          <PromptBar
-            onGenerate={planMode ? handlePlanGenerate : handleGenerate}
-            onRefine={planMode ? handlePlanRefine : handleRefine}
-            onClear={handleClear}
-            hasOutput={!!lastHTML}
-            generating={generating}
-            planMode={planMode}
-            onPlanModeToggle={() => setPlanMode(p => !p)}
-            hasKey={!needsKey}
-            onUseBlueprint={handleUseBlueprint}
+          <VariantPanel
+            onGenerate={handleVariantsGenerate}
+            generating={batchGenerating}
+            progress={batchProgress}
+            disabled={needsKey || !editor}
+          />
+          <LayersPanel
+            editor={editor}
+            canvasVersion={canvasVersion}
+            selectedElementId={selectedElementId}
+            onAddFrame={handleAddFrame}
+          />
+          <HistoryPanel
+            items={history}
+            activeId={activeHistoryId}
+            modelLabel={modelLabel}
+            onLoad={handleLoadHistory}
+            onDelete={handleDeleteHistory}
+            onClear={handleClearHistory}
           />
           <div className="preview-container">
             {variants.length > 0 && (
@@ -1050,25 +1059,16 @@ ${SYSTEM_PROMPT}`
               </span>
             </div>
           )}
-          <VariantPanel
-            onGenerate={handleVariantsGenerate}
-            generating={batchGenerating}
-            progress={batchProgress}
-            disabled={needsKey || !editor}
-          />
-          <LayersPanel
-            editor={editor}
-            canvasVersion={canvasVersion}
-            selectedElementId={selectedElementId}
-            onAddFrame={handleAddFrame}
-          />
-          <HistoryPanel
-            items={history}
-            activeId={activeHistoryId}
-            modelLabel={modelLabel}
-            onLoad={handleLoadHistory}
-            onDelete={handleDeleteHistory}
-            onClear={handleClearHistory}
+          <PromptBar
+            onGenerate={planMode ? handlePlanGenerate : handleGenerate}
+            onRefine={planMode ? handlePlanRefine : handleRefine}
+            onClear={handleClear}
+            hasOutput={!!lastHTML}
+            generating={generating}
+            planMode={planMode}
+            onPlanModeToggle={() => setPlanMode(p => !p)}
+            hasKey={!needsKey}
+            onUseBlueprint={handleUseBlueprint}
           />
         </div>
       </div>
