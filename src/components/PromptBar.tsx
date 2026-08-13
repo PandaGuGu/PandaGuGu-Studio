@@ -111,7 +111,7 @@ export function PromptBar({ onGenerate, onRefine, onClear, hasOutput, generating
               onClick={onClear}
               disabled={generating}
             >
-              清空
+              {t('prompt.clear')}
             </button>
           )}
           <button
