@@ -18,7 +18,7 @@ interface Props {
   onPlanModeToggle: () => void
   hasKey: boolean
   /** Serialize the current canvas blueprint into a prompt string (or null). */
-  onUseBlueprint?: () => string | null
+  onUseBlueprint?: () => Promise<string | null>
 }
 
 export function PromptBar({ onGenerate, onRefine, onClear, hasOutput, generating, planMode, onPlanModeToggle, hasKey, onUseBlueprint }: Props) {
@@ -56,8 +56,8 @@ export function PromptBar({ onGenerate, onRefine, onClear, hasOutput, generating
         <div className="inspiration-strip">
           <button
             className="inspiration-chip blueprint-chip"
-            onClick={() => {
-              const bp = onUseBlueprint?.()
+            onClick={async () => {
+              const bp = await onUseBlueprint?.()
               if (bp) setPrompt(bp)
             }}
             disabled={generating}

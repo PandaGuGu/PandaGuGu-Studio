@@ -6,7 +6,8 @@ import {
   DEFAULT_LAYOUT,
   canTag,
   setSemantic,
-  toBlueprint,
+  toBlueprintAsync,
+  blueprintToHtml,
   downloadJSON,
 } from '../lib/blueprint'
 import { alignElements } from '../lib/align'
@@ -99,14 +100,60 @@ export function SemanticRail({ editor, selected, selectedIds = new Set(), modelL
     onChanged?.()
   }
 
-  const handleExport = () => {
+  const handleExport = async (imageAsFile = false) => {
     if (!editor) return
-    const bp = toBlueprint(editor)
+    const bp = await toBlueprintAsync(editor, { imageAsFile })
     if (!bp) {
       alert(t('semantic.exportEmpty'))
       return
     }
     downloadJSON(bp, brandFilename('json'))
+  }
+
+  /** 导出自包含 HTML:图片 base64 内嵌,无需任何本地文件,Ai 不参与。 */
+  const handleExportHtml = async () => {
+    if (!editor) return
+    const bp = await toBlueprintAsync(editor)
+    if (!bp) {
+      alert(t('semantic.exportEmpty'))
+      return
+    }
+    const html = blueprintToHtml(bp)
+    const blob = new Blob([html], { type: 'text/html;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = brandFilename('html')
+    a.click()
+    URL.revokeObjectURL(url)
+    setExportMenuOpen(false)
+  }
+
+  /** 复制"提示词+JSON"给网页 AI:明确告知 src 是 base64 字符串、不要解码、原样复制。 */
+  const handleCopyForAI = async () => {
+    if (!editor) return
+    const bp = await toBlueprintAsync(editor)
+    if (!bp) {
+      alert(t('semantic.exportEmpty'))
+      return
+    }
+    const prompt =
+      '严格根据以下 JSON 布局生成一个完整的 HTML 页面。\n' +
+      '【映射规则】section→<section>，container/card/nav→<div>，heading→<h1-h6>，text→<p>，link→<a>，button→<button>，input→<input>，image→<img>，raw→原样嵌入 props.html。\n' +
+      '【图片规则】image 元素的 props.src 若以 data:image/ 开头，它是一段完整的 base64 图片数据字符串。你**不需要解码、不需要理解、不需要查看它**，它只是普通文本。你只需把它**一字不差、原样完整复制**到 <img src="..."> 里，浏览器会自动显示图片。**严禁截断、省略、改写、压缩或替换成占位图/链接**。若 src 不是 data: 开头，则按普通 URL 或文件名使用。\n' +
+      '【布局规则】layout:"free" 用 position:absolute(x/y/w/h 是像素)；"row"用 flex 横向；"column"用 flex 纵向；"grid"/"wrap"用 grid/flex-wrap。重叠元素按 zIndex 设置 z-index。\n' +
+      '【硬性要求】1) 严格按元素树生成，不得臆造或删除区块；2) 文案一律用 props 中的 content/label/placeholder，不要自己编内容；3) 输出完整可运行的单文件 HTML(含 <!DOCTYPE html> 和内联 CSS)，不要输出解释文字。\n\n' +
+      '```json\n' +
+      JSON.stringify(bp, null, 2) +
+      '\n```'
+    try {
+      await navigator.clipboard.writeText(prompt)
+      alert(t('semantic.copyForAIHint'))
+    } catch {
+      // Clipboard blocked (non-secure context) — fall back to a download.
+      downloadJSON({ __prompt: prompt }, brandFilename('prompt'))
+    }
+    setExportMenuOpen(false)
   }
 
   const handleExportPng = async () => {
@@ -195,6 +242,30 @@ export function SemanticRail({ editor, selected, selectedIds = new Set(), modelL
           >
             <span className="semantic-rail-icon">📋</span>
             {t('semantic.exportBlueprint')}
+          </button>
+          <button
+            className="semantic-rail-menu-item"
+            onClick={() => { handleExport(true); setExportMenuOpen(false) }}
+            title={t('semantic.exportBlueprintFileHint')}
+          >
+            <span className="semantic-rail-icon">📁</span>
+            {t('semantic.exportBlueprintFile')}
+          </button>
+          <button
+            className="semantic-rail-menu-item"
+            onClick={handleExportHtml}
+            title={t('semantic.exportHtmlHint')}
+          >
+            <span className="semantic-rail-icon">🧾</span>
+            {t('semantic.exportHtml')}
+          </button>
+          <button
+            className="semantic-rail-menu-item"
+            onClick={handleCopyForAI}
+            title={t('semantic.copyForAIHint')}
+          >
+            <span className="semantic-rail-icon">🤖</span>
+            {t('semantic.copyForAI')}
           </button>
           <button
             className="semantic-rail-menu-item"

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react'
 import type { ExcalidrawImperativeAPI } from '@excalidraw/excalidraw/types'
 import { getSources, exportSourceAsPng, exportAllAsPng, brandFilename } from '../lib/export'
 import type { SourceInfo } from '../lib/export'
-import { toBlueprint, downloadJSON } from '../lib/blueprint'
+import { toBlueprintAsync, downloadJSON } from '../lib/blueprint'
 import './FramePicker.css'
 import { useI18n } from '../lib/i18n'
 
@@ -71,9 +71,9 @@ export function FramePicker({ editor, selectedIds, onSelectionChange, onAddFrame
     onSelectionChange(new Set())
   }, [onSelectionChange])
 
-  const handleExportFrameJson = useCallback((frameId: string) => {
+  const handleExportFrameJson = useCallback(async (frameId: string) => {
     if (!editor) return
-    const bp = toBlueprint(editor, { frameId })
+    const bp = await toBlueprintAsync(editor, { frameId })
     if (!bp) {
       alert(t('semantic.exportEmpty'))
       return

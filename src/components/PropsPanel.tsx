@@ -312,6 +312,7 @@ export function PropsPanel({ editor, element, onChanged }: Props) {
         )}
         {type === 'image' && (
           <>
+            <label className="pp-row"><span>{t('props.fileName')}</span>{text('fileName', '111')}</label>
             <label className="pp-row"><span>{t('props.alt')}</span>{text('alt')}</label>
             <label className="pp-row pp-col"><span>{t('props.src')}</span>{text('src', 'https://…')}</label>
             <label className="pp-row"><span>{t('props.fit')}</span>

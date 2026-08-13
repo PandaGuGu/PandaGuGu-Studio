@@ -127,7 +127,7 @@ function blobToBase64(blob: Blob): Promise<string> {
  * e.g. brandFilename('json') -> 2026-08-12.json
  *      brandFilename('png')  -> 2026-08-12.png
  */
-export function brandFilename(kind: 'json' | 'png' | 'html'): string {
+export function brandFilename(kind: 'json' | 'png' | 'html' | 'prompt'): string {
   const d = new Date()
   const pad = (n: number) => String(n).padStart(2, '0')
   const date = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`

@@ -3,7 +3,7 @@ import { useI18n } from '../lib/i18n'
 import './ImportHtmlModal.css'
 
 interface Props {
-  onImport: (html: string) => boolean
+  onImport: (html: string) => Promise<boolean> | boolean
   onClose: () => void
 }
 
@@ -11,6 +11,7 @@ export function ImportHtmlModal({ onImport, onClose }: Props) {
   const t = useI18n()
   const [html, setHtml] = useState('')
   const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
   const fileRef = useRef<HTMLInputElement>(null)
 
   const readFile = (file: File) => {
@@ -23,14 +24,20 @@ export function ImportHtmlModal({ onImport, onClose }: Props) {
     reader.readAsText(file)
   }
 
-  const doImport = () => {
+  const doImport = async () => {
     if (!html.trim()) {
       setError(t('import.empty'))
       return
     }
-    const ok = onImport(html)
-    if (ok) onClose()
-    else setError(t('import.parseError'))
+    setLoading(true)
+    setError('')
+    try {
+      const ok = await onImport(html)
+      if (ok) onClose()
+      else setError(t('import.parseError'))
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -67,9 +74,9 @@ export function ImportHtmlModal({ onImport, onClose }: Props) {
         {error && <div className="import-error">{error}</div>}
 
         <div className="import-foot">
-          <button className="import-cancel" onClick={onClose}>{t('import.cancel')}</button>
-          <button className="import-ok" onClick={doImport} disabled={!html.trim()}>
-            {t('import.confirm')}
+          <button className="import-cancel" onClick={onClose} disabled={loading}>{t('import.cancel')}</button>
+          <button className="import-ok" onClick={doImport} disabled={!html.trim() || loading}>
+            {loading ? t('import.importing') : t('import.confirm')}
           </button>
         </div>
       </div>

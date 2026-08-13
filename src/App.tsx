@@ -25,7 +25,7 @@ import { loadHistory, appendHistory, removeHistory, clearHistory } from './lib/h
 import type { HistoryItem } from './lib/history'
 import { streamChat, chatOnce, extractHTML } from './lib/api'
 import { exportSourceAsPng, exportAllAsPng, getSources, brandFilename } from './lib/export'
-import { toBlueprint } from './lib/blueprint'
+import { toBlueprint, toBlueprintAsync } from './lib/blueprint'
 import { getProvider, loadProviderState, saveProviderState } from './lib/providers'
 import { useI18n } from './lib/i18n'
 import type { ProviderState } from './lib/providers'
@@ -298,11 +298,11 @@ export function App() {
     canvasChangeTimer.current = setTimeout(() => setCanvasVersion(v => v + 1), 400)
   }, [])
 
-  /** Import HTML → parse → simplify → auto-layout → push onto canvas. */
-  const handleImportHtml = useCallback((html: string): boolean => {
+  /** Import HTML → parse → simplify → auto-layout → push onto canvas (async: downloads images). */
+  const handleImportHtml = useCallback(async (html: string): Promise<boolean> => {
     const api = editorRef.current
     if (!api) return false
-    const ok = importHtmlToScene(api, html)
+    const ok = await importHtmlToScene(api, html)
     if (ok) handleCanvasChange()
     return ok
   }, [handleCanvasChange])
@@ -321,16 +321,16 @@ export function App() {
   }, [handleCanvasChange])
 
   /** One-click: serialize current canvas blueprint into a prompt for the AI. */
-  const handleUseBlueprint = useCallback((): string | null => {
+  const handleUseBlueprint = useCallback(async (): Promise<string | null> => {
     const api = editorRef.current
     if (!api) return null
-    const bp = toBlueprint(api)
+    const bp = await toBlueprintAsync(api)
     if (!bp) return null
     return (
       '严格根据以下画布蓝图生成一个完整的 HTML 页面。' +
-      '【映射规则】section→<section>，container/card/nav→<div>，heading→<h1-h6>（用 props.level），text→<p>，link→<a href=props.href>，button→<button>，input→<input placeholder>，image→<img src=props.src>，raw→原样嵌入 props.html，note→仅作设计意图参考不要渲染。' +
+      '【映射规则】section→<section>，container/card/nav→<div>，heading→<h1-h6>（用 props.level），text→<p>，link→<a href=props.href>，button→<button>，input→<input placeholder>，image→<img src=props.src>（若 props.src 以 data:image/ 开头，它是一段完整的 base64 图片数据字符串，你**不需要解码或理解它**，只需把它当普通文本、一字不差原样复制进 src 属性，**严禁截断、省略、改写或替换成占位图**；否则 src 是普通 URL/文件名，直接使用）>，raw→原样嵌入 props.html，note→仅作设计意图参考不要渲染。' +
       '【布局规则】layout:"free" 用 position:absolute（x/y/w/h 为 CSS 像素，1 单位=1px@100% zoom，原点在左上角），"row" 用 flex 横向，"column" 用 flex 纵向，"grid"/"wrap" 用 grid/flex-wrap。重叠元素按 zIndex 设 z-index（大者在上）。' +
-      '【硬性要求】1) 严格按元素树生成，不得臆造或删除区块；2) 文案一律使用 props 中的 content/label/placeholder，不要自己编内容；3) 输出完整可运行的单文件 HTML（含 <!DOCTYPE html> 和内联 CSS），不要输出解释文字。\n\n' +
+      '【硬性要求】1) 严格按元素树生成，不得臆造或删除区块；2) 文案一律使用 props 中的 content/label/placeholder，不要自己编内容；3) 图片的 src 若以 data:image/ 开头必须原样完整复制到 <img src>，不得截断或省略；4) 输出完整可运行的单文件 HTML（含 <!DOCTYPE html> 和内联 CSS），不要输出解释文字。\n\n' +
       '```json\n' +
       JSON.stringify(bp, null, 2) +
       '\n```'
@@ -341,7 +341,7 @@ export function App() {
   const handleVariantsGenerate = useCallback(async (styles: VariantStyle[]) => {
     const api = editorRef.current
     if (!api || needsKey || styles.length === 0) return
-    const bp = toBlueprint(api)
+    const bp = await toBlueprintAsync(api)
     if (!bp) {
       alert(t('semantic.exportEmpty'))
       return
@@ -360,9 +360,9 @@ export function App() {
       setBatchProgress({ done: i, total: styles.length, current: style.label })
       const prompt =
         '严格根据以下画布蓝图生成一个完整的 HTML 页面。' +
-        '【映射规则】section→<section>，container/card/nav→<div>，heading→<h1-h6>（用 props.level），text→<p>，link→<a href=props.href>，button→<button>，input→<input placeholder>，image→<img src=props.src>，raw→原样嵌入 props.html，note→仅作设计意图参考不要渲染。' +
+        '【映射规则】section→<section>，container/card/nav→<div>，heading→<h1-h6>（用 props.level），text→<p>，link→<a href=props.href>，button→<button>，input→<input placeholder>，image→<img src=props.src>（若 props.src 以 data:image/ 开头，它是一段完整的 base64 图片数据字符串，你**不需要解码或理解它**，只需把它当普通文本、一字不差原样复制进 src 属性，**严禁截断、省略、改写或替换成占位图**；否则 src 是普通 URL/文件名，直接使用）>，raw→原样嵌入 props.html，note→仅作设计意图参考不要渲染。' +
         '【布局规则】layout:"free" 用 position:absolute（x/y/w/h 为 CSS 像素），"row" 用 flex 横向，"column" 用 flex 纵向。重叠元素按 zIndex 设 z-index。' +
-        '【硬性要求】严格按元素树生成、文案用 props 内容不要自己编、输出完整可运行单文件 HTML。' +
+        '【硬性要求】严格按元素树生成、文案用 props 内容不要自己编、图片的 src 若以 data:image/ 开头必须原样完整复制到 <img src> 不得截断、输出完整可运行单文件 HTML。' +
         `\n\n【风格要求】${style.desc}` +
         '\n\n```json\n' +
         JSON.stringify(bp, null, 2) +

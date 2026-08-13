@@ -129,6 +129,16 @@ export function Canvas({ onEditorReady, onCanvasChange, onSelectElement, autoTag
     setSelectedIds(new Set(Object.keys(ids).filter((k) => ids[k])))
     onSelectElement?.(el)
 
+    // 选中图片但未打语义标记 → 自动补上 image 标记,
+    // 让右侧属性面板(文件名/描述/来源)始终可用,点击即可改名。
+    if (el?.type === 'image' && !getSemantic(el) && editor) {
+      const tagged = setSemantic(el, { type: 'image', layout: DEFAULT_LAYOUT, props: {} })
+      const elements = editor
+        .getSceneElements()
+        .map((x) => (x.id === tagged.id ? tagged : x))
+      editor.updateScene({ elements })
+    }
+
     // Auto-tag NEW elements, but deferred: wait until Excalidraw has fully
     // committed the shape (dragging/resizing done), then re-read the LATEST
     // scene from the editor and only swap the tagged elements. This keeps the
