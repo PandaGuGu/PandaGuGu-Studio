@@ -6,7 +6,11 @@
   background: var(--bg-secondary);
   margin: 0 12px 8px;
   flex-shrink: 0;
-  overflow: hidden;
+  position: relative;
+}
+/* 展开时提升层级,让浮层盖住下方(预览区) */
+.variant-panel.open {
+  z-index: 30;
 }
 
 .variant-toggle {
@@ -49,12 +53,25 @@
   opacity: 0.6;
 }
 
+/* 展开内容 = 绝对浮层:不占流(生成历史原位不动),盖在下方预览区上 */
+.variant-panel.open .variant-body {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 30;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 0 0 var(--radius) var(--radius);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
+}
+
 .variant-body {
   display: flex;
   flex-direction: column;
   gap: 8px;
   padding: 8px 10px;
-  max-height: 220px;
+  max-height: 240px;
   overflow-y: auto;
 }
 

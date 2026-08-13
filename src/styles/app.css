@@ -39,15 +39,16 @@
   min-height: 0;
 }
 
-/* 辅助面板区(批量变体/图层/生成历史):整体限高 + 区内滚动。
-   任何面板内容再多(画框/条目/风格)都在这里滚动,不会顶掉下面的预览和输入框。 */
+/* 辅助面板区(批量变体/图层/生成历史):限高 + 允许浮层溢出。
+   各面板内部各自滚动(图层/历史),批量变体展开用 absolute 浮层盖在预览上
+   (不占流,生成历史位置不变);极端超高由 panel-right 滚动兜底。 */
 .side-panels {
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
   max-height: 45%;
   min-height: 0;
-  overflow-y: auto;
+  overflow-y: visible;
   padding-top: 12px;
 }
 
