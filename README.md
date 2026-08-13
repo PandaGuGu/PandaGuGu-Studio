@@ -61,11 +61,14 @@ node dist-cli/pgg.mjs plan design.blueprint.json "做成深色科技风" \
 # ② HTML → 蓝图 JSON(逆向,可在画布载入继续编辑)
 node dist-cli/pgg.mjs import old-site.html -o old-site.blueprint.json
 
-# ③ 本地 REST API(GET /health · POST /api/plan · POST /api/import)
+# ③ 蓝图 → HTML(离线渲染,不经 AI,不耗 token;与网页版「🧾 导出 HTML」同一渲染器)
+node dist-cli/pgg.mjs render old-site.blueprint.json --title="新页面" -o new.html
+
+# ④ 本地 REST API(GET /health · POST /api/plan · POST /api/import)
 node dist-cli/pgg.mjs serve --port 8787
 ```
 
-配置优先级:**命令行参数 > 环境变量(`PGG_PROVIDER/PGG_MODEL/PGG_API_KEY/PGG_ENDPOINT`)> `~/.pandagugu.json`**。Key 只在本地,不上传。
+配置优先级:**命令行参数 > 环境变量(`PGG_PROVIDER/PGG_MODEL/PGG_API_KEY/PGG_ENDPOINT`)> `~/.pandagugu.json`**。Key 只在本地,不上传。短参数 `-o/-p/-k/-m` 分别是 `--out/--port/--key/--model` 的别名。
 
 ## 蓝图数据模型（v2）
 

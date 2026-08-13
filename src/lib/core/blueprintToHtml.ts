@@ -123,14 +123,15 @@ function buildNode(e: BlueprintElement): string {
  * Convert a blueprint into a self-contained HTML document.
  * Images are inlined as base64, so the output needs NO external files —
  * open it in any browser and the layout (with pictures) just works.
+ * @param title 可选页面标题(默认 "Canvas Export")
  */
-export function blueprintToHtml(bp: Blueprint): string {
+export function blueprintToHtml(bp: Blueprint, title = 'Canvas Export'): string {
   const body = (bp.elements || []).map(buildNode).join('\n')
   return (
     '<!DOCTYPE html>\n<html lang="zh-CN">\n<head>\n' +
     '<meta charset="UTF-8" />\n' +
     '<meta name="viewport" content="width=device-width, initial-scale=1.0" />\n' +
-    '<title>Canvas Export</title>\n' +
+    '<title>' + esc(title) + '</title>\n' +
     '<style>\n' +
     'body { margin:0; background:#f4f6f9; position:relative; }\n' +
     'html,body { min-height:100%; }\n' +

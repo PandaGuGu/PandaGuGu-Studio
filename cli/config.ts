@@ -33,27 +33,36 @@ export interface Flags {
   [key: string]: string | boolean | undefined
 }
 
+/** 短参数 → 长参数别名(归一化后都存长名,各命令只需读长名)。 */
+const ALIAS: Record<string, string> = {
+  o: 'out', p: 'port', k: 'key', m: 'model',
+}
+
 /** 极简参数解析:--key=value / --key value / -k value / 位置参数 */
 export function parseArgs(argv: string[]): { positionals: string[]; flags: Flags } {
   const positionals: string[] = []
   const flags: Flags = {}
+  const set = (key: string, value: string | boolean) => {
+    const long = ALIAS[key] || key
+    flags[long] = value
+  }
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i]
     if (a.startsWith('--')) {
       const eq = a.indexOf('=')
       if (eq > 0) {
-        flags[a.slice(2, eq)] = a.slice(eq + 1)
+        set(a.slice(2, eq), a.slice(eq + 1))
       } else {
         const key = a.slice(2)
         const next = argv[i + 1]
-        if (next && !next.startsWith('-')) { flags[key] = next; i++ }
-        else flags[key] = true
+        if (next && !next.startsWith('-')) { set(key, next); i++ }
+        else set(key, true)
       }
     } else if (a.startsWith('-') && a.length > 1) {
       const key = a.slice(1)
       const next = argv[i + 1]
-      if (next && !next.startsWith('-')) { flags[key] = next; i++ }
-      else flags[key] = true
+      if (next && !next.startsWith('-')) { set(key, next); i++ }
+      else set(key, true)
     } else {
       positionals.push(a)
     }

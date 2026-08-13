@@ -80,7 +80,9 @@ git -c user.email="pandagugu@studio.local" -c user.name="PandaGuGu Studio" commi
 - 命令：
   - `node dist-cli/pgg.mjs plan <blueprint.json> [prompt]` 蓝图→AI→HTML（流式，`--provider/--model/--key/--endpoint/--style/--out/--no-stream`）
   - `node dist-cli/pgg.mjs import <file.html> [-o out.json]` HTML→蓝图（Node 端用 linkedom 解析后注入）
+  - `node dist-cli/pgg.mjs render <blueprint.json> [-o out.html]` 蓝图→HTML（离线，不经 AI；`--title` 覆盖页面标题，`--open` 浏览器打开）
   - `node dist-cli/pgg.mjs serve [--port 8787]` 本地 REST API（GET /health · POST /api/plan · POST /api/import）
+- 短参数别名：`-o=--out`、`-p=--port`、`-k=--key`、`-m=--model`（parseArgs 的 ALIAS 表归一化，命令内一律读长名）
 - 配置优先级：命令行参数 > 环境变量（`PGG_PROVIDER/PGG_MODEL/PGG_API_KEY/PGG_ENDPOINT`）> `~/.pandagugu.json`
 - **双端复用铁律**：浏览器与 CLI 共用的逻辑必须放 `src/lib/core/`（纯 TS 零依赖，禁 import Excalidraw/React/DOM）；`blueprint.ts` 只留 Excalidraw 层并 re-export core
 - **TS 6.0 坑**：`export * from` 不再把导出带入当前模块自身作用域——本地要用的成员必须显式 `import`（blueprint.ts 头部有示范）
