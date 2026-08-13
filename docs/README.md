@@ -7,6 +7,22 @@
 | AI 操作指令 | [`/Skill.md`](../Skill.md) | 新增类型/文案/组件的操作手册 |
 | 部署说明 | [`/deploy/README.md`](../deploy/README.md) | Docker / 静态托管方式 |
 
+## 根目录文件速查
+
+> 以下文件位于项目根目录（工具链/平台约定位置，**请勿移动**）：
+
+| 文件 | 说明 |
+|------|------|
+| `README.md` | 对外介绍（功能 / CLI 用法 / 数据模型简介 / 服务商 / 开发） |
+| `LICENSE` | MIT 三层版权声明（Excalidraw / VCanvas / PandaGuGu） |
+| `package.json` | npm 脚本（dev/build/test/check/build:cli）+ bin `pgg` |
+| `package-lock.json` | 依赖锁定（勿手改，用 `npm install` 刷新） |
+| `tsconfig.json` | TypeScript 配置（include: src） |
+| `vite.config.ts` | Vite 构建配置（manualChunks 拆包 / chunkSizeWarningLimit） |
+| `index.html` | 入口 HTML（favicon.png / title / 字体） |
+| `.gitignore` | 忽略规则（node_modules / dist / dist-cli / .env* / .workbuddy） |
+| `.env.example` | 环境变量示例（构建路径 / pgg CLI 的 PGG_* 变量） |
+
 ## 目录约定（模仿 cakecake-project 架构）
 
 ```
